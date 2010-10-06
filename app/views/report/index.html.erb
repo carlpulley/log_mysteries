@@ -5,3 +5,9 @@
 		<%= event.to_s %>
 	<% end %>
 </pre>
+<b>Notes:</b> log events with the User Agent string Apple-PubSub/65.12.1 are accessing an RSS news feed (the HTTP request is GET /feeds/). As these events tend to be bound to individual digital identities and occur with a regular frequency, we can use these events to:
+<ul>
+	<li>perform a consistency check against the timestamps in our log file</li>
+	<li>group log events based on RSS update clients</li>
+	<li>by cross-correlating these identities with IP addresses, we can start trying to tie IP addresses to client identities</li>
+</ul>
