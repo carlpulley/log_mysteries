@@ -11,6 +11,7 @@ class CreateLogEvents < ActiveRecord::Migration
       t.string :user_agent
       t.string :unknown
       t.integer :processing_time
+      t.datetime :observed_at
 
       t.timestamps
     end

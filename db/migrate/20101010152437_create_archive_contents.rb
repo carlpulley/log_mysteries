@@ -6,6 +6,7 @@ class CreateArchiveContents < ActiveRecord::Migration
       t.string :name
       t.integer :size
       t.boolean :directory
+      t.datetime :observed_at
 
       t.timestamps
     end

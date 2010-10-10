@@ -7,7 +7,7 @@
 <h2>Graphs</h2>
 
 <h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
-<% data = @log_events.select(["log_events.id", "log_events.created_at"]).all.map_with_index { |d, i| { :x => i, :y => d.created_at.to_f, :id => d.id } } %>
+<% data = @log_events.select(["log_events.id", "log_events.observed_at"]).all.map_with_index { |d, i| { :x => i, :y => d.observed_at.to_f, :id => d.id } } %>
 <script type="text/javascript+protovis">	
 	var data = <%=raw data.to_json %>;
 	
@@ -25,9 +25,9 @@
 		%>
 		<li>Notice that around indexes <%= snip1 %>, <%= snip2 %> and <%= snip3 %> our perfect straight line is kinked. When we look back at our original data (see below), we discover that:
 			<ul>
-				<li>from <%= LogEvent.find(data[snip1][:id]).created_at %> until <%= LogEvent.find(data[snip1+1][:id]).created_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
-				<li>from <%= LogEvent.find(data[snip2][:id]).created_at %> until <%= LogEvent.find(data[snip2+1][:id]).created_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
-				<li>from <%= LogEvent.find(data[snip3][:id]).created_at %> until <%= LogEvent.find(data[snip3+1][:id]).created_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= LogEvent.find(data[snip1][:id]).observed_at %> until <%= LogEvent.find(data[snip1+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= LogEvent.find(data[snip2][:id]).observed_at %> until <%= LogEvent.find(data[snip2+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= LogEvent.find(data[snip3][:id]).observed_at %> until <%= LogEvent.find(data[snip3+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
 			</ul>
 		</li>
 		<%
@@ -64,29 +64,39 @@
 </p>
 	
 <h3>plot of event creation time (seconds from epoch) vs processing time (micro seconds)</h3>
-<% data = @log_events.select(["log_events.created_at", :processing_time]).order("log_events.created_at").all.map { |d| { :x => d.created_at.to_f, :y => d.processing_time } } %>
+
+<% data = @log_events.select(["log_events.observed_at", :processing_time]).order("log_events.observed_at").all.map { |d| { :x => d.observed_at.to_f, :y => d.processing_time } } %>
+
+<%
+	mean = mean(data.map { |d| d[:y] })/(10**6)
+	stddev = standard_deviation(data.map { |d| d[:y] })/(10**6)
+	averg = average(data.map { |d| d[:y] })/(10**6)
+	upper_time_bound = [mean+stddev, averg+stddev].max
+	upper_bound_color = "#B3C6FF"
+%>
+
 <script type="text/javascript+protovis">	
 	var data = <%=raw data.to_json %>;
 	
 	<%= render :partial => 'report/graph/area.js' %>
+
+	vis.add(pv.Rule)
+		.bottom(y(<%= upper_time_bound*(10**6) %>))
+		.strokeStyle(<%=raw upper_bound_color.to_json %>);
 
 	vis.render();
 </script>
 <p>
 	<b>Notes:</b>
 	<ul>
-		<%
-			mean = mean(data.map { |d| d[:y] })/(10**6)
-			stddev = standard_deviation(data.map { |d| d[:y] })/(10**6)
-		%>
-		<li>Here our mean processing time is <%= mean %> seconds with a standard deviation of <%= stddev %> seconds.</li>
-		<li>Thus, we get a mean processing time of <%= number_with_precision(mean, :precision => 2) %>±<%= number_with_precision(stddev, :precision => 2) %> seconds. Notice here how the standard deviation value swamps our mean value - ie. the mean is a highly unreliable value here!</li>
+		<li>Here our mean processing time is <%= mean %> seconds (standard deviation is <%= stddev %> seconds) and our average is <%= averg %> seconds.</li>
+		<li>Thus, any processing times that are greater than <%= number_with_precision(upper_time_bound, :precision => 0) %> seconds indicate when the server is being loaded. This cut off point has been plotted as a <font color="<%= upper_bound_color %>">blue</font> line on the above graph.</li>
 		<li>We know from our unit tests that each of these HTTP GET requests and responses are probably identical (this is based on the URLs being identical and the response body sizes being identical). As a result, our expectation is that, under ideal conditions (ie. with network latency and server load remaining constant), our processing_time attribute should be constant. Clearly, this is not the case here! As a result, if we assume no network latency, then we gain an estimate of server loading.</li>
 		<li>Recall from our unit testing that:
 			<ul>
-				<li>LogEvent id 145 (<%= LogEvent.find(145).created_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
-				<li>LogEvent id 259 (<%= LogEvent.find(259).created_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
-				<li>LogEvent id 297 (<%= LogEvent.find(297).created_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
+				<li>LogEvent id 145 (<%= LogEvent.find(145).observed_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
+				<li>LogEvent id 259 (<%= LogEvent.find(259).observed_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
+				<li>LogEvent id 297 (<%= LogEvent.find(297).observed_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
 			</ul>
 			 If the above server loading assumption is valid, then we can deduce that these delays were not the result of a heavily loaded server as processing times for the above events are all below 2 seconds.
 		</li>
@@ -97,7 +107,7 @@
 
 <h3>Log Events with IP Address <%= params[:ip_address] %> and tagged rss</h3>
 <pre>
-<% @log_events.ip_address(params[:ip_address]).tagged_with("rss").order(:created_at).all.each do |event| %>
+<% @log_events.ip_address(params[:ip_address]).tagged_with("rss").order(:observed_at).all.each do |event| %>
   <%=raw event.to_html %>
 <% end %>
 </pre>

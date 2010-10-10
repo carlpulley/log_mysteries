@@ -9,7 +9,7 @@
 <h3>Log Events tagged with world-of-warcraft,scan</h3>
 
 <pre>
-<% @log_events.tagged_with(["world-of-warcraft", "scan"]).order(:created_at).all.each do |event| %>
+<% @log_events.tagged_with(["world-of-warcraft", "scan"]).order(:observed_at).all.each do |event| %>
 <%=raw event.to_html %>
 <% end %>
 </pre>

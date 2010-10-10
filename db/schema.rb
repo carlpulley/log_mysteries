@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(:version => 20101010155939) do
     t.string   "name"
     t.integer  "size"
     t.boolean  "directory"
+    t.datetime "observed_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -33,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20101010155939) do
     t.string   "user_agent"
     t.string   "unknown"
     t.integer  "processing_time"
+    t.datetime "observed_at"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
