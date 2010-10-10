@@ -1,4 +1,8 @@
 module ReportHelper
+  def average(values)
+    values.sum / values.count.to_f
+  end
+  
   def mean(values)
     count = values.size
     values.inject(:+) / count.to_f
