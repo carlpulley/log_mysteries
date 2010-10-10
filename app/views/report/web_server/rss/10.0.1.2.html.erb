@@ -100,7 +100,7 @@
 					<li>LogEvent id <%= event.id %> (observed at <%= event.observed_at.in_time_zone('GMT').strftime("%d/%b/%Y %H:%M:%S %Z") %>) was logged latter than we expected.</li>
 				<% end %>
 			</ul>
-			 If the above server loading assumption is valid, then we can deduce that these delays were not the result of a heavily loaded server as processing times for the above events are all below 2 seconds.
+			 If the above server loading assumption is valid, then we can deduce that the majority of these delays were not the result of a heavily loaded server, as processing times for the above events are all below our <font color="<%= upper_bound_color %>">blue</font> threshold line. The only log events above that are present within heavy load areas as those for LogEvent id 375 and 393, and both of these events have processing times well below our threshold <font color="<%= upper_bound_color %>">blue</font> line.
 		</li>
 	</ul>
 </p>
