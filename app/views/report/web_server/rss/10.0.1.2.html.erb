@@ -84,6 +84,8 @@
 		.bottom(y(<%= upper_time_bound*(10**6) %>))
 		.strokeStyle(<%=raw upper_bound_color.to_json %>);
 
+	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+
 	vis.render();
 </script>
 <p>

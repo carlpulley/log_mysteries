@@ -17,7 +17,7 @@ var vis = new pv.Panel()
     .top(5);
 
 /* Y-axis and ticks. */
-vis.add(pv.Rule)
+var ylabel = vis.add(pv.Rule)
     .data(y.ticks())
     .bottom(y)
     .strokeStyle(function(d) d ? "#eee" : "#000")
@@ -25,7 +25,7 @@ vis.add(pv.Rule)
     .text(y.tickFormat);
 
 /* X-axis and ticks. */
-vis.add(pv.Rule)
+var xlabel = vis.add(pv.Rule)
     .data(x.ticks())
 	.visible(function(d) d)
     .left(x)
