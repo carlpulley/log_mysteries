@@ -1,0 +1,15 @@
+<h1>Scanning Analysis: World of Warcraft</h1>
+
+<h2>Overview</h2>
+
+<p>TODO: add in missing explanation.</p>
+
+<h2>Appendix</h2>
+
+<h3>Log Events tagged with world-of-warcraft,scan</h3>
+
+<pre>
+<% @log_events.tagged_with(["world-of-warcraft", "scan"]).order(:created_at).all.each do |event| %>
+<%=raw event.to_html %>
+<% end %>
+</pre>

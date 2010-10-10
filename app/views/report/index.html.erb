@@ -1,13 +1,69 @@
-<h1>Report#index</h1>
+<h1>Partial Analysis of <%= link_to "santized_log.zip", "http://honeynet.org/challenges/2010_5_log_mysteries" %></h1>
 
+<h2>Contents</h2>
+
+<ul>
+	<li><%= link_to "Wordpress", "/report/by?tagged=wordpress" %>
+		<ul>
+			<li><%= link_to "Blog", "/report/wordpress/core" %>
+			<li>Plugins
+				<ul>
+					<li><%= link_to "Contact Form 7", "/report/wordpress/plugin/contact-form-7" %></li>
+					<li>TODO: finish off plugin analysis</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li><%= link_to "RSS News Feed", "/report/by?tagged=rss" %> Analysis for:
+		<ul>
+			<li><%= link_to "10.0.1.2", "/report/web_server/rss/10.0.1.2" %></li>
+			<li>TODO: finish off RSS analysis by IP address</li>
+		</ul>
+	</li>
+	<li><%= link_to "Scanning", "/report/by?tagged=scan" %> Analysis:
+		<ul>
+			<li><%= link_to "World of Warcraft", "/report/scan/world-of-warcraft" %></li>
+			<li>TODO: finish off scanning analysis</li>
+		</ul>
+	</li>
+	<li><%= link_to "Web Bot", "/report/by?tagged=bot" %> Analysis:
+		<ul>
+			<li><%= link_to "NaverBot", "/report/bot/naverbot" %></li>
+		</ul>
+	</li>
+</ul>
+
+<h2>Overview</h2>
+
+<p>A visual examination of www-access.log and www-media.log suggests that we should initially group the data by: the remote IP address; and the user agent string (see the appendix below). Using this grouping of our data, we may then tag (see lib/tasks/tag_log_events.rake) Log Entry instances based on their observed interactions with our web server. The top-level links in our contents listing above represent the results of this analysis.</p>
+
+<p>www-access.log holds access information for each page that a client requests, whilst www-media.log holds access information for the resources on each page requested.</p>
+
+<p>By examining the referrer attributes of log entries tagged with <%= link_to "wordpress", "/report/by?tagged=wordpress" %> we are able to identify that the Apache server is hosting web sites located at:
+	<ul>
+		<li>http://www.domain.org/</li>
+		<li>http://24.4.108.196/</li>
+	</ul>
+Which leads one to suspect that the server is possibly located at 24.4.108.196 and www.domain.org resolves to this IP address.
+</p>
+
+<h2>Appendix</h2>
+
+<h3>Log Events <%= " Tagged with: #{params[:tagged]}" if params[:tagged] %> (Grouped by IP address and User Agent)</h3>
 <pre>
-	<% @log_events.user_agent("Apple-PubSub/65.12.1").all.each do |event| %>
-		<%= event.to_s %>
+	<% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
+	<% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
+	<% addresses.each do |address| %>
+		<% agents.each do |agent| %>
+			<% unless @log_events.ip_address(address).user_agent(agent).order(:created_at).count == 0 %>
+  <b>IP Address: <i><%= address %></i></b>
+  <b>User Agent: <i><%= agent %></i></b>
+				<% @log_events.ip_address(address).user_agent(agent).order(:created_at).all.each do |event| %>
+  <%=raw event.to_html %>
+				<% end %>
+<br />
+			<% end %>
+		<% end %>
 	<% end %>
 </pre>
-<b>Notes:</b> log events with the User Agent string Apple-PubSub/65.12.1 are accessing an RSS news feed (the HTTP request is GET /feeds/). As these events tend to be bound to individual digital identities and occur with a regular frequency, we can use these events to:
-<ul>
-	<li>perform a consistency check against the timestamps in our log file</li>
-	<li>group log events based on RSS update clients</li>
-	<li>by cross-correlating these identities with IP addresses, we can start trying to tie IP addresses to client identities</li>
-</ul>
+

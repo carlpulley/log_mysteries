@@ -18,3 +18,6 @@ gem "rspec-rails", "2.0.0.beta.12"
 
 # Following gem provides state machine modeling
 gem "transitions", :require => ["transitions", "active_record/transitions"]
+
+# Following gem allows data to be tagged
+gem 'acts-as-taggable-on'

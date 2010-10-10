@@ -1,8 +1,13 @@
 class LogEvent < ActiveRecord::Base
   serialize :http, Hash
   
-  scope ip_address, lambda { |addr| where(:remote => addr) }
-  scope user_agent, lambda { |agent| where(:user_agent => agent) }
+  acts_as_taggable_on :tags
+  
+  scope :get, lambda { where("http like '%\n:verb: GET%'") }
+  scope :url, lambda { |url| where(["http like ?", "%\n:uri: #{url}%"]) }
+  scope :ip_address, lambda { |addr| where(["remote like ?", "#{addr}%"]) }
+  scope :referer, lambda { |referer| where(["referer like ?", "#{referer}%"]) }
+  scope :user_agent, lambda { |agent| where(agent == "-" ? ["user_agent like '-'"] : ["user_agent like ?", "%#{agent}%"]) }
 
   # NOTES:
   #  Using the Apache2 documentation for LogFormat we get that the NCSA extended/combined log format configuration parameter is:
@@ -21,5 +26,9 @@ class LogEvent < ActiveRecord::Base
   
   def to_s
     "#{remote} #{host} #{user} [#{created_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z")}] \"#{http[:verb]} #{http[:uri]} HTTP/#{http[:version]}\" #{result} #{bytes == 0 ? "-" : bytes} \"#{referer}\" \"#{user_agent}\" #{unknown} #{processing_time}"
+  end
+  
+  def to_html
+    "<a href='/report/by?ip_address=#{remote}'>#{remote}</a> #{host} #{user} [#{created_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z")}] \"#{http[:verb]} <a href='/report/by?url=#{http[:uri]}'>#{http[:uri]}</a> HTTP/#{http[:version]}\" #{result} #{bytes == 0 ? "-" : bytes} \"<a href='/report/by?referer=#{referer}'>#{referer}</a>\" \"<a href='/report/by?user_agent=#{user_agent}'>#{user_agent}</a>\" #{unknown} #{processing_time}"
   end
 end

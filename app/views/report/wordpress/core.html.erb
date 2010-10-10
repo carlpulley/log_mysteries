@@ -1,0 +1,38 @@
+<h1>WordPress Analysis: Core</h1>
+
+<h2>Overview</h2>
+
+<p>By examining the <i>ver</i> parameter string for log entries tagged with <%= link_to "wordpress", "/report/by?tagged=contact-form-7" %>, we are able to extract version 2.9.2 for WordPress. Further examination of referrer attribute of log entries with the URL <i>/wp-cron</i> confirms this version number.</p>
+
+<p>Downloading version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to examine the resulting tar balls file contents for consistency.</p>
+
+<p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
+	<ul>
+		<% ["/wp-includes/js/jquery/jquery.form.js", "/wp-includes/js/jquery/jquery.js"].each do |filename| %>
+			<li><i><%= filename %></i></li>
+		<% end %>
+	</ul>
+have sizes consistent with the downloaded plugin - unit testing further confirms this assertion.</p>
+
+<h2>plugin file and URL file (file names) vs. file size (bytes)</h2>
+
+<% archive_data = Wordpress.where(:directory => false).select([:name, :size]).all %>
+<% log_event_sizes = archive_data.map { |d| @log_events.url(d.name).where(:result => 200).get.maximum(:bytes) || 0 } %>
+<script type="text/javascript+protovis">
+	var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
+	var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
+	
+	<%= render :partial => 'report/graph/bar.js' %>
+
+	vis.render();
+</script>
+
+<h2>Appendix</h2>
+
+<h3>Log Events tagged with wordpress</h3>
+
+<pre>
+<% @log_events.tagged_with("wordpress").order(:created_at).all.each do |event| %>
+  <%=raw event.to_html %>
+<% end %>
+</pre>

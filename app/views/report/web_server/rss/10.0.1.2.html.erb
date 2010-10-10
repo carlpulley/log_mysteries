@@ -1,0 +1,103 @@
+<h1>News Feed Data Analysis</h1>
+
+<h2>Overview</h2>
+
+<p>Unit testing demonstrates that news feeds can be uniquely identified using either: the user agent string <i>Apple-PubSub</i>; or the URL <i>/feed/</i>.</p>
+	
+<h2>Graphs</h2>
+
+<h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
+<% data = @log_events.select(["log_events.id", "log_events.created_at"]).all.map_with_index { |d, i| { :x => i, :y => d.created_at.to_f, :id => d.id } } %>
+<script type="text/javascript+protovis">	
+	var data = <%=raw data.to_json %>;
+	
+	<%= render :partial => 'report/graph/area.js' %>
+
+	vis.render();
+</script>
+<p>
+	<b>Notes:</b>
+	<ul>
+		<%
+			snip1 = 72
+			snip2 = 170
+			snip3 = 178
+		%>
+		<li>Notice that around indexes <%= snip1 %>, <%= snip2 %> and <%= snip3 %> our perfect straight line is kinked. When we look back at our original data (see below), we discover that:
+			<ul>
+				<li>from <%= LogEvent.find(data[snip1][:id]).created_at %> until <%= LogEvent.find(data[snip1+1][:id]).created_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= LogEvent.find(data[snip2][:id]).created_at %> until <%= LogEvent.find(data[snip2+1][:id]).created_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= LogEvent.find(data[snip3][:id]).created_at %> until <%= LogEvent.find(data[snip3+1][:id]).created_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+			</ul>
+		</li>
+		<%
+			tdiff1 = data[snip1][:y] - data[0][:y]
+			grad1_calc = "#{tdiff1}/(#{snip1}-0+1)"
+			grad1 = eval grad1_calc
+			
+			tdiff2 = data[snip2][:y] - data[snip1+1][:y]
+			grad2_calc = "#{tdiff2}/(#{snip2}-#{snip1+1}+1)"
+			grad2 = eval grad2_calc
+			
+			tdiff3 = data[snip3][:y] - data[snip2+1][:y]
+			grad3_calc = "#{tdiff3}/(#{snip3}-#{snip2+1}+1)"
+			grad3 = eval grad3_calc
+			
+			tdiff4 = data.last[:y] - data[snip3+1][:y]
+			grad4_calc = "#{tdiff4}/(#{data.length-1}-#{snip3+1}+1)"
+			grad4 = eval grad4_calc
+			
+			mean = mean([grad1, grad2, grad3, grad4])
+			stddev = standard_deviation([grad1, grad2, grad3, grad4])
+		%>
+		<li>By measuring the gradient of our graphs straight lines, we can reliably estimate that, on average, our digital client refreshes their RSS news feed every <%= number_with_precision(mean/60, :precision => 1) %>±<%= number_with_precision(stddev/60, :precision => 1) %> minutes. This conclusion is based on the following calculations:
+			<ul>
+				<li>from indexes 0 to <%= snip1 %> we have a time difference of <%= number_with_precision(tdiff1, :precision => 0) %> seconds and so a gradient of <%= grad1_calc %> = <%= number_with_precision(grad1, :precision => 0) %>.</li>
+				<li>from indexes <%= snip1+1 %> to <%= snip2 %> we have a time difference of <%= number_with_precision(tdiff2, :precision => 0) %> seconds and so a gradient of <%= grad2_calc %> = <%= number_with_precision(grad2, :precision => 0) %>.</li>
+				<li>from indexes <%= snip2+1 %> to <%= snip3 %> we have a time difference of <%= number_with_precision(tdiff3, :precision => 0) %> seconds and so a gradient of <%= grad3_calc %> = <%= number_with_precision(grad3, :precision => 0) %>.</li>
+				<li>from indexes <%= snip3+1 %> to <%= data.length-1 %> we have a time difference of <%= number_with_precision(tdiff4, :precision => 0) %> seconds and so a gradient of <%= grad4_calc %> = <%= number_with_precision(grad4, :precision => 0) %>.</li>
+				<li>Thus, we get that our gradient has a mean of <%= number_with_precision(mean, :precision => 0) %> and a standard deviation of <%= number_with_precision(stddev, :precision => 0) %>.</li>
+				<li>Whence we have that our RSS feed refresh rate is estimated as being once every <%= number_with_precision(mean, :precision => 0) %>±<%= number_with_precision(stddev, :precision => 0) %> seconds = <%= number_with_precision(mean/60, :precision => 1) %>±<%= number_with_precision(stddev/60, :precision => 1) %> minutes.</li>
+			</ul>
+		</li>
+	</ul>
+</p>
+	
+<h3>plot of event creation time (seconds from epoch) vs processing time (micro seconds)</h3>
+<% data = @log_events.select(["log_events.created_at", :processing_time]).order("log_events.created_at").all.map { |d| { :x => d.created_at.to_f, :y => d.processing_time } } %>
+<script type="text/javascript+protovis">	
+	var data = <%=raw data.to_json %>;
+	
+	<%= render :partial => 'report/graph/area.js' %>
+
+	vis.render();
+</script>
+<p>
+	<b>Notes:</b>
+	<ul>
+		<%
+			mean = mean(data.map { |d| d[:y] })/(10**6)
+			stddev = standard_deviation(data.map { |d| d[:y] })/(10**6)
+		%>
+		<li>Here our mean processing time is <%= mean %> seconds with a standard deviation of <%= stddev %> seconds.</li>
+		<li>Thus, we get a mean processing time of <%= number_with_precision(mean, :precision => 2) %>±<%= number_with_precision(stddev, :precision => 2) %> seconds. Notice here how the standard deviation value swamps our mean value - ie. the mean is a highly unreliable value here!</li>
+		<li>We know from our unit tests that each of these HTTP GET requests and responses are probably identical (this is based on the URLs being identical and the response body sizes being identical). As a result, our expectation is that, under ideal conditions (ie. with network latency and server load remaining constant), our processing_time attribute should be constant. Clearly, this is not the case here! As a result, if we assume no network latency, then we gain an estimate of server loading.</li>
+		<li>Recall from our unit testing that:
+			<ul>
+				<li>LogEvent id 145 (<%= LogEvent.find(145).created_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
+				<li>LogEvent id 259 (<%= LogEvent.find(259).created_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
+				<li>LogEvent id 297 (<%= LogEvent.find(297).created_at.to_f %> seconds from epoch) was logged latter than we expected.</li>
+			</ul>
+			 If the above server loading assumption is valid, then we can deduce that these delays were not the result of a heavily loaded server as processing times for the above events are all below 2 seconds.
+		</li>
+	</ul>
+</p>
+	
+<h2>Appendix</h2>
+
+<h3>Log Events with IP Address <%= params[:ip_address] %> and tagged rss</h3>
+<pre>
+<% @log_events.ip_address(params[:ip_address]).tagged_with("rss").order(:created_at).all.each do |event| %>
+  <%=raw event.to_html %>
+<% end %>
+</pre>

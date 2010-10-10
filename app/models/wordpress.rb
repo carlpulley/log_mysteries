@@ -1,0 +1,2 @@
+class Wordpress < ArchiveContent
+end
