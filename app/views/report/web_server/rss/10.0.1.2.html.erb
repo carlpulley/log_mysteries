@@ -94,14 +94,6 @@
 		<li>Here our mean processing time is <%= mean %> seconds (standard deviation is <%= stddev %> seconds) and our average is <%= averg %> seconds.</li>
 		<li>Thus, any processing times that are greater than <%= number_with_precision(upper_time_bound, :precision => 0) %> seconds indicate when the server is being loaded. This cut off point has been plotted as a <font color="<%= upper_bound_color %>">blue</font> line on the above graph.</li>
 		<li>We know from our unit tests that each of these HTTP GET requests and responses are probably identical (this is based on the URLs being identical and the response body sizes being identical). As a result, our expectation is that, under ideal conditions (ie. with network latency and server load remaining constant), our processing_time attribute should be constant. Clearly, this is not the case here! As a result, if we assume no network latency, then we gain an estimate of server loading.</li>
-		<li>Recall from our unit testing that:
-			<ul>
-				<% LogEvent.where(:id => [145, 259, 297, 375, 393, 461, 467, 485, 570, 583, 585, 587, 589]).order(:observed_at).all.each do |event| %>
-					<li>LogEvent id <%= event.id %> (observed at <%= event.observed_at.in_time_zone('GMT').strftime("%d/%b/%Y %H:%M:%S %Z") %>) was logged latter than we expected.</li>
-				<% end %>
-			</ul>
-			 If the above server loading assumption is valid, then we can deduce that the majority of these delays were not the result of a heavily loaded server, as processing times for the above events are all below our <font color="<%= upper_bound_color %>">blue</font> threshold line. The only log events above that are present within heavy load areas as those for LogEvent id 375 and 393, and both of these events have processing times well below our threshold <font color="<%= upper_bound_color %>">blue</font> line.
-		</li>
 	</ul>
 </p>
 	
