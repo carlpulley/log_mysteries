@@ -32,8 +32,11 @@ have sizes consistent with the downloaded plugin - unit testing further confirms
 
 <h3>Log Events tagged with contact-form-7</h3>
 
+<script type="text/javascript+protovis">
+	<%= render :partial => 'report/graph/spark.js' %>
+</script>
 <pre>
 <% @log_events.tagged_with("contact-form-7").order(:observed_at).all.each do |event| %>
-  <%=raw event.to_html %>
+  <%=raw event.to_html(@log_events) %>
 <% end %>
 </pre>
