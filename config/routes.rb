@@ -1,7 +1,9 @@
 Answer::Application.routes.draw do
-  match 'report/by', :controller => "report", :action => :index, :chapter => "by"
+  match 'report/by' => "report#index", :chapter => "by"
   
-  match 'report/web_server/rss/:subsection', :controller => "report", :action => :index, :chapter => "web_server", :section => "rss", :constraints => { :subsection => /\d+\.\d+\.\d+\.\d+/ }
+  match 'report/web_server/rss/:subsection' => "report#index", :chapter => "web_server", :section => "rss", :subsection => /\d+\.\d+\.\d+\.\d+/
   
-  match 'report(/:chapter(/:section(/:subsection)))', :controller => "report", :action => :index
+  match 'report(/:chapter(/:section(/:subsection)))' => "report#index"
+  
+  root :to => "report#index"
 end
