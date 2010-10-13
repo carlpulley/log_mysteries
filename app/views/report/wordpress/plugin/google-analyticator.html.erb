@@ -1,0 +1,40 @@
+<h1>WordPress Plugin Analysis: Google Analyticator</h1>
+
+<h2>Overview</h2>
+
+<p>By examining the <i>ver</i> parameter string for log entries tagged with <%= link_to "google-analyticator", "/report/by?tagged=google-analyticator" %>, we are able to extract version 6.0.2 for the WordPress plugin Google Analyticator.</p>
+
+<p>By examining the URL's of the log entries tagged with <%= link_to "google-analyticator", "/report/by?tagged=google-analyticator" %> and Googling with the keywords <%= link_to "wordpress plugin google analyticator", "http://google.co.uk/search?q=wordpress+plugin+google+analyticator" %>, we are able to locate and download version 6.0.2 of <%= link_to "Google Analyticator", "http://wordpress.org/extend/plugins/google-analyticator/" %>.</p>
+
+<p>All URLs that are tagged with google-analyticator appear within version 6.0.2 of the downloaded <%= link_to "Google Analyticator", "http://wordpress.org/extend/plugins/google-analyticator/" %> plugin.</p>
+
+<p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
+	<ul>
+		<% ["google-analyticator/external-tracking.min.js"].each do |filename| %>
+			<li><i>/wp-content/plugins/<%= filename %></i></li>
+		<% end %>
+	</ul>
+have sizes consistent with the downloaded plugin - unit testing further confirms this assertion.</p>
+
+<h2>plugin file and URL file (file names) vs. file size (bytes)</h2>
+
+<% archive_data = GoogleAnalyticator.where(:directory => false).select([:name, :size]).all %>
+<% log_event_sizes = archive_data.map { |d| @log_events.url("/wp-content/plugins/#{d.name}").where(:result => 200).get.maximum(:bytes) || 0 } %>
+<script type="text/javascript+protovis">
+	var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
+	var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
+	
+	<%= render :partial => 'report/graph/bar.js' %>
+
+	vis.render();
+</script>
+
+<h2>Appendix</h2>
+
+<h3>Log Events tagged with google-analyticator</h3>
+
+<pre>
+<% @log_events.tagged_with("google-analyticator").order(:observed_at).all.each do |event| %>
+<%=raw event.to_html %>
+<% end %>
+</pre>

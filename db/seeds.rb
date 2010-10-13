@@ -15,6 +15,14 @@ puts `/usr/bin/curl http://wordpress.org/wordpress-2.9.2.tar.gz -o evidence/word
 
 puts `/usr/bin/curl http://downloads.wordpress.org/plugin/contact-form-7.2.1.1.zip -o evidence/contact-form-7.2.1.1.zip` unless FileTest.file?("evidence/contact-form-7.2.1.1.zip")
 
+# Download http://downloads.wordpress.org/plugin/google-analyticator.6.0.2.zip
+
+puts `/usr/bin/curl http://downloads.wordpress.org/plugin/google-analyticator.6.0.2.zip -o evidence/google-analyticator.6.0.2.zip` unless FileTest.file?("evidence/google-analyticator.6.0.2.zip")
+
+# Download http://downloads.wordpress.org/plugin/google-syntax-highlighter.1.5.1.zip
+
+puts `/usr/bin/curl http://downloads.wordpress.org/plugin/google-syntax-highlighter.1.5.1.zip -o evidence/google-syntax-highlighter.1.5.1.zip` unless FileTest.file?("evidence/google-syntax-highlighter.1.5.1.zip")
+
 # Populate the LogEvent model
 
 Rake::Task["db:seed:www_access"].invoke
@@ -25,3 +33,5 @@ Rake::Task["add:tags"].invoke
 
 Rake::Task["db:seed:wordpress"].invoke
 Rake::Task["db:seed:contact_form_7"].invoke
+Rake::Task["db:seed:google_syntax_highlighter"].invoke
+Rake::Task["db:seed:google_analyticator"].invoke

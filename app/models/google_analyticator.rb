@@ -1,0 +1,2 @@
+class GoogleAnalyticator < ArchiveContent
+end
