@@ -181,6 +181,8 @@ namespace :add do
       event.tag_list << "wordpress"
       event.tag_list << "plugin"
       event.tag_list << "contact-form-7" if event.http[:uri] =~ /contact\-form\-7/
+      event.tag_list << "google-syntax-highlighter" if event.http[:uri] =~ /google\-syntax\-highlighter/
+      event.tag_list << "google-analyticator" if event.http[:uri] =~ /google\-analyticator/
       event.save!
     end
   end
