@@ -1,0 +1,73 @@
+<h1>News Feed Data Analysis</h1>
+
+<h2>Overview</h2>
+
+<p>Unit testing demonstrates that news feeds can be uniquely identified using either: the user agent string <i>Apple-PubSub</i>; or the URL <i>/feed/</i>.</p>
+	
+<h2>Graphs</h2>
+
+<h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
+<% data = @log_events.select(["log_events.id", "log_events.observed_at"]).all.map_with_index { |d, i| { :x => i, :y => d.observed_at.to_f, :id => d.id } } %>
+<script type="text/javascript+protovis">	
+	var data = <%=raw data.to_json %>;
+	
+	<%= render :partial => 'report/graph/area.js' %>
+
+	vis.render();
+</script>
+<p>
+	<b>Notes:</b>
+	<ul>
+		<li>From the graph we can visually see that every news feed access/refresh occurs twice (if this feature is judged to be sufficiently unusual, we could use it to fingerprint client software).</li>
+		<li>The changing gradients are suggestive of a more manually influenced update regime being applied here.</li>
+	</ul>
+</p>
+	
+<h3>plot of event creation time (seconds from epoch) vs processing time (micro seconds)</h3>
+
+<% data = @log_events.select(["log_events.observed_at", :processing_time]).order("log_events.observed_at").all.map { |d| { :x => d.observed_at.to_f, :y => d.processing_time } } %>
+
+<%
+	mean = mean(data.map { |d| d[:y] })/(10**6)
+	stddev = standard_deviation(data.map { |d| d[:y] })/(10**6)
+	averg = average(data.map { |d| d[:y] })/(10**6)
+	max_load = data.map { |d| d[:y] }.max/(10**6)
+	upper_time_bound = [mean+stddev, averg+stddev].max
+	upper_bound_color = "#B3C6FF"
+%>
+
+<script type="text/javascript+protovis">	
+	var data = <%=raw data.to_json %>;
+	
+	<%= render :partial => 'report/graph/area.js' %>
+
+	vis.add(pv.Rule)
+		.bottom(y(<%= upper_time_bound*(10**6) %>))
+		.strokeStyle(<%=raw upper_bound_color.to_json %>);
+
+	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+
+	vis.render();
+</script>
+<p>
+	<b>Notes:</b>
+	<ul>
+		<li>Here our mean processing time is <%= mean %> seconds (standard deviation is <%= stddev %> seconds) and our average is <%= averg %> seconds.</li>
+		<li>Thus, any processing times that are greater than <%= number_with_precision(upper_time_bound, :precision => 0) %> seconds indicate when the server is being loaded. This cut off point has been plotted as a <font color="<%= upper_bound_color %>">blue</font> line on the above graph.</li>
+		<li>The following features of this graph are worth noting:
+			<ul>
+				<li>the largest peak is <%= number_with_precision(max_load/upper_time_bound, :precision => 1) %> times larger than our expected upper time bound (ie. the <font color="<%= upper_bound_color %>">blue</font> line)</li>
+				<li>notice how we have repeated requests at each time index that result in increasing processing times</li>
+			</ul>
+		</li>
+	</ul>
+</p>
+	
+<h2>Appendix</h2>
+
+<h3>Log Events with IP Address <%= params[:ip_address] %> and tagged rss</h3>
+<pre>
+<% @log_events.ip_address(params[:ip_address]).tagged_with("rss").order(:observed_at).all.each do |event| %>
+  <%=raw event.to_html %>
+<% end %>
+</pre>
