@@ -2,7 +2,40 @@
 
 <h2>Overview</h2>
 
-<p>TODO: add in missing explanation.</p>
+<p>All these scan attempts result in 404 error responses from the web server (the server has not found anything matching the URI given) - ie. these scans failed.</p>
+
+<h3>IP Addresses</h3>
+
+<p>All these scans originate from the 203.209.253.30/29 range of IP addresses. According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, all these IP addresses originate from China and are not present on any blacklists.</p>
+
+<h3>User Agent</h3>
+
+<p>Googling on the user agent string does not turn up anything specific. Crawling through the returned search results suggests that we are dealing with a Chinese Yahoo image crawling bot.</p>
+
+<h3>Hash-based URLs</h3>
+
+<p>All these URLs contain hash values. <%= link_to "Googling", "http://www.google.co.uk/search?q=b23b245871bab1ffb7c04e1d3353fdc3" %> on these hash values turns up a Google-whack for the hash b23b245871bab1ffb7c04e1d3353fdc3 - all other hash values fail to return any result.</p>
+
+<p>This leads us to the Chinese web site <%= link_to "SoSo", "http://wenwen.soso.com/z/q79049583.htm" %>. Using Google translator, the site claims to allow one to download standalone versions of World of Warcraft.</p>
+
+<p>Using the <%= link_to "NSRL", "http://www.nsrl.nist.gov/Downloads.htm" %> hash sets, we find that all these hash values correspond with unknown files (ie. no corresponding hash values are in the NSRL hash sets).</p>
+
+<h3>Referrer</h3>
+
+<p>Using <%= link_to "Pareto Logic", "http://mdl.paretologic.com/index.php" %>'s URL clearing house, none of our referrer URLs are listed as being malicious.</p>
+
+<p>Examination of the following referrer URLs:
+	<ul>
+		<li> <code>http://www.gravatar.com/avatar.php?gravatar_id=cacc7ad82cc4ad4b975e506520799bce&size=40&default=http://lh6.ggpht.com/_MUGaOIKDFIU/STZ-GXvG6vI/AAAAAAAACYg/UlwMezqvaeI/s144/default.jpg</code> indicates that <code>http://www.gravatar.com</code> is being used as a web proxy to load the URL <code>http://lh6.ggpht.com/_MUGaOIKDFIU/STZ-GXvG6vI/AAAAAAAACYg/UlwMezqvaeI/s144/default.jpg</code>.</li>
+		<li><code>http://www.gravatar.com/avatar.php?gravatar_id=e01f506beea7dad02afc0cdbb55c8ee9&rating=pg&size=35&default=http%3A%2F%2Fwww.mobilecrunch.com%2Fwp-content%2Fthemes%2Ftechcrunchmu%2Fimages%2Fclear_pixel.png</code> indicates that <code>http://www.mobilecrunch.com</code> is being used as a web proxy to load the URL <code>http://www.mobilecrunch.com/wp-content/themes/techcrunchmu/images/clear_pixel.png</code></li>
+		<li><code>http://www.gome.com.cn/send.redir?prefix=context&url=/upload//template/2006/11/10/20061110062052621/template_img/beijing2006111002_12.gif</code> indicates that <code>http://www.gome.com.cn</code> may be vulnerable to file navigation issues as the <code>url</code> parameter is used to redirect the user to the URL <code>http://www.gome.com.cn//upload//template/2006/11/10/20061110062052621/template_img/beijing2006111002_12.gif</code></li>
+		<li><code>http://www.gravatar.com/avatar.php?gravatar_id=25836a5d77cfaf60e7b26202bcc370df&size=80&default=http%3A%2F%2Fblog.money-link.com.tw%2Fmonster.axd%3Fseed%3D25836a5d77%26size%3D80</code> indicates that <code>http://www.gravatar.com</code> is being used as a web proxy to load the URL <code>http://blog.money-link.com.tw/monster.axd?seed=25836a5d77&size=80</code></li>
+	</ul>
+</p>
+
+<p>
+Thus we get that <code>http://www.gravatar.com</code> is being used as a web proxy and that <code>http://www.gome.com.cn</code> has some file navigation vulnerabilities.
+</p>
 
 <h2>Appendix</h2>
 

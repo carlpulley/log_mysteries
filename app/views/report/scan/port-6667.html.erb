@@ -1,0 +1,19 @@
+<h1>Scanning Analysis: Port 6667</h1>
+
+<h2>Overview</h2>
+
+<p>According to a <%= link_to "SANS", "http://isc.sans.edu/port.html?port=6667" %> report, port 6667 is used for IRC and is associated with a number of malware instances.</p>
+
+<p>All these scans return 301 redirect responses (the data requested has been assigned a new URI and the change is permanent) - ie. these scans may have worked, thus allowing the web server to proxy socket connection to port 6667.</p>
+
+<p>This scan originates from the IP address 92.62.43.77. According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, this IP address originates from a caching or proxy web server in Norway and is not present on any blacklist.</p>
+
+<h2>Appendix</h2>
+
+<h3>Log Events tagged with 6667,scan</h3>
+
+<pre>
+<% @log_events.tagged_with(["6667", "scan"]).order(:observed_at).all.each do |event| %>
+<%=raw event.to_html %>
+<% end %>
+</pre>

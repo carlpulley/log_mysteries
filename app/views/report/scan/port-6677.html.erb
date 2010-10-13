@@ -1,0 +1,47 @@
+<h1>Scanning Analysis: Port 6677</h1>
+
+<h2>Overview</h2>
+
+<%
+	data = @log_events.tagged_with(["6677", "scan"]).where(:result => 400).all.map { |d| d.processing_time }
+	mean = mean(data)/(10**6)
+	stddev = standard_deviation(data)/(10**6)
+	averg = average(data)/(10**6)
+
+	data400 = LogEvent.where(:result => 400).all.map { |d| d.processing_time }
+	mean400 = mean(data400)/(10**6)
+	stddev400 = standard_deviation(data400)/(10**6)
+	averg400 = average(data400)/(10**6)
+%>
+
+<p>According to a <%= link_to "Microsoft Report", "http://support.microsoft.com/kb/891760" %> article, port 6677 is used synchronise UNIX-based passwords with Windows passwords.</p>
+
+<p>All scans that use a GET method return 400 error responses (the request had bad syntax or was inherently impossible to be satisfied) ie. these scans failed. Unusually, these log events have an empty <i>unknown</i> LogEvent attribute value. Looking at the processing time for these events we have that:
+	<ul>
+		<li>average value is <%= averg %> seconds, with a mean of <%= mean %> seconds and a standard deviation of <%= stddev %></li>
+		<li>Thus, processing time is <%= number_with_precision(mean, :precision => 3) %>±<%= number_with_precision(stddev, :precision => 3) %> seconds</li>
+	</ul>
+	When we consider processing time for <b>all</b> requests that result in a 400 error response, we have that:
+	<ul>
+		<li>average processing time is <%= averg400 %> seconds, with a mean of <%= mean400 %> seconds and a standard deviation of <%= stddev400 %></li>
+	</ul>
+	This leads us to conclude that 400 error responses have a processing time of <%= number_with_precision(mean400, :precision => 3) %>±<%= number_with_precision(stddev400, :precision => 3) %> seconds and so the above value is to be expected.
+</p>
+
+<p>All the scans that use a CONNECT method return 301 redirect responses (the data requested has been assigned a new URI and the change is permanent) - ie. these scans may have worked, thus allowing the web server to proxy socket connections to port 6677.</p>
+
+<p>All these scans originate from the 193.109.122.0/28 range of IP addresses. According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, all these IP addresses originate from caching or proxy web server in the Netherlands and are present on the following blacklist:
+	<ul>
+		<li><%= link_to "Spam and Open Relay Blocking System ", "http://whatismyipaddress.com/blacklist/sorbs" %>
+	</ul>
+</p>
+
+<h2>Appendix</h2>
+
+<h3>Log Events tagged with 6677,scan</h3>
+
+<pre>
+<% @log_events.tagged_with(["6677", "scan"]).order(:observed_at).all.each do |event| %>
+<%=raw event.to_html %>
+<% end %>
+</pre>
