@@ -1,0 +1,2 @@
+class EasyGoogleSyntaxHighlighter < ArchiveContent
+end
