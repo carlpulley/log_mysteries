@@ -90,8 +90,12 @@
 <h2>Appendix</h2>
 
 <h3>Log Events with IP Address <%= params[:ip_address] %> and tagged rss</h3>
+
+<script type="text/javascript+protovis">
+	<%= render :partial => 'report/graph/spark.js' %>
+</script>
 <pre>
 <% @log_events.ip_address(params[:ip_address]).tagged_with("rss").order(:observed_at).all.each do |event| %>
-  <%=raw event.to_html %>
+  <%=raw event.to_html(@log_events) %>
 <% end %>
 </pre>
