@@ -68,28 +68,29 @@ Which leads one to suspect that the server is possibly located at 24.4.108.196 a
 <script type="text/javascript+protovis">
 	<%= render :partial => 'report/graph/spark.js' %>
 </script>
-<pre>
-	<% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
-	<% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
-	<% addresses.each do |address| %>
-		<% agents.each do |agent| %>
-			<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
-  <b>IP Address: <i><%= address %></i></b>
-  <b>User Agent: <i><%= agent %></i></b>
-<script type="text/javascript+protovis">
-	var data = <%=raw @log_events.ip_address(address).user_agent(agent).order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown.split("").map_with_index { |d, i| [i, d] }.inject({}) { |h, e| h[e[0]] = e[1]; h } }.to_json %>;
-
-	<%= render :partial => 'report/graph/matrix.js' %>
-
-	vis.render();
-</script>
-
+<% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
+<% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
+<% addresses.each do |address| %>
+	<% agents.each do |agent| %>
+		<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
+			<div class="header">
+				<div class="ip_address">IP Address: <i><%= address %></i></div>
+				<div class="user_agent">User Agent: <i><%= agent %></i></div>
+			</div>
+			<div class="matrix">
+				<script type="text/javascript+protovis">
+					var data = <%=raw @log_events.ip_address(address).user_agent(agent).order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown.split("").map_with_index { |d, i| [i, d.ord] }.inject({}) { |h, e| h[e[0]] = e[1]; h } }.to_json %>;
+				
+					<%= render :partial => 'report/graph/matrix.js' %>
+				
+					vis.render();
+				</script>
+			</div>
+			<div class="events">
 				<% @log_events.ip_address(address).user_agent(agent).order(:observed_at).all.each do |event| %>
-  <%=raw event.to_html(@log_events) %>
+					<div class="event"><%=raw event.to_html(@log_events) %></div>
 				<% end %>
-<br />
-			<% end %>
+			</div>
 		<% end %>
 	<% end %>
-</pre>
-
+<% end %>
