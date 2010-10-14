@@ -71,8 +71,8 @@ Which leads one to suspect that the server is possibly located at 24.4.108.196 a
 	<% agents.each do |agent| %>
 		<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
 			<div class="header">
-				<div class="ip_address">IP Address: <i><%= address %></i></div>
-				<div class="user_agent">User Agent: <i><%= agent %></i></div>
+				<div class="title">IP Address: <i><%= address %></i></div>
+				<div class="title">User Agent: <i><%= agent %></i></div>
 			</div>
 			<%= render :partial => 'appendix', :locals => { :log_events => @log_events.ip_address(address).user_agent(agent) } %>
 		<% end %>
