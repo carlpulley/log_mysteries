@@ -76,6 +76,13 @@ Which leads one to suspect that the server is possibly located at 24.4.108.196 a
 			<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
   <b>IP Address: <i><%= address %></i></b>
   <b>User Agent: <i><%= agent %></i></b>
+<script type="text/javascript+protovis">
+	var data = <%=raw @log_events.ip_address(address).user_agent(agent).order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown }.to_json %>;
+
+	<!-- %= render :partial => 'report/graph/parallel.js' % -->
+
+	vis.render();
+</script>
 				<% @log_events.ip_address(address).user_agent(agent).order(:observed_at).all.each do |event| %>
   <%=raw event.to_html(@log_events) %>
 				<% end %>
