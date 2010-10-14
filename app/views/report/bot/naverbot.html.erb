@@ -12,4 +12,13 @@
 
 <h3>Log Events tagged with bot and User Agent string contains naverbot</h3>
 
+<div class="matrix">
+	<script type="text/javascript+protovis">
+		var data = <%=raw @log_events.tagged_with("bot").user_agent("naverbot").order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown.split("").map_with_index { |d, i| ["index #{i-1}", d.ord] }.inject({}) { |h, e| h[e[0]] = e[1]; h } }.to_json %>;
+	
+		<%= render :partial => 'report/graph/matrix.js' %>
+	
+		vis.render();
+	</script>
+</div>
 <%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with("bot").user_agent("naverbot") } %>
