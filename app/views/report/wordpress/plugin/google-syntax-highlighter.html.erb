@@ -42,11 +42,4 @@ have sizes consistent with the downloaded plugin - unit testing further confirms
 
 <h3>Log Events tagged with google-syntax-highlighter</h3>
 
-<script type="text/javascript+protovis">
-	<%= render :partial => 'report/graph/spark.js' %>
-</script>
-<pre>
-<% @log_events.tagged_with("google-syntax-highlighter").order(:observed_at).all.each do |event| %>
-  <%=raw event.to_html(@log_events) %>
-<% end %>
-</pre>
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with("google-syntax-highlighter") } %>
