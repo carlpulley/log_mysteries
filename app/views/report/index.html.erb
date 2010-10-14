@@ -65,23 +65,16 @@ Which leads one to suspect that the server is possibly located at 24.4.108.196 a
 
 <h3>Log Events <%= " Tagged with: #{params[:tagged]}" if params[:tagged] %> (Grouped by IP address and User Agent)</h3>
 
-<script type="text/javascript+protovis">
-	<%= render :partial => 'report/graph/spark.js' %>
-</script>
-<pre>
-	<% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
-	<% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
-	<% addresses.each do |address| %>
-		<% agents.each do |agent| %>
-			<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
-  <b>IP Address: <i><%= address %></i></b>
-  <b>User Agent: <i><%= agent %></i></b>
-				<% @log_events.ip_address(address).user_agent(agent).order(:observed_at).all.each do |event| %>
-  <%=raw event.to_html(@log_events) %>
-				<% end %>
-<br />
-			<% end %>
+<% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
+<% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
+<% addresses.each do |address| %>
+	<% agents.each do |agent| %>
+		<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
+			<div class="header">
+				<div class="ip_address">IP Address: <i><%= address %></i></div>
+				<div class="user_agent">User Agent: <i><%= agent %></i></div>
+			</div>
+			<%= render :partial => 'appendix', :locals => { :log_events => @log_events.ip_address(address).user_agent(agent) } %>
 		<% end %>
 	<% end %>
-</pre>
-
+<% end %>

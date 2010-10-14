@@ -41,11 +41,4 @@ Thus we get that <code>http://www.gravatar.com</code> is being used as a web pro
 
 <h3>Log Events tagged with world-of-warcraft,scan</h3>
 
-<script type="text/javascript+protovis">
-	<%= render :partial => 'report/graph/spark.js' %>
-</script>
-<pre>
-<% @log_events.tagged_with(["world-of-warcraft", "scan"]).order(:observed_at).all.each do |event| %>
-<%=raw event.to_html(@log_events) %>
-<% end %>
-</pre>
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with(["world-of-warcraft", "scan"]) } %>
