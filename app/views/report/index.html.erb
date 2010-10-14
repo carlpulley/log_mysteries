@@ -77,9 +77,9 @@ Which leads one to suspect that the server is possibly located at 24.4.108.196 a
   <b>IP Address: <i><%= address %></i></b>
   <b>User Agent: <i><%= agent %></i></b>
 <script type="text/javascript+protovis">
-	var data = <%=raw @log_events.ip_address(address).user_agent(agent).order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown }.to_json %>;
+	var data = <%=raw @log_events.ip_address(address).user_agent(agent).order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown.split("").map_with_index { |d, i| [i, d] }.inject({}) { |h, e| h[e[0]] = e[1]; h } }.to_json %>;
 
-	<!-- %= render :partial => 'report/graph/matrix.js' % -->
+	<%= render :partial => 'report/graph/matrix.js' %>
 
 	vis.render();
 </script>
