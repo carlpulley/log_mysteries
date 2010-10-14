@@ -1,0 +1,13 @@
+.header {
+    margin-top: 0.5em;
+}
+
+.header .title {
+    font-weight: bold;
+}
+
+.events .event {
+    font-family: "Courier New";
+    font-size: 0.8em;
+    white-space: pre;
+}
