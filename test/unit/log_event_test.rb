@@ -53,5 +53,35 @@ class SanitizedLogTest < ActiveSupport::TestCase
         end
       end
     end
+    
+    context "non-empty unknown attribute" do
+      setup do
+        @events = LogEvent.where("unknown != '-'").all
+      end
+      
+      should "have characters 6-12 equal to 'oAAQ4AA'" do
+        @events.each do |event|
+          assert_equal "oAAQ4AA", event.unknown[6..12]
+        end
+      end
+      
+      should "have characters 19-22 equal to 'AAAA'" do
+        @events.each do |event|
+          assert_equal "AAAA", event.unknown[19..22]
+        end
+      end
+      
+      should "have character 5 equal to g, w, Q or A" do
+        @events.each do |event|
+          assert ["g", "w", "Q", "A"].member?(event.unknown[5])
+        end
+      end
+      
+      should "have character 13 equal to E, H, A or C" do
+        @events.each do |event|
+          assert ["E", "H", "A", "C"].member?(event.unknown[13])
+        end
+      end
+    end
   end
 end
