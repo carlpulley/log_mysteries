@@ -1,0 +1,29 @@
+<h1>Log Event Analysis of <i>unknown</i> Attribute</h1>
+
+<h2>Parallel Co-ordinate Plot</h2>
+
+<div class="parallel">
+	<script type="text/javascript+protovis">
+		var data = <%=raw @log_events.order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown.split("").map_with_index { |d, i| [i-1, d.ord] }.inject({}) { |h, e| h[e[0]] = e[1]; h } }.to_json %>;
+	
+		<%= render :partial => 'report/graph/parallel.js' %>
+	
+		vis.render();
+	</script>
+</div>
+
+<p>Here we plot the contextual relationship between ordinal character value and character position for each non-empty unknown attribute string. In doing this we can visually see that:
+	<ul>
+		<li>characters 6-12 are equal to 'oAAQ4AA'</li>
+		<li>characters 19-22 are equal to 'AAAA'</li>
+		<li>character 5 is equal to 'g', 'w', 'Q' or 'A'</li>
+		<li>character 13 is equal to 'E', 'H', 'A' or 'C'</li>
+	</ul>
+	These observations have been confirmed using unit testing.
+</p>
+
+<h2>Appendix</h2>
+
+<h3>Log Events</h3>
+
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.order(:observed_at) } %>
