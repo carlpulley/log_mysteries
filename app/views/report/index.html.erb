@@ -65,19 +65,6 @@ Which leads one to suspect that the server is possibly located at 24.4.108.196 a
 
 <h3>Log Events <%= " Tagged with: #{params[:tagged]}" if params[:tagged] %> (Grouped by IP address and User Agent)</h3>
 
-<% if params[:chapter] == "by" %>
-	<% if params[:tagged] == "rss" %>
-		<div class="matrix">
-			<script type="text/javascript+protovis">
-				var data = <%=raw @log_events.tagged_with(params[:tagged]).order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| d.unknown.split("").map_with_index { |d, i| ["column #{i-1}", d.ord] }.inject({}) { |h, e| h[e[0]] = e[1]; h } }.to_json %>;
-			
-				<%= render :partial => 'report/graph/matrix.js' %>
-			
-				vis.render();
-			</script>
-		</div>
-	<% end %>
-<% end %>
 <% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
 <% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
 <% addresses.each do |address| %>

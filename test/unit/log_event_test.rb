@@ -53,5 +53,43 @@ class SanitizedLogTest < ActiveSupport::TestCase
         end
       end
     end
+    
+    context "non-empty unknown attribute" do
+      setup do
+        @events = LogEvent.where("unknown != '-'").all
+      end
+      
+      should "have no character ordinal values in range 58-63" do
+        @events.each do |event|
+          event.unknown.split("").each do |char|
+            assert not((58..63).member?(char.ord))
+          end
+        end
+      end
+      
+      should "have no character ordinal values in range 91-96" do
+        @events.each do |event|
+          event.unknown.split("").each do |char|
+            assert not((91..96).member?(char.ord))
+          end
+        end
+      end
+      
+      should "have no character ordinal values below 44" do
+        @events.each do |event|
+          event.unknown.split("").each do |char|
+            assert char.ord > 44
+          end
+        end
+      end
+      
+      should "have no character ordinal values above 123" do
+        @events.each do |event|
+          event.unknown.split("").each do |char|
+            assert char.ord < 123
+          end
+        end
+      end
+    end
   end
 end
