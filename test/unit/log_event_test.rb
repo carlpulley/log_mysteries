@@ -59,34 +59,10 @@ class SanitizedLogTest < ActiveSupport::TestCase
         @events = LogEvent.where("unknown != '-'").all
       end
       
-      should "have no character ordinal values in range 58-63" do
+      should "have timestamp match (+/- 1 second) to a truncated value of observed_at (except for event 394)" do
         @events.each do |event|
-          event.unknown.split("").each do |char|
-            assert not((58..63).member?(char.ord))
-          end
-        end
-      end
-      
-      should "have no character ordinal values in range 91-96" do
-        @events.each do |event|
-          event.unknown.split("").each do |char|
-            assert not((91..96).member?(char.ord))
-          end
-        end
-      end
-      
-      should "have no character ordinal values below 44" do
-        @events.each do |event|
-          event.unknown.split("").each do |char|
-            assert char.ord > 44
-          end
-        end
-      end
-      
-      should "have no character ordinal values above 123" do
-        @events.each do |event|
-          event.unknown.split("").each do |char|
-            assert char.ord < 123
+          unless event.id == 394
+            assert_in_delta ((event.observed_at.to_i * (10**6)) % (256**4)) / (10**6), event.timestamp, 1, "event ID = #{event.id}"
           end
         end
       end
