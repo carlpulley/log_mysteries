@@ -2,6 +2,7 @@ class LogEvent < ActiveRecord::Base
   serialize :http, Hash
   
   acts_as_taggable_on :tags
+  acts_as_nested_set
   
   scope :get, lambda { where("http like '%\n:verb: GET%'") }
   scope :url, lambda { |url| where(["http like ?", "%\n:uri: #{url}%"]) }

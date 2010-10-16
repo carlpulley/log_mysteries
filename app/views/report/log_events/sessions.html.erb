@@ -1,0 +1,24 @@
+<h1>Log Event Analysis of HTTP Sessions</h1>
+
+<h2>Overview</h2>
+
+<p>??</p>
+
+<% LogEvent.roots.each do |root| %>
+	<script type="text/javascript+protovis">	
+		var data = { 
+				nodes: [
+<%= root.self_and_descendants.all.map { |d| "					{ nodeName: '#{d.name}', nodeId: #{d.id-1} }" }.join(",\n") %>
+				],
+		 		links: [
+<%= root.descendants.all.map { |d| "					{ source: #{d.parent.id-1}, target: #{d.id-1}, value: #{(d.log_events.map { |n| n.bytes }.max || 0)} }" }.join(",\n") %>
+				]
+			};
+		
+		<%= render :partial => 'report/graph/matrix.js' %>
+		
+		layout.directed(true);
+	
+		vis.render();
+	</script>
+<% end %>

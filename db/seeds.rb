@@ -32,6 +32,7 @@ puts `/usr/bin/curl http://downloads.wordpress.org/plugin/easy-google-syntax-hig
 Rake::Task["db:seed:www_access"].invoke
 Rake::Task["db:seed:www_media"].invoke
 Rake::Task["add:tags"].invoke
+Rake::Task["add:page:resources"].invoke
 
 # Populate the ArchiveContent models
 
