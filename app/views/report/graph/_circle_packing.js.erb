@@ -1,0 +1,20 @@
+/* For pretty number formatting. */
+var format = pv.Format.number();
+
+var vis = new pv.Panel()
+    .width(796)
+    .height(796)
+    .margin(2);
+
+var pack = vis.add(pv.Layout.Pack)
+    .nodes(pv.dom(data).root(root).nodes())
+    .size(function(d) d.nodeValue);
+
+pack.node.add(pv.Dot)
+    .fillStyle(function(d) d.firstChild ? "rgba(31, 119, 180, .25)" : "#ff7f0e")
+    .title(function(d) d.nodeName + (d.firstChild ? "" : ": " + format(d.nodeValue)))
+    .lineWidth(1);
+
+pack.label.add(pv.Label)
+    .visible(function(d) !d.firstChild)
+    .text(function(d) d.nodeName);

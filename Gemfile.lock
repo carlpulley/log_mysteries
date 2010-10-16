@@ -45,6 +45,9 @@ GEM
       mime-types
       treetop (>= 1.4.5)
     mime-types (1.16)
+    nested_set (1.5.2)
+      activerecord (>= 3.0.0)
+      railties (>= 3.0.0)
     nokogiri (1.4.3.1)
     polyglot (0.3.1)
     rack (1.2.1)
@@ -104,6 +107,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts-as-taggable-on
+  nested_set
   nokogiri
   rails (= 3.0.0)
   rspec-rails (= 2.0.0.beta.12)

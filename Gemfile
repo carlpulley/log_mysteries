@@ -21,3 +21,6 @@ gem "transitions", :require => ["transitions", "active_record/transitions"]
 
 # Following gem allows data to be tagged
 gem 'acts-as-taggable-on'
+
+# Following gem allows hierarchical data to be defined
+gem 'nested_set'
