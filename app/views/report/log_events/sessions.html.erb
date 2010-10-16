@@ -4,20 +4,30 @@
 
 <p>??</p>
 
-<% LogEvent.roots.each do |root| %>
+<%
+def walk_tree(node)
+	if node.root? and node.leaf?
+		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index}': #{node.result}"
+	elsif node.leaf?
+		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index}': #{node.result}"
+	else
+		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index}': { #{node.children.map { |n| walk_tree n }.join(", ")} }"
+	end
+end
+%>
+<% @log_events.order(:observed_at).all.select { |d| d.root? }.each do |root| %>
 	<script type="text/javascript+protovis">	
-		var data = { 
-				nodes: [
-<%= root.self_and_descendants.all.map { |d| "					{ nodeName: '#{d.name}', nodeId: #{d.id-1} }" }.join(",\n") %>
-				],
-		 		links: [
-<%= root.descendants.all.map { |d| "					{ source: #{d.parent.id-1}, target: #{d.id-1}, value: #{(d.log_events.map { |n| n.bytes }.max || 0)} }" }.join(",\n") %>
-				]
-			};
+		var root = "<%= root.observed_at %>";
+		var data = { '<%= root.remote %>': { <%= walk_tree(root) %> } };
 		
-		<%= render :partial => 'report/graph/matrix.js' %>
+		<%= render :partial => 'report/graph/dendrogram.js' %>
 		
-		layout.directed(true);
+		vis.left(150)
+		   .right(500)
+		   .width(650)
+		   .height(<%= root.self_and_descendants.count %> * 10);
+		
+		dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(n.nodeValue));
 	
 		vis.render();
 	</script>
