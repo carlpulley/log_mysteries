@@ -35,7 +35,7 @@ var xlabel = vis.add(pv.Rule)
     .text(x.tickFormat);
 
 /* The area with top line. */
-vis.add(pv.Area)
+var area = vis.add(pv.Area)
     .data(data)
     .bottom(1)
     .left(function(d) x(d['x']))

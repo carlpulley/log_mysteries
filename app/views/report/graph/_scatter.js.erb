@@ -15,7 +15,7 @@ var vis = new pv.Panel()
     .top(5);
 
 /* Y-axis and ticks. */
-vis.add(pv.Rule)
+var ylabel = vis.add(pv.Rule)
     .data(y.ticks())
     .bottom(y)
     .strokeStyle(function(d) d ? "#eee" : "#000")
@@ -24,7 +24,7 @@ vis.add(pv.Rule)
     .text(y.tickFormat);
 
 /* X-axis and ticks. */
-vis.add(pv.Rule)
+var xlabel = vis.add(pv.Rule)
     .data(x.ticks())
     .left(x)
     .strokeStyle(function(d) d ? "#eee" : "#000")
@@ -33,7 +33,7 @@ vis.add(pv.Rule)
     .text(x.tickFormat);
 
 /* The dot plot! */
-vis.add(pv.Panel)
+var dot = vis.add(pv.Panel)
     .data(data)
   .add(pv.Dot)
     .left(function(d) x(d.x))

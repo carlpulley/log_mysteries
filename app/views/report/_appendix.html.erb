@@ -24,9 +24,7 @@ end
 		   .height(<%= root.self_and_descendants.count*12 %>);
 		
 		dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(n.nodeValue));
-		
-		label.add(function(n) sparklength(10, 20).left(n));
-	
+
 		vis.render();
 	<% end %>
 </script>
