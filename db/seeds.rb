@@ -41,3 +41,7 @@ Rake::Task["db:seed:contact_form_7"].invoke
 Rake::Task["db:seed:google_syntax_highlighter"].invoke
 Rake::Task["db:seed:easy_google_syntax_highlighter"].invoke
 Rake::Task["db:seed:google_analyticator"].invoke
+
+# Populate the FileObject model
+
+Rake::Task["db:seed:file_object"].invoke
