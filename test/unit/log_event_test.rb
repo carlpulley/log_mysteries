@@ -59,27 +59,11 @@ class SanitizedLogTest < ActiveSupport::TestCase
         @events = LogEvent.where("unknown != '-'").all
       end
       
-      should "have characters 6-12 equal to 'oAAQ4AA'" do
+      should "have timestamp match (+/- 1 second) to a truncated value of observed_at (except for event 394)" do
         @events.each do |event|
-          assert_equal "oAAQ4AA", event.unknown[6..12]
-        end
-      end
-      
-      should "have characters 19-22 equal to 'AAAA'" do
-        @events.each do |event|
-          assert_equal "AAAA", event.unknown[19..22]
-        end
-      end
-      
-      should "have character 5 equal to g, w, Q or A" do
-        @events.each do |event|
-          assert ["g", "w", "Q", "A"].member?(event.unknown[5])
-        end
-      end
-      
-      should "have character 13 equal to E, H, A or C" do
-        @events.each do |event|
-          assert ["E", "H", "A", "C"].member?(event.unknown[13])
+          unless event.id == 394
+            assert_in_delta ((event.observed_at.to_i * (10**6)) % (256**4)) / (10**6), event.timestamp, 1, "event ID = #{event.id}"
+          end
         end
       end
     end

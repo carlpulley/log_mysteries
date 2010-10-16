@@ -20,5 +20,8 @@ cell.add(pv.Dot)
     .def("x", function(k0, k1) pv.Scale.linear(data, function(d) d[k0]).range(0, s))
     .def("y", function(k0, k1) pv.Scale.linear(data, function(d) d[k1]).range(0, s))
     .data(data)
+    .size(3)
     .left(function(d, k0, k1) this.x()(d[k0]))
     .bottom(function(d, k0, k1) this.y()(d[k1]));
+    
+cell.event("click", function(k0, k1) alert(k0+" vs "+k1));
