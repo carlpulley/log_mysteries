@@ -15,7 +15,7 @@ function sparkbar(data) {
       .height(function(d) { return hs(d.charCodeAt()); })
       .bottom(0);
 
-  vis.render();
+  return vis;
 }
 
 function sparklength(data, mw) {
@@ -32,7 +32,7 @@ function sparklength(data, mw) {
       .height(h)
       .width(ws(data));
   
-  vis.render();
+  return vis;
 }
 
 function sparkcolour(data) {
@@ -43,6 +43,7 @@ function sparkcolour(data) {
   vis.add(pv.Dot)
 	.bottom(6)
 	.left(6)
-	.fillStyle(pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(data))
-	.render();
+	.fillStyle(pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(data));
+	
+  return vis;
 }
