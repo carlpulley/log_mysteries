@@ -58,14 +58,6 @@
 
 <p>www-access.log holds access information for each page that a client requests, whilst www-media.log holds access information for the resources on each page requested.</p>
 
-<p>By examining the referrer attributes of log entries tagged with <%= link_to "wordpress", "/report/by?tagged=wordpress" %> we are able to identify that the Apache server is hosting web sites located at:
-	<ul>
-		<li>http://www.domain.org/</li>
-		<li>http://24.4.108.196/</li>
-	</ul>
-Which leads one to suspect that the server is possibly located at 24.4.108.196 and www.domain.org resolves to this IP address.
-</p>
-
 <h2>Appendix</h2>
 
 <h3>Log Events <%= " Tagged with: #{params[:tagged]}" if params[:tagged] %> (Grouped by IP address and User Agent)</h3>
