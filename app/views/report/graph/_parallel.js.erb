@@ -20,13 +20,13 @@ var rule = vis.add(pv.Rule)
     .left(x);
 
 // Dimension label
-rule.anchor("top").add(pv.Label)
+var label = rule.anchor("top").add(pv.Label)
     .top(-12)
     .font("bold 10px sans-serif")
     .text(function(d) d);
     
 // The parallel coordinates display.
-vis.add(pv.Panel)
+var line = vis.add(pv.Panel)
     .data(data)
   .add(pv.Line)
     .data(dims)
