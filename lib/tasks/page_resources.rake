@@ -43,8 +43,11 @@ namespace :add do
       end
       
       events = LogEvent.tagged_with("wordpress").ip_address("201.229.176.217")
-      events.where(:name => "www-media.log").url("/wp-content").all.each do |event|
+      events.where(:name => "www-media.log").url("/wp-content").referer("http://24.4.108.196/").all.each do |event|
         event.move_to_child_of events.where(:unknown => "-qYm5QoAAQ4AAEP3EbUAAAAD").first
+      end
+      events.where(:name => "www-media.log").url("/wp-content").referer("http://24.4.108.196/wp-content/themes/optimize/css/style.css").all.each do |event|
+        event.move_to_child_of events.where(:unknown => "-r@uVgoAAQ4AAEP3EbYAAAAD").first
       end
       
       events = LogEvent.tagged_with("wordpress").ip_address("208.80.69.69")

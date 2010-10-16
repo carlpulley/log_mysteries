@@ -9,8 +9,8 @@ def walk_tree(node)
 	end
 end
 %>
-<% log_events.order(:observed_at).all.select { |d| d.root? }.each do |root| %>
-	<script type="text/javascript+protovis">	
+<script type="text/javascript+protovis">	
+	<% log_events.order(:observed_at).all.map { |d| d.root }.uniq.each do |root| %>
 		var root = "<%= root.observed_at %>";
 		var data = { '<%= root.remote %>': { <%= walk_tree(root) %> } };
 		
@@ -19,10 +19,12 @@ end
 		vis.left(150)
 		   .right(500)
 		   .width(650)
-		   .height(<%= root.self_and_descendants.count %> * 10);
+		   .top(0)
+		   .bottom(0)
+		   .height(<%= root.self_and_descendants.count*12 %>);
 		
 		dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(n.nodeValue));
 	
 		vis.render();
-	</script>
-<% end %>
+	<% end %>
+</script>
