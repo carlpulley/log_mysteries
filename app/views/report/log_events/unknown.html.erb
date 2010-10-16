@@ -1,0 +1,58 @@
+<h1>Log Event Analysis of <i>unknown</i> Attribute</h1>
+
+<h2>Overview</h2>
+
+<p>An analysis of the unknown attribute characters, using parallel co-ordinate graphs, allows us to ignore character positions 6-12 and 19-22. In doing this, we simplify our scatter-plot matrix below.</p>
+
+<h2>Scatter Plot Matrix for rss Tagged Data</h2>
+
+<div class="matrix">
+	<script type="text/javascript+protovis">
+		var data = <%=raw @log_events.tagged_with("rss").order(:observed_at).where("unknown != '-'").select(:unknown).all.map { |d| (d.unknown[0..5]+d.unknown[13..18]+d.unknown[23]).split("").map_with_index { |d, i| ["column #{i-1}", d.ord] }.inject({}) { |h, e| h[e[0]] = e[1]; h } }.to_json %>;
+	
+		<%= render :partial => 'report/graph/matrix.js' %>
+	
+		vis.render();
+	</script>
+</div>
+
+<p>Looking at our scatter plot matrix we see that our diagonal graphs have clear gaps. These gaps correspond to the following ordinal character ranges:
+	<ul>
+		<li>first gap is from character ordinal 58 to 63</li>
+		<li>second gap is from character ordinal 91 to 96</li>
+		<li>there are no characters with an ordinal value &le; 44</li>
+		<li>there are no characters with an ordinal value &ge; 123</li>
+	</ul>
+	These observations have been confirmed using unit testing.
+</p>
+
+<p>The scatter plots for rows 0-4 and columns 0-4 appear random (modulo the ordinal character gaps noted above). This suggests that there is no relationship between the following character ordinal positions:
+	<ul>
+		<li>0 and 1</li>
+		<li>0 and 2</li>
+		<li>0 and 3</li>
+		<li>0 and 4</li>
+		<li>1 and 2</li>
+		<li>1 and 3</li>
+		<li>1 and 4</li>
+		<li>2 and 3</li>
+		<li>2 and 4</li>
+		<li>3 and 4</li>
+	</ul>
+	In a similar manner, we deduce that the scatter plots for rows 0-4 and column 10 also appear random. Agains suggesting that there is no relationship between the following character ordinal positions:
+	<ul>
+		<li>0 and 17</li>
+		<li>1 and 17</li>
+		<li>2 and 17</li>
+		<li>3 and 17</li>
+		<li>4 and 17</li>
+	</ul>
+</p>
+
+<p>However, the scatter plots in rows 0-4 and columns 5-9, 11-12 all show clear horizontal banding. This is indicative of some form of relationship between character ordinal positions 0-4 and character ordinal positions 5, 13-16, 18 and 23.</p>
+
+<h2>Appendix</h2>
+
+<h3>Log Events</h3>
+
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with("rss").order(:observed_at) } %>
