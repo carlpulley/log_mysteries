@@ -61,6 +61,6 @@
 	
 <h2>Appendix</h2>
 
-<h3>Log Events with IP Address <%= params[:ip_address] %> and tagged rss</h3>
+<h3>Log Events with IP Address <%= params[:subsection] %> and tagged rss</h3>
 
-<%= render :partial => 'appendix', :locals => { :log_events => @log_events.ip_address(params[:ip_address]).tagged_with("rss") } %>
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.ip_address(params[:subsection]).tagged_with("rss") } %>

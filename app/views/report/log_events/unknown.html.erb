@@ -48,9 +48,3 @@
   201.229.176.217 - - [19/Apr/2010:11:19:21 -0700] "GET /favicon.ico HTTP/1.1" 200 3654 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.0.19) Gecko/2010031422 Firefox/3.0.19" AABohgoAAQ4AAHbXLg8AAAAK 839
 </pre>
 </p>
-
-<h2>Appendix</h2>
-
-<h3>Log Events</h3>
-
-<%= render :partial => 'appendix', :locals => { :log_events => @log_events.where("unknown != '-'").order(:observed_at) } %>

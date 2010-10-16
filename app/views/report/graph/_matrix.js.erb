@@ -16,7 +16,7 @@ var cell = vis.add(pv.Panel)
     .top(function() this.index * (s + 2 * p) + p)
     .strokeStyle("#ccc");
 
-cell.add(pv.Dot)
+var dot = cell.add(pv.Dot)
     .def("x", function(k0, k1) pv.Scale.linear(data, function(d) d[k0]).range(0, s))
     .def("y", function(k0, k1) pv.Scale.linear(data, function(d) d[k1]).range(0, s))
     .data(data)

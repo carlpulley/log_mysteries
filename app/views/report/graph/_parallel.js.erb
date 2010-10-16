@@ -1,0 +1,36 @@
+/* Sizing and scales. */
+var w = 820,
+    h = 420,
+    dims = pv.keys(data[0]),
+    x = pv.Scale.ordinal(dims).splitFlush(0, w),
+    y = pv.dict(dims, function(t) pv.Scale.linear(data, function(d) Math.floor(d[t]), function(d) Math.ceil(d[t])).range(0, h));
+
+/* The root panel. */
+var vis = new pv.Panel()
+    .width(w)
+    .height(h)
+    .left(30)
+    .right(30)
+    .top(30)
+    .bottom(20);
+
+// Rule per dimension.
+var rule = vis.add(pv.Rule)
+    .data(dims)
+    .left(x);
+
+// Dimension label
+var label = rule.anchor("top").add(pv.Label)
+    .top(-12)
+    .font("bold 10px sans-serif")
+    .text(function(d) d);
+    
+// The parallel coordinates display.
+var line = vis.add(pv.Panel)
+    .data(data)
+  .add(pv.Line)
+    .data(dims)
+    .left(function(t, d) x(t))
+    .bottom(function(t, d) y[t](d[t]))
+    .strokeStyle("#1f77b4")
+    .lineWidth(1);

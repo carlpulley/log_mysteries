@@ -7,6 +7,8 @@
 <h2>Contents</h2>
 
 <ul>
+<li>Research
+<ul>
 	<li><%= link_to "Wordpress", "/report/by?tagged=wordpress" %>
 		<ul>
 			<li><%= link_to "Blog", "/report/wordpress/core" %>
@@ -45,27 +47,21 @@
 			<li><%= link_to "NaverBot", "/report/bot/naverbot" %></li>
 		</ul>
 	</li>
-	<li>Log Events Analysis:
-		<ul>
-			<li><%= link_to "unknown", "/report/log_events/unknown" %></li>
-			<li><%= link_to "processes", "/report/log_events/process" %></li>
-		</ul>
-	</li>
+</ul>
+</li>
+<li>Data Analysis
+<ul>
+	<li><%= link_to "unknown attribute", "/report/log_events/unknown" %></li>
+	<li><%= link_to "processes", "/report/log_events/process" %></li>
+</ul>
+</li>
 </ul>
 
 <h2>Overview</h2>
 
-<p>A visual examination of www-access.log and www-media.log suggests that we should initially group the data by: the remote IP address; and the user agent string (see the appendix below). Using this grouping of our data, we may then tag (see lib/tasks/tag_log_events.rake) Log Entry instances based on their observed interactions with our web server. The top-level links in our contents listing above represent the results of this analysis.</p>
+<p>A visual examination of www-access.log and www-media.log suggests that we should initially group the data by: the remote IP address; and the user agent string (see the appendix below). Using this grouping of our data, we may then tag (see lib/tasks/tag_log_events.rake) Log Entry instances based on their observed interactions with our web server. The top-level links within our research section above represent the results of this analysis.</p>
 
 <p>www-access.log holds access information for each page that a client requests, whilst www-media.log holds access information for the resources on each page requested.</p>
-
-<p>By examining the referrer attributes of log entries tagged with <%= link_to "wordpress", "/report/by?tagged=wordpress" %> we are able to identify that the Apache server is hosting web sites located at:
-	<ul>
-		<li>http://www.domain.org/</li>
-		<li>http://24.4.108.196/</li>
-	</ul>
-Which leads one to suspect that the server is possibly located at 24.4.108.196 and www.domain.org resolves to this IP address.
-</p>
 
 <h2>Appendix</h2>
 
