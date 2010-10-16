@@ -14,6 +14,8 @@
 	var data = <%=raw data.to_json %>;
 	
 	<%= render :partial => 'report/graph/area.js' %>
+	
+	ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 
 	vis.render();
 </script>
@@ -46,6 +48,7 @@
 		.strokeStyle(<%=raw upper_bound_color.to_json %>);
 
 	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+	ylabel.text(function(d) (d/1000000)+" &mu;s");
 
 	vis.render();
 </script>
@@ -59,8 +62,5 @@
 <h2>Appendix</h2>
 
 <h3>Log Events with IP Address <%= params[:ip_address] %> and tagged rss</h3>
-<pre>
-<% @log_events.ip_address(params[:ip_address]).tagged_with("rss").order(:observed_at).all.each do |event| %>
-  <%=raw event.to_html %>
-<% end %>
-</pre>
+
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.ip_address(params[:ip_address]).tagged_with("rss") } %>

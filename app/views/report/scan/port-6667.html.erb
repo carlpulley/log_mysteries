@@ -10,10 +10,6 @@
 
 <h2>Appendix</h2>
 
-<h3>Log Events tagged with 6667,scan</h3>
+<h3>Log Events tagged with port-6667,scan</h3>
 
-<pre>
-<% @log_events.tagged_with(["6667", "scan"]).order(:observed_at).all.each do |event| %>
-<%=raw event.to_html %>
-<% end %>
-</pre>
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with(["port-6667", "scan"]) } %>

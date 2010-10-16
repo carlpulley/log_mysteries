@@ -42,8 +42,4 @@ have sizes consistent with the downloaded plugin - unit testing further confirms
 
 <h3>Log Events tagged with wordpress</h3>
 
-<pre>
-<% @log_events.tagged_with("wordpress").order(:observed_at).all.each do |event| %>
-  <%=raw event.to_html %>
-<% end %>
-</pre>
+<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with("wordpress") } %>

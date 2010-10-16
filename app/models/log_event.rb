@@ -28,7 +28,7 @@ class LogEvent < ActiveRecord::Base
     "#{remote} #{host} #{user} [#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z")}] \"#{http[:verb]} #{http[:uri]} HTTP/#{http[:version]}\" #{result} #{bytes == 0 ? "-" : bytes} \"#{referer}\" \"#{user_agent}\" #{unknown} #{processing_time}"
   end
   
-  def to_html
-    "<a href='/report/by?ip_address=#{remote}'>#{remote}</a> #{host} #{user} [#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z")}] \"#{http[:verb]} <a href='/report/by?url=#{http[:uri]}'>#{http[:uri]}</a> HTTP/#{http[:version]}\" #{result} #{bytes == 0 ? "-" : bytes} \"<a href='/report/by?referer=#{referer}'>#{referer}</a>\" \"<a href='/report/by?user_agent=#{user_agent}'>#{user_agent}</a>\" #{unknown} #{processing_time}"
+  def to_html(log_events)
+    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z")} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json})</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{log_events.maximum(:bytes)})</script> <script type=\"text/javascript+protovis\">sparkbar(#{unknown.to_json});</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{log_events.maximum(:processing_time)})</script> #{referer == '-' ? http[:verb] : "#{referer} -> #{http[:verb]}"} #{http[:uri]}"
   end
 end

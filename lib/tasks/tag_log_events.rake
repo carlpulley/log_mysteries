@@ -72,12 +72,12 @@ namespace :add do
     end
     
     LogEvent.ip_address("193.109.122.15").user_agent("-").all.each do |event|
-      event.tag_list = "6677, scan"
+      event.tag_list = "port-6677, scan"
       event.save!
     end
     
     LogEvent.ip_address("193.109.122.18").user_agent("-").all.each do |event|
-      event.tag_list = "6677, scan"
+      event.tag_list = "port-6677, scan"
       event.save!
     end
     
@@ -87,17 +87,17 @@ namespace :add do
     end
     
     LogEvent.ip_address("193.109.122.52").user_agent("pxyscand/2.1").all.each do |event|
-      event.tag_list = "6677, scan"
+      event.tag_list = "port-6677, scan"
       event.save!
     end
     
     LogEvent.ip_address("193.109.122.56").user_agent("pxyscand/2.1").all.each do |event|
-      event.tag_list = "6677, scan"
+      event.tag_list = "port-6677, scan"
       event.save!
     end
     
     LogEvent.ip_address("193.109.122.57").user_agent("pxyscand/2.1").all.each do |event|
-      event.tag_list = "6677, scan"
+      event.tag_list = "port-6677, scan"
       event.save!
     end
     
@@ -167,12 +167,12 @@ namespace :add do
     end
     
     LogEvent.ip_address("92.62.43.77").user_agent("-").all.each do |event|
-      event.tag_list = "6667, scan"
+      event.tag_list = "port-6667, scan"
       event.save!
     end
     
     LogEvent.ip_address("193.109.122.33").user_agent("-").all.each do |event|
-      event.tag_list = "6677, scan"
+      event.tag_list = "port-6677, scan"
       event.save!
     end
     
@@ -184,6 +184,50 @@ namespace :add do
       event.tag_list << "google-syntax-highlighter" if event.http[:uri] =~ /google\-syntax\-highlighter/
       event.tag_list << "google-analyticator" if event.http[:uri] =~ /google\-analyticator/
       event.save!
+    end
+    
+    # Following code tags log events into static and dynamic web server files
+    LogEvent.where("http like '%#.js%'").all.each do |event|
+      if event.http[:verb] == "GET" and event.http[:uri] =~ /\.js(\?.+)?$/ and event.result == 200
+        event.tag_list << "static"
+        event.save!
+      end
+    end
+    LogEvent.where("http like '%#.css%'").all.each do |event|
+      if event.http[:verb] == "GET" and event.http[:uri] =~ /\.css(\?.+)?$/ and event.result == 200
+        event.tag_list << "static"
+        event.save!
+      end
+    end
+    LogEvent.where("http like '%#.png%'").all.each do |event|
+      if event.http[:verb] == "GET" and event.http[:uri] =~ /\.png(\?.+)?$/ and event.result == 200
+       event.tag_list << "static"
+       event.save!
+     end
+    end
+    LogEvent.where("http like '%#.gif%'").all.each do |event|
+      if event.http[:verb] == "GET" and event.http[:uri] =~ /\.gif(\?.+)?$/ and event.result == 200
+        event.tag_list << "static"
+        event.save!
+      end
+    end
+    LogEvent.where("http like '%#.ico%'").all.each do |event|
+      if event.http[:verb] == "GET" and event.http[:uri] =~ /\.ico(\?.+)?$/ and event.result == 200
+        event.tag_list << "static"
+        event.save!
+      end
+    end
+    LogEvent.where("http like '%#.txt%'").all.each do |event|
+      if event.http[:verb] == "GET" and event.http[:uri] =~ /\.txt(\?.+)?$/ and event.result == 200
+        event.tag_list << "static"
+        event.save!
+      end
+    end
+    LogEvent.where("http like '%#.php%'").all.each do |event|
+      if event.http[:verb] == "GET" and event.http[:uri] =~ /\.php(\?.+)?$/ and event.result == 200
+        event.tag_list << "dynamic"
+        event.save!
+      end
     end
   end
 end

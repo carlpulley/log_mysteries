@@ -1,0 +1,5 @@
+<div class="events">
+	<% log_events.order(:observed_at).all.each do |event| %>
+		<div class="event"><%=raw event.to_html(log_events) %></div>
+	<% end %>
+</div>
