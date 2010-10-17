@@ -1,5 +1,5 @@
 <div class="events">
-	<% log_events.order(:observed_at).all.each do |event| %>
+	<% log_events.order(:observed_at).all.sort { |a,b| a.observed_at == b.observed_at ? (a.counter <=> b.counter) : (a.observed_at <=> b.observed_at) }.each do |event| %>
 		<div class="event"><%=raw event.to_html(log_events) %></div>
 	<% end %>
 </div>

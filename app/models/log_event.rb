@@ -29,7 +29,7 @@ class LogEvent < ActiveRecord::Base
   end
   
   def to_html(log_events)
-    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z")} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{log_events.maximum(:bytes)}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{log_events.maximum(:processing_time)}).render();</script> #{pid} #{thread_index} #{referer == '-' ? http[:verb] : "#{referer} -> #{http[:verb]}"} #{http[:uri]}"
+    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z")} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{log_events.maximum(:bytes)}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{log_events.maximum(:processing_time)}).render();</script> #{counter} #{pid} #{thread_index} #{referer == '-' ? http[:verb] : "#{referer} -> #{http[:verb]}"} #{http[:uri]}"
   end
   
   def timestamp
@@ -46,6 +46,10 @@ class LogEvent < ActiveRecord::Base
   
   def thread_index
     decode_unknown[14..17].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
+  end
+  
+  def counter
+    decode_unknown[12..13].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
   end
   
   private
