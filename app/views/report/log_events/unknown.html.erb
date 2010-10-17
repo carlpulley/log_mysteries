@@ -4,7 +4,7 @@
 
 <p>By analysing the <i>unknown</i> attribute we are able to determine that:
 	<ul>
-		<li>the version of Apache2 installed is at revision number 420893 or below</li>
+		<li>the version of Apache2 installed is at revision number 420893 or below - under the assumption that <%= link_to "tagged", "http://svn.apache.org/viewvc/httpd/httpd/tags/" %> versions of Apache2 are installed, then we have that Apache2 is at most version 2.2.2</li>
 		<li>mod_unique_id is installed and enabled on the server</li>
 		<li>for each log entry we can assert the process ID and thread index that dealt with the request</li>
 		<li>one log event at time index 19/Apr/2010:11:19:21 -0700 in www-media.log fails to match the timestamp value of the <i>unknown</i> attribute</li>
