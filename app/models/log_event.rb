@@ -50,6 +50,10 @@ class LogEvent < ActiveRecord::Base
     decode_unknown[14..17].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
   end
   
+  def counter
+    decode_unknown[12..13].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
+  end
+  
   private
   
   def decode_unknown

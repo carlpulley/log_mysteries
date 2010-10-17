@@ -1,11 +1,11 @@
 <%
 def walk_tree(node)
 	if node.root? and node.leaf?
-		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index}': #{node.result}"
+		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index} #{node.counter} #{node.processing_time}': #{node.result}"
 	elsif node.leaf?
-		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index}': #{node.result}"
+		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index} #{node.counter} #{node.processing_time}': #{node.result}"
 	else
-		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index}': { #{node.children.map { |n| walk_tree n }.join(", ")} }"
+		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index} #{node.counter} #{node.processing_time}': { #{node.children.sort { |a,b| a.counter <=> b.counter }.map { |n| walk_tree n }.join(", ")} }"
 	end
 end
 %>
@@ -24,6 +24,9 @@ end
 		   .height(<%= root.self_and_descendants.count*12 %>);
 		
 		dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(n.nodeValue));
+		
+		//layout.label.add(function() sparklength(15,20)).top(0);
+		//layout.label.add(pv.Label);
 
 		vis.render();
 	<% end %>
