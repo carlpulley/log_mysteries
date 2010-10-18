@@ -14,6 +14,8 @@
 	</ul>
 </p>
 
+<p>The double fetches here are consistent with the server not setting the character encoding in the Content-Type HTTP response header and the client using Firefox 3.x to access this RSS feed.</p>
+
 <h2>Graphs</h2>
 
 <h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
@@ -41,7 +43,7 @@
 					</ul>
 				</li>
 			</ul>
-			We do not see this issue with other client requests, so we're led to believe the issue is more IP/user agent specific and so related to inconsistent character encoding - ie. server is not communicating the character set encoding in the Content-Type response HTTP header.
+			We do not see this issue with other client requests, so we're led to believe the issue is more IP/user agent specific and so related to inconsistent character encoding - ie. server is not communicating the character set encoding in the Content-Type response HTTP header. Comparing our IP address against user agent strings allows us to conclude that this RSS feed is probably being accessed via a Firefox browser.
 		</li>
 		<li>The changing gradients are suggestive of a more manually influenced update regime being applied here.</li>
 	</ul>
