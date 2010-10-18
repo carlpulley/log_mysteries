@@ -1,18 +1,28 @@
 <%
 def walk_tree(node)
-	if node.root? and node.leaf?
-		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index} #{node.counter} #{node.processing_time}': #{node.result}"
-	elsif node.leaf?
-		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index} #{node.counter} #{node.processing_time}': #{node.result}"
+	parent_label = "#{node.http[:verb]} #{node.http[:uri]} #{node.processing_time}"
+	result = {}
+	if node.leaf?
+		result[parent_label] = node.result
 	else
-		"'#{node.http[:verb]} #{node.http[:uri]} #{node.pid} #{node.thread_index} #{node.counter} #{node.processing_time}': { #{node.children.sort { |a,b| a.counter <=> b.counter }.map { |n| walk_tree n }.join(", ")} }"
+		result[parent_label] ||= {}
+		node.children.each do |child|
+			child_label = "#{child.http[:verb]} #{child.http[:uri]} #{child.processing_time}"
+			result[parent_label][child.pid] ||= {}
+			if child.leaf?
+				result[parent_label][child.pid][child_label] = child.result
+			else
+				result[parent_label][child.pid] = walk_tree child
+			end
+		end
 	end
+	result
 end
 %>
 <script type="text/javascript+protovis">	
 	<% log_events.order(:observed_at).all.map { |d| d.root }.uniq.each do |root| %>
-		var root = "<%= root.observed_at %>";
-		var data = { '<%= root.remote %>': { <%= walk_tree(root) %> } };
+		var root = <%=raw root.observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y:%H:%M:%S %z").to_json %>;
+		var data = <%= h = {}; h[root.remote] = walk_tree(root); raw h.to_json %>;
 		
 		<%= render :partial => 'report/graph/dendrogram.js' %>
 		
@@ -21,9 +31,10 @@ end
 		   .width(650)
 		   .top(0)
 		   .bottom(0)
-		   .height(<%= root.self_and_descendants.count*12 %>);
+		   .height(<%= root.self_and_descendants.count*15 %>);
 		
-		dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(n.nodeValue));
+		dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.linear(200, 300, 400, 600).range('green', 'yellow', 'red', 'black')(n.nodeValue))
+		   .text(<%=raw root.observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %Z").to_json %>);
 		
 		//layout.label.add(function() sparklength(15,20)).top(0);
 		//layout.label.add(pv.Label);
