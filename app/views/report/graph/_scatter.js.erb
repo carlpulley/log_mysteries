@@ -1,6 +1,6 @@
 /* Sizing and scales. */
-var w = 400,
-    h = 400,
+var w = 1000,
+    h = 500,
     x = pv.Scale.linear(data.map(function(d){ return d['x']; }).min(), data.map(function(d){ return d['x']; }).max()).range(0, w),
     y = pv.Scale.linear(data.map(function(d){ return d['y']; }).min(), data.map(function(d){ return d['y']; }).max()).range(0, h),
     c = pv.Scale.log(data.map(function(d){ return d['z']; }).min(), data.map(function(d){ return d['z']; }).max()).range("blue", "red");
@@ -10,8 +10,8 @@ var vis = new pv.Panel()
     .width(w)
     .height(h)
     .bottom(20)
-    .left(20)
-    .right(10)
+    .left(50)
+    .right(30)
     .top(5);
 
 /* Y-axis and ticks. */
@@ -20,16 +20,15 @@ var ylabel = vis.add(pv.Rule)
     .bottom(y)
     .strokeStyle(function(d) d ? "#eee" : "#000")
   .anchor("left").add(pv.Label)
-    .visible(function(d) d > 0 && d < 1)
     .text(y.tickFormat);
 
 /* X-axis and ticks. */
 var xlabel = vis.add(pv.Rule)
     .data(x.ticks())
     .left(x)
+    .bottom(-8)
     .strokeStyle(function(d) d ? "#eee" : "#000")
   .anchor("bottom").add(pv.Label)
-    .visible(function(d) d > 0 && d < 100)
     .text(x.tickFormat);
 
 /* The dot plot! */
@@ -40,5 +39,5 @@ var dot = vis.add(pv.Panel)
     .bottom(function(d) y(d.y))
     .strokeStyle(function(d) c(d.z))
     .fillStyle(function() this.strokeStyle().alpha(.2))
-    .size(function(d) d.z)
+    .size(5)
     .title(function(d) d.z.toFixed(1));

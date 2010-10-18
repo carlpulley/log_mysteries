@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101010155939) do
+ActiveRecord::Schema.define(:version => 20101016150539) do
 
   create_table "archive_contents", :force => true do |t|
     t.string   "type"
@@ -19,6 +19,16 @@ ActiveRecord::Schema.define(:version => 20101010155939) do
     t.integer  "size"
     t.boolean  "directory"
     t.datetime "observed_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "file_objects", :force => true do |t|
+    t.string   "name"
+    t.integer  "lft"
+    t.integer  "rgt"
+    t.integer  "parent_id"
+    t.integer  "depth"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -38,6 +48,11 @@ ActiveRecord::Schema.define(:version => 20101010155939) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
+    t.integer  "file_object_id"
+    t.integer  "parent_id"
+    t.integer  "lft"
+    t.integer  "rgt"
+    t.integer  "depth"
   end
 
   create_table "taggings", :force => true do |t|

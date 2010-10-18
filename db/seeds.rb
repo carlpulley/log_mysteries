@@ -32,6 +32,7 @@ puts `curl http://downloads.wordpress.org/plugin/easy-google-syntax-highlighter.
 Rake::Task["db:seed:www_access"].invoke
 Rake::Task["db:seed:www_media"].invoke
 Rake::Task["add:tags"].invoke
+Rake::Task["add:page:resources"].invoke
 
 # Populate the ArchiveContent models
 
@@ -40,3 +41,7 @@ Rake::Task["db:seed:contact_form_7"].invoke
 Rake::Task["db:seed:google_syntax_highlighter"].invoke
 Rake::Task["db:seed:easy_google_syntax_highlighter"].invoke
 Rake::Task["db:seed:google_analyticator"].invoke
+
+# Populate the FileObject model
+
+Rake::Task["db:seed:file_object"].invoke

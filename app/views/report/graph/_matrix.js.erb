@@ -1,27 +1,24 @@
-var s = 100,
-    p = 5,
-    keys = pv.keys(data[0]);
+// WARNING: indexes here are 0 based!!
+
+var color = pv.Colors.category19().by(function(d) d.nodeId);
 
 var vis = new pv.Panel()
-    .width(keys.length * (s + 2 * p))
-    .height(keys.length * (s + 2 * p));
+    .width(800)
+    .height(800)
+    .top(150)
+    .left(150);
 
-var cell = vis.add(pv.Panel)
-    .data(keys)
-    .width(s)
-    .left(function() this.index * (s + 2 * p) + p)
-  .add(pv.Panel)
-    .data(keys)
-    .height(s)
-    .top(function() this.index * (s + 2 * p) + p)
-    .strokeStyle("#ccc");
+var layout = vis.add(pv.Layout.Matrix)
+    .nodes(data.nodes)
+    .links(data.links)
+    .sort(function(a, b) b.nodeId - a.nodeId);
 
-var dot = cell.add(pv.Dot)
-    .def("x", function(k0, k1) pv.Scale.linear(data, function(d) d[k0]).range(0, s))
-    .def("y", function(k0, k1) pv.Scale.linear(data, function(d) d[k1]).range(0, s))
-    .data(data)
-    .size(3)
-    .left(function(d, k0, k1) this.x()(d[k0]))
-    .bottom(function(d, k0, k1) this.y()(d[k1]));
-    
-cell.event("click", function(k0, k1) alert(k0+" vs "+k1));
+layout.link.add(pv.Bar)
+    .fillStyle(function(l) l.linkValue
+        ? ((l.targetNode.nodeId == l.sourceNode.nodeId)
+        ? color(l.sourceNode) : "#555") : "#eee")
+    .antialias(false)
+    .lineWidth(1);
+
+layout.label.add(pv.Label)
+    .textStyle(color);
