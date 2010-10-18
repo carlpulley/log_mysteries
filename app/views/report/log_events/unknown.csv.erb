@@ -1,0 +1,5 @@
+<% headers['Content-Disposition'] = "attachment; filename=\"unknown\"" -%>
+<%= (0..23).map { |n| "Character #{n}" }.join(", ") %>
+<% @log_events.all.each do |event| -%>
+<%= event.unknown.split("").map { |n| n.ord }.join(", ") %>
+<% end -%>
