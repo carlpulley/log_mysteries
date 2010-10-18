@@ -1,0 +1,19 @@
+var vis = new pv.Panel()
+    .width(900)
+    .height(900)
+    .bottom(-80);
+
+var partition = vis.add(pv.Layout.Partition.Fill)
+    .nodes(pv.dom(data).root(root).nodes())
+    .size(function(d) d.nodeValue)
+    .order("descending")
+    .orient("radial");
+
+partition.node.add(pv.Wedge)
+    .fillStyle(pv.Colors.category19().by(function(d) d.parentNode && d.parentNode.nodeName))
+    .strokeStyle("#fff")
+    .lineWidth(.5);
+
+partition.label.add(pv.Label)
+    .visible(function(d) d.angle * d.outerRadius >= 6);
+    

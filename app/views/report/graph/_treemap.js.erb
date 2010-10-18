@@ -1,0 +1,16 @@
+var vis = new pv.Panel()
+    .width(900)
+    .height(900);
+
+var treemap = vis.add(pv.Layout.Treemap)
+    .nodes(pv.dom(data).nodes())
+    .padding(6);
+
+treemap.node.add(pv.Bar)
+    .fillStyle(function(d) d.firstChild ? "rgba(31, 119, 180, .25)" : "#ff7f0e");
+    
+treemap.node.add(pv.Label)
+        .textAlign("left")
+        .textBaseline("top")
+        .text(function(d) d.nodeName);
+        

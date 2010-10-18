@@ -1,0 +1,18 @@
+var vis = new pv.Panel()
+    .width(1600)
+    .height(800)
+    .left(-700)
+    .top(-100);
+
+var tree = vis.add(pv.Layout.Tree)
+    .nodes(pv.dom(data).root(root).nodes())
+    .depth(85)
+    .breadth(7.25)
+    .orient("radial");
+
+tree.link.add(pv.Line);
+
+tree.node.add(pv.Dot)
+    .fillStyle(function(n) n.firstChild ? "#aec7e8" : "#ff7f0e");
+
+tree.label.add(pv.Label);
