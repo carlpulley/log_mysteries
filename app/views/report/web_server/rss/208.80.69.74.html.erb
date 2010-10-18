@@ -33,7 +33,7 @@
 			mean = mean([grad1, grad2, grad3, grad4, grad5, grad6])
 			stddev = standard_deviation([grad1, grad2, grad3, grad4, grad5, grad6])
 		%>
-		<li>From the graph we can visually see a number of clear patterns: every news feed access/refresh occurs twice (if this feature is judged to be sufficiently unusual, we could use it to fingerprint client software); the accesses occur with a regular periodicity.</li>
+		<li>From the graph we can visually see a number of clear patterns: every news feed access/refresh occurs twice (see <%= link_to "RSS Analysis: 65.88.2.5", "/report/web_server/rss/65.88.2.5" %> for more information on this behaviour); the accesses occur with a regular periodicity.</li>
 		<li>By examining our graph data we are able to calculate:
 			<ul>
 				<li>between event indexes 1 and 2 we have a gradient of <%= grad1 %></li>

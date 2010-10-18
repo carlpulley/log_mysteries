@@ -14,6 +14,8 @@
 	</ul>
 </p>
 
+<p>The double fetches here are consistent with the server not setting the character encoding in the Content-Type HTTP response header and the client using Firefox 3.x to access this RSS feed.</p>
+
 <h2>Graphs</h2>
 
 <h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
@@ -30,7 +32,19 @@
 <p>
 	<b>Notes:</b>
 	<ul>
-		<li>From the graph we can visually see that every news feed access/refresh occurs twice (if this feature is judged to be sufficiently unusual, we could use it to fingerprint client software).</li>
+		<li>From the graph we can visually see that every news feed access/refresh occurs twice (if this feature is judged to be sufficiently unusual, we could use it to fingerprint client software). 
+			<ul>
+				<li>Empty link or img HTML tags resolve to the current page and so can result in double fetches</li>
+				<li>Javascript generated HTML can often result in double fetches</li>
+				<li>Googling on the terms <%= link_to "firefox double fetch get request", "http://www.google.co.uk/search?q=firefox+double+fetch+get+request" %> turns up the following link <%= link_to "Firefox loads my page 5 times", "http://forums.mozillazine.org/viewtopic.php?f=25&t=1971947" %> from where we locate the following potential explanations:
+					<ul>
+						<li>empty src attributes in a page or empty url() values in the CSS apparently cause this type of behaviour in Firefox</li>
+						<li>inconsistent character encoding (eg. page meta tag and server headers specify differing character encodings) - see <%= link_to "Bug 236858 - Repeating GET requests", "https://bugzilla.mozilla.org/show_bug.cgi?id=236858" %></li>
+					</ul>
+				</li>
+			</ul>
+			We do not see this issue with other client requests, so we're led to believe the issue is more IP/user agent specific and so related to inconsistent character encoding - ie. server is not communicating the character set encoding in the Content-Type response HTTP header. Comparing our IP address against user agent strings allows us to conclude that this RSS feed is probably being accessed via a Firefox browser.
+		</li>
 		<li>The changing gradients are suggestive of a more manually influenced update regime being applied here.</li>
 	</ul>
 </p>
