@@ -50,6 +50,18 @@
 	vis.render();
 </script>
 
+<h3>Scatter Plot of Process ID vs Counter vs Observed Time (seconds from epoch on a blue to red scale)</h3>
+
+<script type="text/javascript+protovis">
+	var data = <%=raw @log_events.all.map { |d| { :y => d.counter, :z => d.observed_at.to_i, :x => d.pid } }.to_json %>;
+	
+	<%= render :partial => 'report/graph/scatter.js' %>
+
+	dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
+	
+	vis.render();
+</script>
+
 <h2>Appendix</h2>
 
 <h3>Log Events</h3>
