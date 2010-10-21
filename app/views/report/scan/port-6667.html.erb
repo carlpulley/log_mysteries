@@ -12,4 +12,4 @@
 
 <h3>Log Events tagged with port-6667,scan</h3>
 
-<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with(["port-6667", "scan"]) } %>
+<%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=port-6667,scan"]).join("&") }" %>

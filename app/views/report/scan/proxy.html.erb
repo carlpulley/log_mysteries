@@ -48,6 +48,4 @@
 
 <h2>Appendix</h2>
 
-<h3>Log Events tagged with proxy,scan</h3>
-
-<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with(["proxy", "scan"]) } %>
+<%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=proxy,scan"]).join("&") }" %>

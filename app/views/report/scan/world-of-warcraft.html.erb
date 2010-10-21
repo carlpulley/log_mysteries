@@ -39,6 +39,4 @@ Thus we get that <code>http://www.gravatar.com</code> is being used as a web pro
 
 <h2>Appendix</h2>
 
-<h3>Log Events tagged with world-of-warcraft,scan</h3>
-
-<%= render :partial => 'appendix', :locals => { :log_events => @log_events.tagged_with(["world-of-warcraft", "scan"]) } %>
+<%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=world-of-warcraft,scan"]).join("&") }" %>

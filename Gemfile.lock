@@ -34,6 +34,7 @@ GEM
       activesupport (~> 3.0.0)
     builder (2.1.2)
     columnize (0.3.1)
+    diff-lcs (1.1.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     i18n (0.4.1)
@@ -47,6 +48,7 @@ GEM
     nested_set (1.5.2)
       activerecord (>= 3.0.0)
       railties (>= 3.0.0)
+    nokogiri (1.4.3.1)
     polyglot (0.3.1)
     rack (1.2.1)
     rack-mount (0.6.13)
@@ -67,6 +69,17 @@ GEM
       rake (>= 0.8.4)
       thor (~> 0.14.0)
     rake (0.8.7)
+    rspec (2.0.0.beta.12)
+      rspec-core (= 2.0.0.beta.12)
+      rspec-expectations (= 2.0.0.beta.12)
+      rspec-mocks (= 2.0.0.beta.12)
+    rspec-core (2.0.0.beta.12)
+    rspec-expectations (2.0.0.beta.12)
+      diff-lcs (>= 1.1.2)
+    rspec-mocks (2.0.0.beta.12)
+    rspec-rails (2.0.0.beta.12)
+      rspec (= 2.0.0.beta.12)
+      webrat (>= 0.7.0)
     ruby-debug-base19 (0.11.24)
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
@@ -84,6 +97,10 @@ GEM
     treetop (1.4.8)
       polyglot (>= 0.3.1)
     tzinfo (0.3.23)
+    webrat (0.7.1)
+      nokogiri (>= 1.2.0)
+      rack (>= 1.0)
+      rack-test (>= 0.5.3)
 
 PLATFORMS
   ruby
@@ -91,7 +108,9 @@ PLATFORMS
 DEPENDENCIES
   acts-as-taggable-on
   nested_set
+  nokogiri
   rails (= 3.0.0)
+  rspec-rails (= 2.0.0.beta.12)
   ruby-debug19
   shoulda
   sqlite3-ruby
