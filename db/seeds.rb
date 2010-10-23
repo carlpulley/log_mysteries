@@ -6,6 +6,7 @@ puts `curl http://honeynet.org/files/sanitized_log.zip -o evidence/sanitized_log
 
 puts `unzip -d evidence evidence/sanitized_log.zip sanitized_log/apache2/www-access.log` unless FileTest.file?("evidence/sanitized_log/apache2/www-access.log")
 puts `unzip -d evidence evidence/sanitized_log.zip sanitized_log/apache2/www-media.log` unless FileTest.file?("evidence/sanitized_log/apache2/www-media.log")
+puts `unzip -d evidence evidence/sanitized_log.zip sanitized_log/auth.log` unless FileTest.file?("evidence/sanitized_log/auth.log")
 
 # Download http://wordpress.org/wordpress-2.9.2.tar.gz
 
@@ -45,3 +46,7 @@ Rake::Task["db:seed:google_analyticator"].invoke
 # Populate the FileObject model
 
 Rake::Task["db:seed:file_object"].invoke
+
+# Populate the Auth model
+
+Rake::Task["db:seed:auth"].invoke
