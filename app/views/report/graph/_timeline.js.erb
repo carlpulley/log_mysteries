@@ -1,0 +1,38 @@
+var pb = 4, pt = 6, p = pb+pt, h = 3, c = p+h;
+var width = 1100;
+var height = data.length * c + 10;
+
+var begin = function(ds) { return ds.timeline.map(function (d) { return d.begin; }).min(); }
+var end = function(ds) { return ds.timeline.map(function (d) { return d.end; }).max(); }
+var dates = pv.Scale.linear(data.map(function(ds) { return begin(ds); }).min(), data.map(function(ds) { return end(ds); }).max()).range(0, width);
+
+var vis = new pv.Panel()
+    .width(width)
+    .height(height)
+    .margin(20)
+    .right(400);
+
+vis.add(pv.Rule)
+    .data(dates.ticks())
+    .strokeStyle("#eee")
+    .left(dates)
+    .anchor("bottom").add(pv.Label)
+        .text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+
+data.forEach(function(ds) {
+    var line = vis.add(pv.Bar)
+        .data(ds.timeline)
+        .left(dates(begin(ds)))
+        .width(dates(end(ds)) - dates(begin(ds)))
+        .top(function() data.indexOf(ds) * c + p)
+        .height(h);
+        //.fillStyle(function(d) dates(d));
+        
+    var label = vis.add(pv.Label)
+        .left(dates(begin(ds)))
+        .top(function() data.indexOf(ds) * c + p)
+        .textAlign("left")
+        .textBaseline("bottom")
+        .text(ds.label);
+});
+                                    

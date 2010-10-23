@@ -64,20 +64,22 @@
 
 <p>www-access.log holds access information for each page that a client requests, whilst www-media.log holds access information for the resources on each page requested.</p>
 
-<h2>Appendix</h2>
+<h2>Timeline (Grouped by IP address and User Agent)</h2>
 
-<h3>Log Events <%= " Tagged with: #{params[:tagged]}" if params[:tagged] %> (Grouped by IP address and User Agent)</h3>
-
+<% data = [] %>
 <% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
 <% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
 <% addresses.each do |address| %>
 	<% agents.each do |agent| %>
 		<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
-			<div class="header">
-				<div class="title">IP Address: <i><%= address %></i></div>
-				<div class="title">User Agent: <i><%= agent %></i></div>
-			</div>
-			<%= render :partial => 'appendix', :locals => { :log_events => @log_events.ip_address(address).user_agent(agent) } %>
+			<% data << { :label => "#{address}: #{agent}", :timeline => @log_events.ip_address(address).user_agent(agent).order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
 		<% end %>
 	<% end %>
 <% end %>
+<script type="text/javascript+protovis">
+	var data = <%=raw data.to_json %>;
+
+	<%= render :partial => 'report/graph/timeline.js' %>
+
+	vis.render();
+</script>
