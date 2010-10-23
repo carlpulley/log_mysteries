@@ -62,6 +62,21 @@
 	vis.render();
 </script>
 
+<h3>Process ID Timeline</h3>
+
+<% data = [] %>
+<% data << { :label => "Apache2 Restart Estimate", :timeline => @log_events.all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% @log_events.all.map { |d| d.pid }.compact.uniq.sort.each do |pid| %>
+	<% data << { :label => "PID: #{pid}", :timeline => @log_events.all.select { |d| d.pid == pid }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% end %>
+<script type="text/javascript+protovis">
+	var data = <%=raw data.to_json %>;
+
+	<%= render :partial => 'report/graph/timeline.js' %>
+
+	vis.render();
+</script>
+
 <h2>Appendix</h2>
 
 <%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %>
