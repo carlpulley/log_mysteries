@@ -60,21 +60,51 @@
 
 <h2>Overview</h2>
 
-<p>A visual examination of www-access.log and www-media.log suggests that we should initially group the data by: the remote IP address; and the user agent string (see the appendix below). Using this grouping of our data, we may then tag (see lib/tasks/tag_log_events.rake) Log Entry instances based on their observed interactions with our web server. The top-level links within our research section above represent the results of this analysis.</p>
+<p>A visual examination of www-access.log and www-media.log suggests that we should initially group the data by: the remote IP address; and the user agent string (see the timeline below). Using this grouping of our data, we may then tag (see lib/tasks/tag_log_events.rake) Log Entry instances based on their observed interactions with our web server. The top-level links within our research section above represent the results of this analysis.</p>
 
 <p>www-access.log holds access information for each page that a client requests, whilst www-media.log holds access information for the resources on each page requested.</p>
 
-<h2>Timeline (Grouped by IP address and User Agent)</h2>
+<h2>Timeline (Based on Data Analysis)</h2>
 
 <% data = [] %>
-<% addresses = @log_events.group(:remote).select(:remote).all.map { |d| d.remote } %>
-<% agents = @log_events.group(:user_agent).select(:user_agent).all.map { |d| d.user_agent } %>
-<% addresses.each do |address| %>
-	<% agents.each do |agent| %>
-		<% unless @log_events.ip_address(address).user_agent(agent).order(:observed_at).count == 0 %>
-			<% data << { :label => "#{address}: #{agent}", :timeline => @log_events.ip_address(address).user_agent(agent).order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
-		<% end %>
-	<% end %>
+<% data << { :label => "10.0.1.14: POST /wp-cron.php?doing_wp_cron", :timeline => @log_events.ip_address("10.0.1.14").tagged_with("wordpress").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "10.0.1.2: Newsfeed", :timeline => @log_events.ip_address("10.0.1.2").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "10.0.1.2: OSX 10.6; Firefox 3.6.3", :timeline => @log_events.ip_address("10.0.1.2").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "10.0.1.2: OSX 10.6; Safari 4.0.5", :timeline => @log_events.ip_address("10.0.1.2").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2; en-us) AppleWebKit/531.22.7 (KHTML, like Gecko) Version/4.0.5 Safari/531.22.7").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "65.88.2.5: Newsfeed", :timeline => @log_events.ip_address("65.88.2.5").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "65.88.2.5: OSX 10.6; Firefox 3.6.3", :timeline => @log_events.ip_address("65.88.2.5").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "208.80.69.74: Newsfeed", :timeline => @log_events.ip_address("208.80.69.74").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "208.80.69.69: OSX 10.6; Safari 4.0.4", :timeline => @log_events.ip_address("208.80.69.69").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "76.191.195.140: Newsfeed", :timeline => @log_events.ip_address("76.191.195.140").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "123.4.59.174: Windows XP; IE 6.0", :timeline => @log_events.ip_address("123.4.59.174").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "125.45.106.180: Windows XP; IE 6.0", :timeline => @log_events.ip_address("125.45.106.180").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.4.59.21: Windows XP; IE 6.0", :timeline => @log_events.ip_address("123.4.59.21").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "125.45.106.168: Windows XP; IE 6.0", :timeline => @log_events.ip_address("125.45.106.168").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.4.42.80: Windows XP; IE 6.0", :timeline => @log_events.ip_address("123.4.42.80").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.11.240.130: Windows XP; IE 6.0", :timeline => @log_events.ip_address("123.11.240.130").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.4.51.181: Windows XP; IE 6.0", :timeline => @log_events.ip_address("123.4.51.181").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "190.167.70.87: Windows XP; Chrome 4.1.249.1045", :timeline => @log_events.ip_address("190.167.70.87").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "190.166.87.164: Windows XP; Chrome 4.1.249.1059", :timeline => @log_events.ip_address("190.166.87.164").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "201.229.176.217: Windows XP; Firefox 3.0.19", :timeline => @log_events.ip_address("201.229.176.217").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "Naverbot", :timeline => @log_events.tagged_with("bot").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "World of Warcraft Scanning", :timeline => @log_events.tagged_with("world-of-warcraft,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "Proxy Scanning", :timeline => @log_events.tagged_with("proxy,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "Port 6677 Scanning", :timeline => @log_events.tagged_with("port-6677,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "Port 6667 Scanning", :timeline => @log_events.tagged_with("port-6667,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "Server Loading Estimate", :timeline => @log_events.ip_address("10.0.1.2").tagged_with("rss").order(:observed_at).all.select { |d| d.processing_time >= 3*(10**6) }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "Apache2 Restart Estimate", :timeline => @log_events.all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% @log_events.all.map { |d| d.pid }.compact.uniq.sort.each do |pid| %>
+	<% data << { :label => "PID: #{pid}", :timeline => @log_events.all.select { |d| d.pid == pid }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
 <% end %>
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
