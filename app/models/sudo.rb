@@ -10,17 +10,11 @@ class Sudo < Auth
     { :username => $1, :tty => $2, :pwd => $3, :user => $4, :command => $5 } if message =~ /^\s*([\w\d]+)\s*:\s*TTY=([^;]+?)\s*;\s*PWD=([^;]+?)\s*;\s*USER=([^;]+?)\s*;\s*COMMAND=(.*)$/
   end
   
-  def self.apache_timeline
-    (Sudo.command("apache").command("start").all + Sudo.command("apache").command("stop").all).sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.inject([])  do |hs, d| 
-      if hs.empty?
-        [ { :start => d } ]
-      elsif d.message[:command] =~ /stop/ and hs.last.keys.member? :start and not hs.last.keys.member? :stop
-        hs[0..-1] + [ hs.last.merge({ :stop => d }) ]
-      elsif d.message[:command] =~ /stop/ and not hs.last.keys.member? :start
-        hs + [ { :stop => d } ]
-      else
-        hs + [ { :start => d } ]
-      end
-    end.map { |d| { :begin => d[:start].try(:observed_at).try(:to_i), :end => d[:stop].try(:observed_at).try(:to_i) } }
+  def self.apache_timeline_starts
+    Sudo.command("apache2").command("start").where("observed_at >= '2010-04-17'").all.sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i } }
+  end
+  
+  def self.apache_timeline_ends
+    (Sudo.command("apache2").command("stop").where("observed_at >= '2010-04-17'").all + Sudo.command("apache2").command("killall").where("observed_at >= '2010-04-17'").all).sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i } }
   end
 end

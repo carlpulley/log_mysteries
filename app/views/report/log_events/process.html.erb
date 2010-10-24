@@ -65,10 +65,11 @@
 <h3>Process ID Timeline</h3>
 
 <% data = [] %>
-<% data << { :label => "Apache2 Restart Estimate", :timeline => @log_events.all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
 <% @log_events.all.map { |d| d.pid }.compact.uniq.sort.each do |pid| %>
 	<% data << { :label => "PID: #{pid}", :timeline => @log_events.all.select { |d| d.pid == pid }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
 <% end %>
+<% data << { :label => "Apache2 Start Times", :timeline => Sudo.apache_timeline_starts } %>
+<% data << { :label => "Apache2 Stop Times", :timeline => Sudo.apache_timeline_ends } %>
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
 
