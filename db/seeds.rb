@@ -50,3 +50,4 @@ Rake::Task["db:seed:file_object"].invoke
 # Populate the Auth model
 
 Rake::Task["db:seed:auth"].invoke
+Rake::Task["db:seed:sudo"].invoke
