@@ -6,6 +6,12 @@ class GoogleSyntaxHighlighterContentsTest < ActiveSupport::TestCase
       ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
     end
     
+    should "not have any shBrushBash.js entries" do
+      ["google-syntax-highlighter/Scripts/shBrushBash.js"].each do |filename|
+        assert_equal 0, GoogleSyntaxHighlighter.where(:name => filename).count
+      end
+    end
+    
     should "be consistent with google-syntax-highlighter tagged entries in ApacheAccess that exist on the server" do
       ["google-syntax-highlighter/Styles/SyntaxHighlighter.css", "google-syntax-highlighter/Scripts/shBrushPhp.js", "google-syntax-highlighter/Scripts/shBrushCSharp.js", "google-syntax-highlighter/Scripts/shBrushJScript.js", "google-syntax-highlighter/Scripts/shBrushSql.js", "google-syntax-highlighter/Scripts/shBrushJava.js", "google-syntax-highlighter/Scripts/shCore.js", "google-syntax-highlighter/Scripts/shBrushXml.js", "google-syntax-highlighter/Scripts/shBrushVb.js", "google-syntax-highlighter/Scripts/shBrushPython.js", "google-syntax-highlighter/Scripts/shBrushRuby.js", "google-syntax-highlighter/Scripts/shBrushCpp.js", "google-syntax-highlighter/Scripts/shBrushDelphi.js", "google-syntax-highlighter/Scripts/shBrushCss.js"].each do |filename|
         events = ApacheAccess.tagged_with("google-syntax-highlighter").url("/wp-content/plugins/#{filename}").where(:result => 200).get

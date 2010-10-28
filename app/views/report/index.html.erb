@@ -143,9 +143,9 @@ TODO: add in graph-based conclusions
 
 <p>Based on those URLs matching <code>^/wp-content/</code> in www-media.log, we have that <%= link_to "Wordpress", "/research/wordpress/core" %> is installed along with the plugins:
 	<ul>
-		<li><%= link_to "Contact Form 7", "/research/wordpress/plugin/contact-form-7" %> (<%= github_link "lib/tasks/contact_form_7.rake", "extraction" %>; <%= github_link "test/unit/contact_form7_test.rb", "verification" %>)</li>
-		<li><%= link_to "Google Syntax Highlighter", "/research/wordpress/plugin/google-syntax-highlighter" %> (<%= github_link "lib/tasks/google_syntax_highlighter.rake", "extraction" %>; <%= github_link "test/unit/google_syntax_highlighter_test.rb", "verification" %>) or <%= link_to "Easy Google Syntax Highlighter", "/research/wordpress/plugin/easy-google-syntax-highlighter" %> (<%= github_link "lib/tasks/easy_google_syntax_highlighter.rake", "extraction" %>; <%= github_link "test/unit/easy_google_syntax_highlighter_test.rb", "verification" %>)</li>
-		<li><%= link_to "Google Analyticator", "/research/wordpress/plugin/google-analyticator" %> (<%= github_link "lib/tasks/google_analyticator.rake", "extraction" %>; <%= github_link "test/unit/google_analyticator_test.rb", "verification" %>).</li>
+		<li><%= link_to "Contact Form 7", "/research/wordpress/plugin/contact-form-7" %> (<%= github_link "lib/tasks/contact_form_7.rake", "download" %>; <%= github_link "test/unit/contact_form7_test.rb", "verification" %>)</li>
+		<li><%= link_to "Google Syntax Highlighter", "/research/wordpress/plugin/google-syntax-highlighter" %> (<%= github_link "lib/tasks/google_syntax_highlighter.rake", "download" %>; <%= github_link "test/unit/google_syntax_highlighter_test.rb", "verification" %>) or <%= link_to "Easy Google Syntax Highlighter", "/research/wordpress/plugin/easy-google-syntax-highlighter" %> (<%= github_link "lib/tasks/easy_google_syntax_highlighter.rake", "download" %>; <%= github_link "test/unit/easy_google_syntax_highlighter_test.rb", "verification" %>)</li>
+		<li><%= link_to "Google Analyticator", "/research/wordpress/plugin/google-analyticator" %> (<%= github_link "lib/tasks/google_analyticator.rake", "download" %>; <%= github_link "test/unit/google_analyticator_test.rb", "verification" %>).</li>
 	</ul>
 	Plugin names have been determined by matching URI's against the pattern <code>^/wp-content/plugins/([^/]+)/</code>. Google searches of <%= link_to "wordpress.org", "http://wordpress.org/extend/plugins/" %> have then been performed using the contents of the match variable <code>$1</code>.
 </p>
