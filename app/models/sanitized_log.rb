@@ -1,0 +1,2 @@
+class SanitizedLog < ArchiveContent
+end

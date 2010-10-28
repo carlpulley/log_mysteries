@@ -31,10 +31,10 @@ class Sudo < Auth
   end
   
   def self.apache_timeline_starts
-    Sudo.command("apache2").command("start").where("observed_at >= '2010-04-17'").all.sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i } }
+    Sudo.command("apache2").command("start").all.sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i } }
   end
   
   def self.apache_timeline_ends
-    (Sudo.command("apache2").command("stop").where("observed_at >= '2010-04-17'").all + Sudo.command("apache2").command("killall").where("observed_at >= '2010-04-17'").all).sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i } }
+    (Sudo.command("apache2").command("stop").all + Sudo.command("apache2").command("killall").all).sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i } }
   end
 end
