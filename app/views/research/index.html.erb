@@ -1,0 +1,6 @@
+<h1>Research#index</h1>
+<p>Find me in app/views/research/index.html.erb</p>
+
+<h2>Appendix</h2>
+
+<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %>

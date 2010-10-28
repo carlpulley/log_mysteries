@@ -19,7 +19,7 @@ end
 	<script type="text/javascript+protovis">	
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'report/graph/treemap.js' %>
+		<%= render :partial => 'graph/treemap.js' %>
 	
 		vis.render();
 	</script>
@@ -34,7 +34,7 @@ end
 				]
 			};
 		
-		<%= render :partial => 'report/graph/matrix.js' %>
+		<%= render :partial => 'graph/matrix.js' %>
 		
 		layout.directed(true);
 	
@@ -42,10 +42,10 @@ end
 	</script>
 <h3>File System Hierarchy</h3>
 	<script type="text/javascript+protovis">	
-		var root = "/var/www";
+		var root = "$WEB_ROOT";
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'report/graph/dendrogram.js' %>
+		<%= render :partial => 'graph/dendrogram.js' %>
 		
 		vis.left(80)
 		   .width(650)
@@ -55,19 +55,19 @@ end
 	</script>
 <h3>Sunburst Graph scaled with File Size (bytes)</h3>
 	<script type="text/javascript+protovis">	
-		var root = "/var/www";
+		var root = "$WEB_ROOT";
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'report/graph/sunburst.js' %>
+		<%= render :partial => 'graph/sunburst.js' %>
 	
 		vis.render();
 	</script>
 <h3>Circle Packing Graph scaled with File Size (bytes)</h3>
 	<script type="text/javascript+protovis">	
-		var root = "/var/www";
+		var root = "$WEB_ROOT";
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'report/graph/circle_packing.js' %>
+		<%= render :partial => 'graph/circle_packing.js' %>
 	
 		vis.render();
 	</script>

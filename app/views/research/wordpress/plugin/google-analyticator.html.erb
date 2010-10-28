@@ -2,7 +2,7 @@
 
 <h2>Overview</h2>
 
-<p>By examining the <i>ver</i> parameter string for log entries tagged with <%= link_to "google-analyticator", "/report/by?tagged=google-analyticator" %>, we are able to extract version 6.0.2 for the WordPress plugin Google Analyticator.</p>
+<p>By examining the <i>ver</i> parameter string for log entries tagged with <%= link_to "google-analyticator", "/research/by?tagged=google-analyticator" %>, we are able to extract version 6.0.2 for the WordPress plugin Google Analyticator.</p>
 
 <p>By examining the URL's of the log entries tagged with <%= link_to "google-analyticator", "/report/by?tagged=google-analyticator" %> and Googling with the keywords <%= link_to "wordpress plugin google analyticator", "http://google.co.uk/search?q=wordpress+plugin+google+analyticator" %>, we are able to locate and download version 6.0.2 of <%= link_to "Google Analyticator", "http://wordpress.org/extend/plugins/google-analyticator/" %>.</p>
 
@@ -24,11 +24,11 @@ have sizes consistent with the downloaded plugin - unit testing further confirms
 	var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
 	var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
 	
-	<%= render :partial => 'report/graph/bar.js' %>
+	<%= render :partial => 'graph/bar.js' %>
 
 	vis.render();
 </script>
 
 <h2>Appendix</h2>
 
-<%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=google-analyticator"]).join("&") }" %>
+<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=google-analyticator"]).join("&") }" %>

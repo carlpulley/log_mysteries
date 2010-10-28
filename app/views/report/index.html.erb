@@ -12,42 +12,42 @@
 </li>
 <li>Research
 <ul>
-	<li><%= link_to "Wordpress", "/report/by?tagged=wordpress" %>
+	<li><%= link_to "Wordpress", "/research/by?tagged=wordpress" %>
 		<ul>
-			<li><%= link_to "Blog", "/report/wordpress/core" %>
+			<li><%= link_to "Blog", "/research/wordpress/core" %>
 			<li>Plugins
 				<ul>
-					<li><%= link_to "Contact Form 7", "/report/wordpress/plugin/contact-form-7" %></li>
+					<li><%= link_to "Contact Form 7", "/research/wordpress/plugin/contact-form-7" %></li>
 					<li>Google Syntax Highlighter
 						<ul>
-							<li><%= link_to "Google Syntax Highlighter", "/report/wordpress/plugin/google-syntax-highlighter" %></li>
-							<li><%= link_to "Easy Google Syntax Highlighter", "/report/wordpress/plugin/easy-google-syntax-highlighter" %></li>
+							<li><%= link_to "Google Syntax Highlighter", "/research/wordpress/plugin/google-syntax-highlighter" %></li>
+							<li><%= link_to "Easy Google Syntax Highlighter", "/research/wordpress/plugin/easy-google-syntax-highlighter" %></li>
 						</ul>
 					</li>
-					<li><%= link_to "Google Analyticator", "/report/wordpress/plugin/google-analyticator" %></li>
+					<li><%= link_to "Google Analyticator", "/research/wordpress/plugin/google-analyticator" %></li>
 				</ul>
 			</li>
 		</ul>
 	</li>
-	<li><%= link_to "RSS News Feed", "/report/by?tagged=rss" %> Analysis for:
+	<li><%= link_to "RSS News Feed", "/research/by?tagged=rss" %> Analysis for:
 		<ul>
-			<li><%= link_to "10.0.1.2", "/report/web_server/rss/10.0.1.2" %></li>
-			<li><%= link_to "208.80.69.74", "/report/web_server/rss/208.80.69.74" %></li>
-			<li><%= link_to "65.88.2.5", "/report/web_server/rss/65.88.2.5" %></li>
-			<li><%= link_to "76.191.195.140", "/report/web_server/rss/76.191.195.140" %></li>
+			<li><%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2" %></li>
+			<li><%= link_to "208.80.69.74", "/research/web_server/rss/208.80.69.74" %></li>
+			<li><%= link_to "65.88.2.5", "/research/web_server/rss/65.88.2.5" %></li>
+			<li><%= link_to "76.191.195.140", "/research/web_server/rss/76.191.195.140" %></li>
 		</ul>
 	</li>
-	<li><%= link_to "Scanning", "/report/by?tagged=scan" %> Analysis:
+	<li><%= link_to "Scanning", "/research/by?tagged=scan" %> Analysis:
 		<ul>
-			<li><%= link_to "World of Warcraft", "/report/scan/world-of-warcraft" %></li>
-			<li><%= link_to "Proxy", "/report/scan/proxy" %></li>
-			<li><%= link_to "Port 6677", "/report/scan/port-6677" %></li>
-			<li><%= link_to "Port 6667", "/report/scan/port-6667" %></li>
+			<li><%= link_to "World of Warcraft", "/research/scan/world-of-warcraft" %></li>
+			<li><%= link_to "Proxy", "/research/scan/proxy" %></li>
+			<li><%= link_to "Port 6677", "/research/scan/port-6677" %></li>
+			<li><%= link_to "Port 6667", "/research/scan/port-6667" %></li>
 		</ul>
 	</li>
-	<li><%= link_to "Web Bot", "/report/by?tagged=bot" %> Analysis:
+	<li><%= link_to "Web Bot", "/research/by?tagged=bot" %> Analysis:
 		<ul>
-			<li><%= link_to "NaverBot", "/report/bot/naverbot" %></li>
+			<li><%= link_to "NaverBot", "/research/bot/naverbot" %></li>
 		</ul>
 	</li>
 </ul>
@@ -73,7 +73,7 @@
 
 <p>We have chosen to build a Rails 3 application (running on top of Ruby 1.9.2 RC2 within a RVM environment) to offer a visual and interactive web report. All report graphing is performed using <%= link_to "Protovis 3.2", "http://vis.stanford.edu/protovis/" %>.</p>
 
-<p>Using Git, we hope to be able to capture the full development process for our final report with Git branches capturing the different investigative phases. Whilst the author is still experimenting with this approach to forensic documentation, it is hoped that the idea might be of use to others. This entire web application (complete with its development history) is available via the author's Github project <%= link_to "log mysteries", "http://github.com/carlpulley/log_mysteries" %>. At some point in the near future, I'll aim to reshape this current development tree in an attempt to produce a formal report of the investigative process as applied to produce this report.</p>
+<p>Using Git, we hope to be able to capture the full development process for our final report with Git branches capturing the different investigative phases. Whilst the author is still experimenting with this approach to forensic documentation, it is hoped that the idea might be of use to others. This entire web application (complete with its development history) is available via the author's Github project <%= github_link "", "log mysteries" %>. At some point in the near future, I'll aim to reshape this current development tree in an attempt to produce a formal report of the investigative process as applied to produce this report.</p>
 
 <p>All log data has been parsed and processed using Rake tasks and then loaded into various Rail's models (for each log file, we have an associated model). The author has found that ActiveSupport provides an excellent platform by which one may slice and dice the data sets for further examination and analysis. Additionally:
 	<ul>
@@ -108,7 +108,7 @@
 	<script type="text/javascript+protovis">
 		var data = < %=raw data.to_json %>;
 
-		<%= render :partial => 'report/graph/dendrogram.js' %>
+		<%= render :partial => 'graph/dendrogram.js' %>
 		
 		// TODO: add in interaction code to allow IP address filtering
 		
@@ -121,7 +121,7 @@
 	<script type="text/javascript+protovis">
 		var data = < %=raw data.to_json %>;
 
-		< %= render :partial => 'report/graph/globe.js' %>
+		< %= render :partial => 'graph/globe.js' %>
 		
 		// TODO: add in interaction code to allow IP address filtering
 
@@ -130,13 +130,13 @@
 	TODO: add in graph-based conclusions
 </p>
 
-<p>Given that IP address <%= link_to "10.0.1.2", "/report/web_server/rss/10.0.1.2" %> accounts for ??% of the logged traffic, we analyse the log events associated with this IP address first. TODO: plot ip_address/user_agent vs number of events (pie chart?)</p>
+<p>Given that IP address <%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2" %> accounts for ??% of the logged traffic, we analyse the log events associated with this IP address first. TODO: plot ip_address/user_agent vs number of events (pie chart?)</p>
 
-<p>Based on those URLs matching <code>^/wp-content/</code> in www-media.log, we have that <%= link_to "Wordpress", "/report/wordpress/core" %> is installed along with the plugins:
+<p>Based on those URLs matching <code>^/wp-content/</code> in www-media.log, we have that <%= link_to "Wordpress", "/research/wordpress/core" %> is installed along with the plugins:
 	<ul>
-		<li><%= link_to "Contact Form 7", "/report/wordpress/plugin/contact-form-7" %> (<%= github_link "lib/tasks/contact_form_7.rake", "extraction" %>; <%= github_link "test/unit/contact_form7_test.rb", "verification" %>)</li>
-		<li><%= link_to "Google Syntax Highlighter", "/report/wordpress/plugin/google-syntax-highlighter" %> (<%= github_link "lib/tasks/google_syntax_highlighter.rake", "extraction" %>; <%= github_link "test/unit/google_syntax_highlighter_test.rb", "verification" %>) or <%= link_to "Easy Google Syntax Highlighter", "/report/wordpress/plugin/easy-google-syntax-highlighter" %> (<%= github_link "lib/tasks/easy_google_syntax_highlighter.rake", "extraction" %>; <%= github_link "test/unit/easy_google_syntax_highlighter_test.rb", "verification" %>)</li>
-		<li><%= link_to "Google Analyticator", "/report/wordpress/plugin/google-analyticator" %> (<%= github_link "lib/tasks/google_analyticator.rake", "extraction" %>; <%= github_link "test/unit/google_analyticator_test.rb", "verification" %>).</li>
+		<li><%= link_to "Contact Form 7", "/research/wordpress/plugin/contact-form-7" %> (<%= github_link "lib/tasks/contact_form_7.rake", "extraction" %>; <%= github_link "test/unit/contact_form7_test.rb", "verification" %>)</li>
+		<li><%= link_to "Google Syntax Highlighter", "/research/wordpress/plugin/google-syntax-highlighter" %> (<%= github_link "lib/tasks/google_syntax_highlighter.rake", "extraction" %>; <%= github_link "test/unit/google_syntax_highlighter_test.rb", "verification" %>) or <%= link_to "Easy Google Syntax Highlighter", "/research/wordpress/plugin/easy-google-syntax-highlighter" %> (<%= github_link "lib/tasks/easy_google_syntax_highlighter.rake", "extraction" %>; <%= github_link "test/unit/easy_google_syntax_highlighter_test.rb", "verification" %>)</li>
+		<li><%= link_to "Google Analyticator", "/research/wordpress/plugin/google-analyticator" %> (<%= github_link "lib/tasks/google_analyticator.rake", "extraction" %>; <%= github_link "test/unit/google_analyticator_test.rb", "verification" %>).</li>
 	</ul>
 	Plugin names have been determined by matching URI's against the pattern <code>^/wp-content/plugins/([^/]+)/</code>. Google searches of <%= link_to "wordpress.org", "http://wordpress.org/extend/plugins/" %> have then been performed using the contents of the match variable <code>$1</code>.
 </p>
@@ -210,13 +210,13 @@ TODO: say something about timestamps and log event ordering
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
 
-	<%= render :partial => 'report/graph/timeline.js' %>
+	<%= render :partial => 'graph/timeline.js' %>
 
 	vis.render();
 </script>
 
 <h2>Appendix</h2>
 
-<%= link_to "Apache2 Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %><br />
+<%= link_to "Apache2 Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %><br />
 
-<%= link_to "Auth Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %>
+<%= link_to "Auth Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %>

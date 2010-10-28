@@ -2,7 +2,7 @@
 
 <h2>Overview</h2>
 
-<p>By examining the <i>ver</i> parameter string for log entries tagged with <%= link_to "wordpress", "/report/by?tagged=contact-form-7" %>, we are able to extract version 2.9.2 for WordPress. Further examination of referrer attribute of log entries with the URL <i>/wp-cron</i> confirms this version number.</p>
+<p>By examining the <i>ver</i> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=contact-form-7" %>, we are able to extract version 2.9.2 for WordPress. Further examination of referrer attribute of log entries with the URL <i>/wp-cron</i> confirms this version number.</p>
 
 <p>Downloading version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to examine the resulting tar balls file contents for consistency.</p>
 
@@ -33,11 +33,11 @@ have sizes consistent with the downloaded plugin - unit testing further confirms
 	var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
 	var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
 	
-	<%= render :partial => 'report/graph/bar.js' %>
+	<%= render :partial => 'graph/bar.js' %>
 
 	vis.render();
 </script>
 
 <h2>Appendix</h2>
 
-<%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=wordpress"]).join("&") }" %>
+<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=wordpress"]).join("&") }" %>

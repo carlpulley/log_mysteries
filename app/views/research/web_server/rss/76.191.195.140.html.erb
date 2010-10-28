@@ -13,7 +13,7 @@
 <script type="text/javascript+protovis">	
 	var data = <%=raw data.to_json %>;
 	
-	<%= render :partial => 'report/graph/area.js' %>
+	<%= render :partial => 'graph/area.js' %>
 	
 	ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 
@@ -41,7 +41,7 @@
 <script type="text/javascript+protovis">	
 	var data = <%=raw data.to_json %>;
 	
-	<%= render :partial => 'report/graph/area.js' %>
+	<%= render :partial => 'graph/area.js' %>
 
 	vis.add(pv.Rule)
 		.bottom(y(<%= upper_time_bound*(10**6) %>))
@@ -61,4 +61,4 @@
 	
 <h2>Appendix</h2>
 
-<%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["ip_address=#{params[:subsection]}", "tagged=rss"]).join("&") }" %>
+<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["ip_address=#{params[:subsection]}", "tagged=rss"]).join("&") }" %>

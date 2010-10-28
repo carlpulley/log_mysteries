@@ -30,7 +30,7 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw @log_events.all.map { |d| { :y => d.pid, :x => d.observed_at.to_i, :z => d.observed_at.to_i } }.to_json %>;
 	
-	<%= render :partial => 'report/graph/scatter.js' %>
+	<%= render :partial => 'graph/scatter.js' %>
 	
 	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 	dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
@@ -43,7 +43,7 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw @log_events.all.map { |d| { :y => d.pid, :z => d.observed_at.to_i, :x => (d.thread_index || 0) } }.to_json %>;
 	
-	<%= render :partial => 'report/graph/scatter.js' %>
+	<%= render :partial => 'graph/scatter.js' %>
 
 	dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
 	
@@ -55,7 +55,7 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw @log_events.all.map { |d| { :y => d.counter, :z => d.observed_at.to_i, :x => d.pid } }.to_json %>;
 	
-	<%= render :partial => 'report/graph/scatter.js' %>
+	<%= render :partial => 'graph/scatter.js' %>
 
 	dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
 	
@@ -73,11 +73,11 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
 
-	<%= render :partial => 'report/graph/timeline.js' %>
+	<%= render :partial => 'graph/timeline.js' %>
 
 	vis.render();
 </script>
 
 <h2>Appendix</h2>
 
-<%= link_to "Data Set (CSV)", "/report/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %>
+<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %>
