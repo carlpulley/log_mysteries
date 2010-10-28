@@ -8,7 +8,7 @@
 
 <p>Those URLs that are tagged with wordpress but are not tagged as plugins, and that also do not appear within version 2.9.2 of the downloaded <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> archive are as follows:
 	<ul>
-		<% LogEvent.tagged_with("wordpress").tagged_with("plugin", :exclude => true).all.map { |d| d.http[:uri] }.uniq.each do |url| %>
+		<% ApacheAccess.tagged_with("wordpress").tagged_with("plugin", :exclude => true).all.map { |d| d.http[:uri] }.uniq.each do |url| %>
 			<% expected_filename = $1 if url =~ /^(.*?)(\?.*)?$/ %>
 			<% unless Wordpress.where(["name = ?", "wordpress#{expected_filename}"]).exists? %>
 				<li><i><%= expected_filename %></i></li>

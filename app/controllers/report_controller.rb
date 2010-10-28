@@ -1,6 +1,6 @@
 class ReportController < ApplicationController
   def index
-    @log_events = LogEvent.scoped
+    @log_events = ApacheAccess.scoped
     @filename = ""
         
     if params[:chapter] and params[:section]

@@ -28,9 +28,9 @@
 <p>Revision 596448 differs from revision 420893 in the way in which it handles the <code>timestamp</code> value. As a result we get that:
 	<ul>
 		<%
-		timestamp_596448 = "Base64.decode64(LogEvent.first.unknown.tr('-', '/').tr('@', '+'))[0..3]"
+		timestamp_596448 = "Base64.decode64(ApacheAccess.first.unknown.tr('-', '/').tr('@', '+'))[0..3]"
 		%>
-		<li>if we assume that mod_unique_id is at revision 596448, then our request time is stored in seconds. Working with <%= timestamp_596448 %>, we calculate a timestamp value of <%= Time.at((eval timestamp_596448).split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n }) %> which fails to agree with the observed timestamp value of <%= LogEvent.first.observed_at %>. Thus we deduce that mod_unique_id must be at a revision prior to 596448.</li>
+		<li>if we assume that mod_unique_id is at revision 596448, then our request time is stored in seconds. Working with <%= timestamp_596448 %>, we calculate a timestamp value of <%= Time.at((eval timestamp_596448).split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n }) %> which fails to agree with the observed timestamp value of <%= ApacheAccess.first.observed_at %>. Thus we deduce that mod_unique_id must be at a revision prior to 596448.</li>
 		<li>if we assume that mod_unique_id is at revision <%= link_to "420893", "http://svn.apache.org/viewvc/httpd/httpd/trunk/modules/metadata/mod_unique_id.c?revision=420983&view=markup" %>, then our request time is the bottom 4 bytes of the current time in micro-seconds. Our reasoning here is as follow:
 			<ul>
 				<li>From lines 278 and 307 of <%= link_to "mod_unique_id", "http://svn.apache.org/viewvc/httpd/httpd/trunk/modules/metadata/mod_unique_id.c?revision=420983&view=markup" %> we have that request_time is a field of request_rec</li>

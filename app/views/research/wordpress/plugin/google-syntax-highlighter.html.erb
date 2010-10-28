@@ -8,7 +8,7 @@
 
 <p>Those URLs that are tagged with google-syntax-highlighter and that do not appear within version 1.5.1 of the downloaded <%= link_to "Google Syntax Highlighter", "http://wordpress.org/extend/plugins/google-syntax-highlighter/" %> plugin are as follows:
 	<ul>
-		<% LogEvent.tagged_with("google-syntax-highlighter").all.map { |d| d.http[:uri] }.uniq.each do |url| %>
+		<% ApacheAccess.tagged_with("google-syntax-highlighter").all.map { |d| d.http[:uri] }.uniq.each do |url| %>
 			<% expected_filename = $1 if url =~ /^\/wp\-content\/plugins\/(google\-syntax\-highlighter\/.*?)(\?.*)?$/ %>
 			<% unless GoogleSyntaxHighlighter.where(:name => expected_filename).exists? %>
 				<li><i><%= url %></i></li>

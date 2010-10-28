@@ -7,7 +7,7 @@
 <%
 def walk_tree(node)
 	if node.leaf?
-		"'#{node.name}': #{node.log_events.map { |d| d.bytes }.max}"
+		"'#{node.name}': #{node.apache_accesses.map { |d| d.bytes }.max}"
 	else
 		"'#{node.name}': { #{node.children.map { |n| walk_tree n }.join(", ")} }"
 	end
@@ -30,7 +30,7 @@ end
 <%= root.self_and_descendants.all.map { |d| "					{ nodeName: '#{d.name}', nodeId: #{d.id-1} }" }.join(",\n") %>
 				],
 		 		links: [
-<%= root.descendants.all.map { |d| "					{ source: #{d.parent.id-1}, target: #{d.id-1}, value: #{(d.log_events.map { |n| n.bytes }.max || 0)} }" }.join(",\n") %>
+<%= root.descendants.all.map { |d| "					{ source: #{d.parent.id-1}, target: #{d.id-1}, value: #{(d.apache_accesses.map { |n| n.bytes }.max || 0)} }" }.join(",\n") %>
 				]
 			};
 		

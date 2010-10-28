@@ -1,14 +1,14 @@
 require 'test_helper'
 
-class SanitizedLogTest < ActiveSupport::TestCase
-  context "LogEvent model" do
+class LogEventTest < ActiveSupport::TestCase
+  context "ApacheAccess model" do
     setup do
       ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
     end
     
     context "www-access.log" do
       setup do
-        @events = LogEvent.where(:name => "www-access.log")
+        @events = ApacheAccess.where(:name => "www-access.log")
       end
       
       should "have contents matching www-access.log" do
@@ -21,9 +21,9 @@ class SanitizedLogTest < ActiveSupport::TestCase
       end
       
       should "have observed_at timestamps increasing with their position within www-access.log" do
-        assert File.stat("evidence/sanitized_log/apache2/www-access.log").mtime >= LogEvent.last.observed_at
+        assert File.stat("evidence/sanitized_log/apache2/www-access.log").mtime >= ApacheAccess.last.observed_at
         last_date = nil
-        @events.where("log_events.id not in (145, 259, 297)").find_each do |data|
+        @events.where("apache_accesses.id not in (145, 259, 297)").find_each do |data|
           assert data.observed_at >= last_date unless last_date.nil?
           last_date = data.observed_at
         end
@@ -32,7 +32,7 @@ class SanitizedLogTest < ActiveSupport::TestCase
     
     context "www-media.log" do
       setup do
-        @events = LogEvent.where(:name => "www-media.log")
+        @events = ApacheAccess.where(:name => "www-media.log")
       end
       
       should "have contents matching www-media.log" do
@@ -45,9 +45,9 @@ class SanitizedLogTest < ActiveSupport::TestCase
       end
       
       should "have observed_at timestamps increasing with their position within www-media.log" do
-        assert File.stat("evidence/sanitized_log/apache2/www-media.log").mtime >= LogEvent.last.observed_at
+        assert File.stat("evidence/sanitized_log/apache2/www-media.log").mtime >= ApacheAccess.last.observed_at
         last_date = nil
-        @events.where("log_events.id not in (375, 393, 461, 467, 485, 570, 583, 585, 587, 588, 589)").find_each do |data|
+        @events.where("apache_accesses.id not in (375, 393, 461, 467, 485, 570, 583, 585, 587, 588, 589)").find_each do |data|
           assert data.observed_at >= last_date, "id: #{data.id}" unless last_date.nil?
           last_date = data.observed_at
         end
@@ -56,7 +56,7 @@ class SanitizedLogTest < ActiveSupport::TestCase
     
     context "non-empty unknown attribute" do
       setup do
-        @events = LogEvent.where("unknown != '-'").all
+        @events = ApacheAccess.where("unknown != '-'").all
       end
       
       should "have timestamp match (+/- 1 second) to a truncated value of observed_at (except for event 394)" do

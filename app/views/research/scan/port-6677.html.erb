@@ -8,7 +8,7 @@
 	stddev = standard_deviation(data)/(10**6)
 	averg = average(data)/(10**6)
 
-	data400 = LogEvent.where(:result => 400).all.map { |d| d.processing_time }
+	data400 = ApacheAccess.where(:result => 400).all.map { |d| d.processing_time }
 	mean400 = mean(data400)/(10**6)
 	stddev400 = standard_deviation(data400)/(10**6)
 	averg400 = average(data400)/(10**6)

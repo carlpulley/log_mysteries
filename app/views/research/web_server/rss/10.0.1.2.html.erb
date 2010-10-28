@@ -9,7 +9,7 @@
 <h2>Graphs</h2>
 
 <h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
-<% data = @log_events.select(["log_events.id", "log_events.observed_at"]).all.map_with_index { |d, i| { :x => i, :y => d.observed_at.to_f, :id => d.id } } %>
+<% data = @log_events.select(["apache_accesses.id", "apache_accesses.observed_at"]).all.map_with_index { |d, i| { :x => i, :y => d.observed_at.to_f, :id => d.id } } %>
 <script type="text/javascript+protovis">	
 	var data = <%=raw data.to_json %>;
 	
@@ -29,9 +29,9 @@
 		%>
 		<li>Notice that around indexes <%= snip1 %>, <%= snip2 %> and <%= snip3 %> our perfect straight line is kinked. When we look back at our original data (see below), we discover that:
 			<ul>
-				<li>from <%= LogEvent.find(data[snip1][:id]).observed_at %> until <%= LogEvent.find(data[snip1+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
-				<li>from <%= LogEvent.find(data[snip2][:id]).observed_at %> until <%= LogEvent.find(data[snip2+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
-				<li>from <%= LogEvent.find(data[snip3][:id]).observed_at %> until <%= LogEvent.find(data[snip3+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= ApacheAccess.find(data[snip1][:id]).observed_at %> until <%= ApacheAccess.find(data[snip1+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= ApacheAccess.find(data[snip2][:id]).observed_at %> until <%= ApacheAccess.find(data[snip2+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				<li>from <%= ApacheAccess.find(data[snip3][:id]).observed_at %> until <%= ApacheAccess.find(data[snip3+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
 			</ul>
 		</li>
 		<%
@@ -69,7 +69,7 @@
 	
 <h3>plot of event creation time (seconds from epoch) vs processing time (micro seconds)</h3>
 
-<% data = @log_events.select(["log_events.observed_at", :processing_time]).order("log_events.observed_at").all.map { |d| { :x => d.observed_at.to_f, :y => d.processing_time } } %>
+<% data = @log_events.select(["apache_accesses.observed_at", :processing_time]).order("apache_accesses.observed_at").all.map { |d| { :x => d.observed_at.to_f, :y => d.processing_time } } %>
 
 <%
 	mean = mean(data.map { |d| d[:y] })/(10**6)

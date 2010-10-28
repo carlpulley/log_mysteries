@@ -24,11 +24,20 @@ Rake::Task["process:auth"].invoke
 
 Rake::Task["process:auth:sudo"].invoke
 
-# Populate the LogEvent model
+# Tag events in the ApacheAccess model
 
-Rake::Task["add:tags"].invoke
-Rake::Task["add:page:resources"].invoke
+Rake::Task["tag:events:wordpress"].invoke
+Rake::Task["tag:events:wordpress:plugins"].invoke
+Rake::Task["tag:events:bot"].invoke
+Rake::Task["tag:events:scan"].invoke
+Rake::Task["tag:events:rss"].invoke
+Rake::Task["tag:files:static"].invoke
+Rake::Task["tag:files:dynamic"].invoke
+
+# Build referrer hierarchy for the ApacheAccess model
+
+#Rake::Task["build:hierarchy:referrer"].invoke
 
 # Populate the FileObject model
 
-Rake::Task["db:seed:file_object"].invoke
+Rake::Task["build:file_objects"].invoke

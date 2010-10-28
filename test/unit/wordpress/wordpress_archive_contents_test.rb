@@ -6,7 +6,7 @@ class WordpressArchiveContentsTest < ActiveSupport::TestCase
       ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
     end
     
-    should "be consistent with wordpress tagged entries in LogEvent that exist on the server" do
+    should "be consistent with wordpress tagged entries in ApacheAccess that exist on the server" do
       ["/wp-includes/js/jquery/jquery.form.js", "/wp-includes/js/jquery/jquery.js"].each do |filename|
         events = ApacheAccess.tagged_with("wordpress").url(filename).where(:result => 200).get
         assert events.exists?
