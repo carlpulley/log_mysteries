@@ -94,9 +94,9 @@
 
 <h3><a name="triage">Initial Data Processing and Triage</a></h3>
 
-<p>Our <%= link_to "santized_log.zip", "http://honeynet.org/challenges/2010_5_log_mysteries" %> archive is <%= github_link "lib/tasks/sanitized_log.rake", "downloaded" %> and its type and SHA1 hash sum is <%= github_link "test/unit/santitized_log_test.rb", "verified" %>. This zip archive is found to contain the following information within its index:
+<p>Our <%= link_to "sanitized_log.zip", "http://honeynet.org/challenges/2010_5_log_mysteries" %> archive is <%= github_link "lib/tasks/sanitized_log.rake", "downloaded" %> and its type and SHA1 hash sum is <%= github_link "test/unit/santitized_log_test.rb", "verified" %>. This zip archive is found to contain the following information within its index:
 <pre>
-  <%= SanitizedLog.all %>
+<%= SanitizedLog.all.map { |d| d.to_s }.join("\n") %>
 </pre>
 </p>
 
@@ -105,23 +105,32 @@
 <p>Finally, we extract and process auth.log (<%= github_link "lib/tasks/auth.rake", "extraction" %>; <%= github_link "test/unit/auth_test.rb", "verification" %>) followed by a refactoring (<%= github_link "lib/tasks/sudo.rake", "extraction" %>; <%= github_link "test/unit/sudo_test.rb", "verification" %>) of the Auth model into the Sudo model.</p>
 
 <p>Using the logged remote IP address field for each logged event allows us to build up the following network diagram (node colour encodes frequency of requests via a heat scale):
-	<script type="text/javascript+protovis">
-		var data = < %=raw data.to_json %>;
+	<%
+		def walk_ip_addresses(data, level = 32)
+			if level > 0
+				walk_ip_addresses(data.map { |d| d.split(".").inject(0) { |n, b| 256*n + b.to_i } % (2**level) }.uniq, level+1)
+			else
+				
+			end
+		end
+	%>
+<script type="text/javascript+protovis">
+	var data = <%=raw walk_ip_addresses((ApacheAccess.select(:remote).all.map { |d| d.remote } + ApacheError.select(:client).all.map { |d| d.client }).uniq).to_json %>;
 
-		<%= render :partial => 'graph/dendrogram.js' %>
-		
-		// TODO: add in interaction code to allow IP address filtering
-		
-		vis.render();
-	</script>
-	TODO: add in graph-based conclusions
+	<%= render :partial => '/graph/dendrogram.js' %>
+	
+	// TODO: add in interaction code to allow IP address filtering
+	
+	vis.render();
+</script>
+TODO: add in graph-based conclusions
 </p>
 
 <p>The following map shows the geographical distribution for our Apache server's visitors (node colour encodes frequency of requests via a heat scale):
 	<script type="text/javascript+protovis">
 		var data = < %=raw data.to_json %>;
 
-		< %= render :partial => 'graph/globe.js' %>
+		< %= render :partial => '/graph/globe.js' %>
 		
 		// TODO: add in interaction code to allow IP address filtering
 
@@ -210,7 +219,7 @@ TODO: say something about timestamps and log event ordering
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
 
-	<%= render :partial => 'graph/timeline.js' %>
+	<%= render :partial => '/graph/timeline.js' %>
 
 	vis.render();
 </script>

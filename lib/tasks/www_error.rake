@@ -1,6 +1,6 @@
 namespace :process do
   task :www_error => :environment do
-    archive = "evidence/sanitized_log/auth.log"
+    archive = "evidence/sanitized_log/apache2/www-error.log"
     
     puts `unzip evidence/sanitized_log.zip #{archive}` unless FileTest.file?(archive)
     

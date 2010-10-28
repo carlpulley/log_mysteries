@@ -19,7 +19,7 @@ end
 	<script type="text/javascript+protovis">	
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'graph/treemap.js' %>
+		<%= render :partial => '/graph/treemap.js' %>
 	
 		vis.render();
 	</script>
@@ -34,7 +34,7 @@ end
 				]
 			};
 		
-		<%= render :partial => 'graph/matrix.js' %>
+		<%= render :partial => '/graph/matrix.js' %>
 		
 		layout.directed(true);
 	
@@ -45,7 +45,7 @@ end
 		var root = "$WEB_ROOT";
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'graph/dendrogram.js' %>
+		<%= render :partial => '/graph/dendrogram.js' %>
 		
 		vis.left(80)
 		   .width(650)
@@ -58,7 +58,7 @@ end
 		var root = "$WEB_ROOT";
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'graph/sunburst.js' %>
+		<%= render :partial => '/graph/sunburst.js' %>
 	
 		vis.render();
 	</script>
@@ -67,7 +67,7 @@ end
 		var root = "$WEB_ROOT";
 		var data = { <%= walk_tree(root) %> };
 		
-		<%= render :partial => 'graph/circle_packing.js' %>
+		<%= render :partial => '/graph/circle_packing.js' %>
 	
 		vis.render();
 	</script>

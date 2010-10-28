@@ -13,7 +13,7 @@
 <script type="text/javascript+protovis">	
 	var data = <%=raw data.to_json %>;
 	
-	<%= render :partial => 'graph/area.js' %>
+	<%= render :partial => '/graph/area.js' %>
 	
 	ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 
@@ -83,7 +83,7 @@
 <script type="text/javascript+protovis">	
 	var data = <%=raw data.to_json %>;
 	
-	<%= render :partial => 'graph/area.js' %>
+	<%= render :partial => '/graph/area.js' %>
 
 	vis.add(pv.Rule)
 		.bottom(y(<%= upper_time_bound*(10**6) %>))

@@ -30,7 +30,7 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw @log_events.all.map { |d| { :y => d.pid, :x => d.observed_at.to_i, :z => d.observed_at.to_i } }.to_json %>;
 	
-	<%= render :partial => 'graph/scatter.js' %>
+	<%= render :partial => '/graph/scatter.js' %>
 	
 	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 	dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
@@ -43,7 +43,7 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw @log_events.all.map { |d| { :y => d.pid, :z => d.observed_at.to_i, :x => (d.thread_index || 0) } }.to_json %>;
 	
-	<%= render :partial => 'graph/scatter.js' %>
+	<%= render :partial => '/graph/scatter.js' %>
 
 	dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
 	
@@ -55,7 +55,7 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw @log_events.all.map { |d| { :y => d.counter, :z => d.observed_at.to_i, :x => d.pid } }.to_json %>;
 	
-	<%= render :partial => 'graph/scatter.js' %>
+	<%= render :partial => '/graph/scatter.js' %>
 
 	dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
 	
@@ -73,7 +73,7 @@
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
 
-	<%= render :partial => 'graph/timeline.js' %>
+	<%= render :partial => '/graph/timeline.js' %>
 
 	vis.render();
 </script>

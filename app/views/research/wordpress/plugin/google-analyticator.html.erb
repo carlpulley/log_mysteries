@@ -24,7 +24,7 @@ have sizes consistent with the downloaded plugin - unit testing further confirms
 	var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
 	var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
 	
-	<%= render :partial => 'graph/bar.js' %>
+	<%= render :partial => '/graph/bar.js' %>
 
 	vis.render();
 </script>
