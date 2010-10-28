@@ -10,7 +10,38 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101025103015) do
+ActiveRecord::Schema.define(:version => 20101028103307) do
+
+  create_table "apache_accesses", :force => true do |t|
+    t.string   "remote"
+    t.string   "host"
+    t.string   "user"
+    t.text     "http"
+    t.integer  "result"
+    t.integer  "bytes"
+    t.string   "referer"
+    t.string   "user_agent"
+    t.string   "unknown"
+    t.integer  "processing_time"
+    t.datetime "observed_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "name"
+    t.integer  "file_object_id"
+    t.integer  "parent_id"
+    t.integer  "lft"
+    t.integer  "rgt"
+    t.integer  "depth"
+  end
+
+  create_table "apache_errors", :force => true do |t|
+    t.datetime "observed_at"
+    t.string   "level"
+    t.string   "client"
+    t.string   "message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "archive_contents", :force => true do |t|
     t.string   "type"
@@ -43,28 +74,6 @@ ActiveRecord::Schema.define(:version => 20101025103015) do
     t.integer  "depth"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "log_events", :force => true do |t|
-    t.string   "remote"
-    t.string   "host"
-    t.string   "user"
-    t.text     "http"
-    t.integer  "result"
-    t.integer  "bytes"
-    t.string   "referer"
-    t.string   "user_agent"
-    t.string   "unknown"
-    t.integer  "processing_time"
-    t.datetime "observed_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "name"
-    t.integer  "file_object_id"
-    t.integer  "parent_id"
-    t.integer  "lft"
-    t.integer  "rgt"
-    t.integer  "depth"
   end
 
   create_table "taggings", :force => true do |t|

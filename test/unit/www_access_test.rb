@@ -15,7 +15,7 @@ class SanitizedLogTest < ActiveSupport::TestCase
     end
     
     should "have the correct file type" do
-      assert_match "ASCII text", `/usr/bin/file #{@www_access}`
+      assert_match "ASCII text", `file #{@www_access}`
     end
   end
 end

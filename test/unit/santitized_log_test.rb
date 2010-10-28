@@ -15,7 +15,7 @@ class SanitizedLogTest < ActiveSupport::TestCase
     end
     
     should "have the correct file type" do
-      assert_match "Zip archive data", `/usr/bin/file #{@sanitized_log}`
+      assert_match "Zip archive data", `file #{@sanitized_log}`
     end
   end
 end

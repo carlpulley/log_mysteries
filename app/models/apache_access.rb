@@ -1,4 +1,4 @@
-class LogEvent < ActiveRecord::Base
+class ApacheAccess < ActiveRecord::Base
   serialize :http, Hash
   
   acts_as_taggable_on :tags

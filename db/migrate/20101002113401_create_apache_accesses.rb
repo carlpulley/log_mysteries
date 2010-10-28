@@ -1,6 +1,6 @@
-class CreateLogEvents < ActiveRecord::Migration
+class CreateApacheAccesses < ActiveRecord::Migration
   def self.up
-    create_table :log_events do |t|
+    create_table :apache_accesses do |t|
       t.string :remote
       t.string :host
       t.string :user
@@ -18,6 +18,6 @@ class CreateLogEvents < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :log_events
+    drop_table :apache_accesses
   end
 end

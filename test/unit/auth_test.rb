@@ -15,7 +15,7 @@ class AuthTest < ActiveSupport::TestCase
     end
     
     should "have the correct file type" do
-      assert_match "ASCII text", `/usr/bin/file #{@auth}`
+      assert_match "ASCII text", `file #{@auth}`
     end
   end
 end
