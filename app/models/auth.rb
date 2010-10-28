@@ -9,4 +9,12 @@ class Auth < ActiveRecord::Base
       { :observed_at => DateTime.strptime("2010 #{$1} -0700", "%Y %b %d %H:%M:%S %z"),  :host => $2, :process => $3, :pid => $5, :message => $6 }
     end
   end
+  
+  def to_s
+    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%b %e %H:%M:%S")} #{host} #{process}#{"[#{pid}]" unless pid.nil?}: #{message_to_s}"
+  end
+  
+  def message_to_s
+    message
+  end
 end

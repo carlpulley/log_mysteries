@@ -100,12 +100,12 @@
 </pre>
 </p>
 
-<p>We now extract and process www-access.log (<%= github_link "lib/tasks/www_access.rake", "extraction" %>; <%= github_link "test/unit/www_access_test.rb", "verification" %>), www-media.log (<%= github_link "lib/tasks/www_media.rake", "extraction" %>; <%= github_link "test/unit/www_media_test.rb", "verification" %>) and www-error.log (<%= github_link "lib/tasks/www_error.rake", "extraction" %>; <%= github_link "test/unit/www_error_test.rb", "verification" %>) from sanitized_log.zip.</p>
+<p>We now extract, process and check the consistency of www-access.log (<%= github_link "lib/tasks/www_access.rake", "extraction" %>; <%= github_link "test/unit/www_access_test.rb", "verification" %>; <%= github_link "test/unit/apache2/access_log_contents_test.rb", "consistency" %>), www-media.log (<%= github_link "lib/tasks/www_media.rake", "extraction" %>; <%= github_link "test/unit/www_media_test.rb", "verification" %>; <%= github_link "test/unit/apache2/access_log_contents_test.rb", "consistency" %>) and www-error.log (<%= github_link "lib/tasks/www_error.rake", "extraction" %>; <%= github_link "test/unit/www_error_test.rb", "verification" %>; <%= github_link "test/unit/apache2/error_log_contents_test.rb", "consistency" %>) from sanitized_log.zip.</p>
 
-<p>Finally, we extract and process auth.log (<%= github_link "lib/tasks/auth.rake", "extraction" %>; <%= github_link "test/unit/auth_test.rb", "verification" %>) followed by a refactoring (<%= github_link "lib/tasks/sudo.rake", "extraction" %>; <%= github_link "test/unit/sudo_test.rb", "verification" %>) of the Auth model into the Sudo model.</p>
+<p>Next, we extract, process and check the consistency of auth.log (<%= github_link "lib/tasks/auth.rake", "extraction" %>; <%= github_link "test/unit/auth_test.rb", "verification" %>; <%= github_link "test/unit/auth/auth_log_contents_test.rb", "consistency" %>) followed by a refactoring (<%= github_link "lib/tasks/sudo.rake", "extraction" %>; <%= github_link "test/unit/sudo_test.rb", "verification" %>) of the Auth model into the Sudo model.</p>
 
 <p>Using the logged remote IP address field for each logged event allows us to build up the following network diagram (node colour encodes frequency of requests via a heat scale):
-<%
+< %
 	def walk_ip_addresses(data, level = 32)
 		if level > 0
 			walk_ip_addresses(data.map { |d| d.split(".").inject(0) { |n, b| 256*n + b.to_i } % (2**level) }.uniq, level+1)
@@ -115,7 +115,7 @@
 	end
 %>
 <script type="text/javascript+protovis">
-	var data = <%=raw walk_ip_addresses((ApacheAccess.select(:remote).all.map { |d| d.remote } + ApacheError.select(:client).all.map { |d| d.client }).uniq).to_json %>;
+	var data = < %=raw walk_ip_addresses((ApacheAccess.select(:remote).all.map { |d| d.remote } + ApacheError.select(:client).all.map { |d| d.client }).uniq).to_json %>;
 
 	<%= render :partial => '/graph/dendrogram.js' %>
 	
