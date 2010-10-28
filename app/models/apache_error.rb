@@ -6,4 +6,8 @@ class ApacheError < ActiveRecord::Base
       { :level => $2, :client => $3, :message => $4, :observed_at => DateTime.strptime("#{$1} -0700", "%a %b %d %H:%M:%S %Y %Z") }
     end
   end
+  
+  def to_s
+    "[#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%a %b %d %H:%M:%S %Y")}] [#{level}] [client #{client}] #{message}"    
+  end
 end
