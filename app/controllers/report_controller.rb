@@ -1,5 +1,6 @@
 class ReportController < ApplicationController
   def index
+    @geoip = GeoIP.new('db/GeoLiteCity.dat')
     @log_events = ApacheAccess.scoped
     # FIXME: can't matches and anomalies be implemented using scoped tagging?
     @anomalies = {}

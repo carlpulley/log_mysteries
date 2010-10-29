@@ -1,0 +1,65 @@
+// INPUT:
+//    fill = pv.Scale
+//    data = { <country code>: <integer>,.. }
+
+/* Convert the country borders to latlng. */
+countries.forEach(function(c) {
+  c.borders.forEach(function(b) {
+    b.forEach(function(p, i) {
+      b[i] = {lat: p[1], lng: p[0]};
+    });
+  });
+});
+
+/* Precompute the country's population density and color. */
+countries.forEach(function(c) {
+  c.color = data[c.code] ? fill(data[c.code]) : "#ccc";
+});
+
+var w = 860,
+    h = 3 / 5 * w,
+    geo = pv.Geo.scale("none").range(w, h);
+
+var vis = new pv.Panel()
+    .width(w)
+    .height(h);
+
+/* Countries. */
+var countryline = vis.add(pv.Panel)
+    .data(countries)
+  .add(pv.Panel)
+    .data(function(c) c.borders)
+  .add(pv.Line)
+    .data(function(b) b)
+    .left(geo.x)
+    .top(geo.y)
+    .title(function(d, b, c) c.name)
+    .fillStyle(function(d, b, c) c.color)
+    .strokeStyle(function() this.fillStyle().darker())
+    .lineWidth(1)
+    .antialias(false);
+
+/* Latitude ticks. */
+vis.add(pv.Panel)
+    .data(geo.ticks.lat())
+  .add(pv.Line)
+    .data(function(b) b)
+    .left(geo.x)
+    .top(geo.y)
+    .strokeStyle("rgba(128,128,128,.3)")
+    .lineWidth(1)
+    .interpolate("cardinal")
+    .antialias(false);
+
+/* Longitude ticks. */
+vis.add(pv.Panel)
+    .data(geo.ticks.lng())
+  .add(pv.Line)
+    .data(function(b) b)
+    .left(geo.x)
+    .top(geo.y)
+    .strokeStyle("rgba(128,128,128,.3)")
+    .lineWidth(1)
+    .interpolate("cardinal")
+    .antialias(false);
+    

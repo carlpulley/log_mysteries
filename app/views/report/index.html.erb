@@ -104,38 +104,68 @@
 
 <p>Next, we <%= github_link "lib/tasks/auth.rake", "extract" %>, <%= github_link "test/unit/auth_test.rb", "verify" %> and check the <%= github_link "test/unit/auth/auth_log_contents_test.rb", "consistency" %> of auth.log followed by a  <%= github_link "lib/tasks/sudo.rake", "refactoring" %> (<%= github_link "test/unit/sudo_test.rb", "verification" %>) of the Auth model into the Sudo model.</p>
 
-<p>Using the logged remote IP address field for each logged event allows us to build up the following network diagram (node colour encodes frequency of requests via a heat scale):
-< %
-	def walk_ip_addresses(data, level = 32)
-		if level > 0
-			walk_ip_addresses(data.map { |d| d.split(".").inject(0) { |n, b| 256*n + b.to_i } % (2**level) }.uniq, level+1)
-		else
-			
-		end
+<p>Using the logged remote IP address field for each Apache logged event allows us to build up the following network diagram (node colour encodes frequency of requests via a logarithmic heat scale):
+<%
+	def largest_common_prefix(data)
+		data.inject { |m, s| s[0,(0..m.length).find { |i| m[i] != s[i] }.to_i] }
 	end
+	
+	def prefix_ordered_tree(alphabet, data)
+		result = {}
+		lcp = largest_common_prefix(data.keys)
+		return data[lcp] if data.keys.member? lcp
+		result[lcp] = alphabet.map { |letter| prefix_ordered_tree(alphabet, data.select { |k, v| k =~ /^#{lcp}#{letter}/ }) }.inject({}) { |r, h| r.merge(h) }
+		result
+	end
+	
+	request_counts = ApacheAccess.group(:remote).count
 %>
 <script type="text/javascript+protovis">
-	var data = < %=raw walk_ip_addresses((ApacheAccess.select(:remote).all.map { |d| d.remote } + ApacheError.select(:client).all.map { |d| d.client }).uniq).to_json %>;
+	var root = "";
+	var data = <%=raw prefix_ordered_tree(["0", "1"], ApacheAccess.select(:remote).all.map { |d| d.remote }.uniq.map { |d| [ d, d.split(".").inject(0) { |n,d| n*256 + d.to_i }.to_s(2) ] }.uniq.inject({}) { |h, d| h["#{'0'*(32-d.last.size)}#{d.last}"] = { d.first => request_counts[d.first] }; h }).to_json %>;
 
 	<%= render :partial => '/graph/dendrogram.js' %>
+
+	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= request_counts.values.min %>, <%= request_counts.values.max %>).range('blue', 'red')(n.nodeValue));
 	
-	// TODO: add in interaction code to allow IP address filtering
+	label.text(function(n) n.firstChild ? "/"+n.nodeName.length : n.nodeName);
 	
 	vis.render();
 </script>
-TODO: add in graph-based conclusions
+</p>
+<p>
+Based on the above subnet groupings, we may now group the following IP addresses into potential networks:
+<ul>
+	<li>10.0.1.2 and 10.0.1.14 (/28 subnet)</li>
+	<li>123.4.42.80, 123.4.51.181, 123.4.59.21, 123.4.59.174 and 123.11.240.130 (/12 subnet)</li>
+	<li>125.45.106.168 and 125.45.106.180 (/27 subnet)</li>
+	<li>203.209.253.30, 203.209.253.31, 203.209.253.33 and 203.209.253.34 (/26 subnet)</li>
+	<li>193.109.122.15, 193.109.122.18, 193.109.122.33, 193.109.122.52, 193.109.122.56 and 193.109.122.57 (/26 subnet)</li>
+	<li>208.80.69.69 and 208.80.69.74 (/28 subnet)</li>
+	<li>221.192.199.35 and 221.194.47.162 (/14 subnet)</li>
+	<li>190.166.87.164 and 190.167.70.87 (/15 subnet)</li>
+</ul>
 </p>
 
-<p>The following map shows the geographical distribution for our Apache server's visitors (node colour encodes frequency of requests via a heat scale):
-	<script type="text/javascript+protovis">
-		var data = < %=raw data.to_json %>;
+<p>The following map (hovering the mouse displays list of originating IP addresses) shows the geographical distribution for our Apache server's visitors (country colour encodes frequency of requests via a logarithmic heat scale):
+</p>
+<% 
+	country_counts = ApacheAccess.group(:remote).count.map { |k, v| [@geoip.city(k)[2], v] unless @geoip.city(k).nil? }.compact.inject({}) { |h, p| h[p.first] = p.last; h }
+	country_ip_addresses = country_counts.keys.map { |c| [c, ApacheAccess.group(:remote).all.select { |d| @geoip.city(d.remote) and @geoip.city(d.remote)[2] == c }.map { |d| d.remote }.join("\n")] }.inject({}) { |h, p| h[p.first] = p.last; h }
+%>
 
-		< %= render :partial => '/graph/globe.js' %>
-		
-		// TODO: add in interaction code to allow IP address filtering
+<script type="text/javascript+protovis">
+	var fill = pv.Scale.log(<%= country_counts.values.min %>, <%= country_counts.values.max %>).range('blue', 'red');
+	var data = <%=raw country_counts.to_json %>;
+	var ip_address = <%=raw country_ip_addresses.to_json %>;
+	
+	<%= render :partial => '/graph/globe.js' %>
+	
+	countryline.title(function(d, b, c) c.name+"\n"+ip_address[c.code]);
 
-		vis.render();
-	</script>
+	vis.render();
+</script>
+<p>
 	TODO: add in graph-based conclusions
 </p>
 
@@ -164,7 +194,7 @@ TODO: add in graph-based conclusions
 <p>An analysis of the unique ID value in each log entry reveals that:
 	<ul>
 		<li>Apache2 is at version 2.2.2 or below</li>
-		<li>within www-media.log we have the anomalous event: <center><code><%= @anomalies[:unknown].map { |d| d.to_s }.join("\n") %></code></center></li>
+		<li>within www-media.log we have the anomalous event: <center><code><%= @anomalies[:unknown].map { |collect| collect.map { |d| d.to_s }.join("\n") }.join("\n") %></code></center></li>
 		<li>the Apache2 process was restarted at the following times: ??</li>
 		<li>between ?? and ?? the web server did not restart</li>
 		<li>the server may have been restarted at ??</li>
