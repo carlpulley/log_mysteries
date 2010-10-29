@@ -1,6 +1,11 @@
 class ReportController < ApplicationController
   def index
     @log_events = ApacheAccess.scoped
+    # FIXME: can't matches and anomalies be implemented using scoped tagging?
+    @anomalies = {}
+    @matches = {}
+    @anomalies[:unknown] = [394].map { |n| ApacheAccess.where(["id in (?)", n]) }
+    
     @filename = ""
         
     if params[:chapter] and params[:section]

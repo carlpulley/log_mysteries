@@ -100,9 +100,9 @@
 </pre>
 </p>
 
-<p>We now extract, process and check the consistency of www-access.log (<%= github_link "lib/tasks/www_access.rake", "extraction" %>; <%= github_link "test/unit/www_access_test.rb", "verification" %>; <%= github_link "test/unit/apache2/access_log_contents_test.rb", "consistency" %>), www-media.log (<%= github_link "lib/tasks/www_media.rake", "extraction" %>; <%= github_link "test/unit/www_media_test.rb", "verification" %>; <%= github_link "test/unit/apache2/access_log_contents_test.rb", "consistency" %>) and www-error.log (<%= github_link "lib/tasks/www_error.rake", "extraction" %>; <%= github_link "test/unit/www_error_test.rb", "verification" %>; <%= github_link "test/unit/apache2/error_log_contents_test.rb", "consistency" %>) from sanitized_log.zip.</p>
+<p>We now extract, verify and check the consistency of www-access.log (<%= github_link "lib/tests/www_access.rake", "extraction" %>; <%= github_link "test/unit/www_access_test.rb", "verification" %>; <%= github_link "test/unit/apache2/access_log_contents_test.rb", "consistency" %>), www-media.log (<%= github_link "lib/tasks/www_media.rake", "extraction" %>; <%= github_link "test/unit/www_media_test.rb", "verification" %>; <%= github_link "test/unit/apache2/access_log_contents_test.rb", "consistency" %>) and www-error.log (<%= github_link "lib/tasks/www_error.rake", "extraction" %>; <%= github_link "test/unit/www_error_test.rb", "verification" %>; <%= github_link "test/unit/apache2/error_log_contents_test.rb", "consistency" %>).</p>
 
-<p>Next, we extract, process and check the consistency of auth.log (<%= github_link "lib/tasks/auth.rake", "extraction" %>; <%= github_link "test/unit/auth_test.rb", "verification" %>; <%= github_link "test/unit/auth/auth_log_contents_test.rb", "consistency" %>) followed by a refactoring (<%= github_link "lib/tasks/sudo.rake", "extraction" %>; <%= github_link "test/unit/sudo_test.rb", "verification" %>) of the Auth model into the Sudo model.</p>
+<p>Next, we <%= github_link "lib/tasks/auth.rake", "extract" %>, <%= github_link "test/unit/auth_test.rb", "verify" %> and check the <%= github_link "test/unit/auth/auth_log_contents_test.rb", "consistency" %> of auth.log followed by a  <%= github_link "lib/tasks/sudo.rake", "refactoring" %> (<%= github_link "test/unit/sudo_test.rb", "verification" %>) of the Auth model into the Sudo model.</p>
 
 <p>Using the logged remote IP address field for each logged event allows us to build up the following network diagram (node colour encodes frequency of requests via a heat scale):
 < %
@@ -164,7 +164,7 @@ TODO: add in graph-based conclusions
 <p>An analysis of the unique ID value in each log entry reveals that:
 	<ul>
 		<li>Apache2 is at version 2.2.2 or below</li>
-		<li>within www-media.log we have the anomalous event: <center><code>201.229.176.217 - - [19/Apr/2010:11:19:21 -0700] "GET /favicon.ico HTTP/1.1" 200 3654 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.0.19) Gecko/2010031422 Firefox/3.0.19" AABohgoAAQ4AAHbXLg8AAAAK 839</code></center></li>
+		<li>within www-media.log we have the anomalous event: <center><code><%= @anomalies[:unknown].map { |d| d.to_s }.join("\n") %></code></center></li>
 		<li>the Apache2 process was restarted at the following times: ??</li>
 		<li>between ?? and ?? the web server did not restart</li>
 		<li>the server may have been restarted at ??</li>

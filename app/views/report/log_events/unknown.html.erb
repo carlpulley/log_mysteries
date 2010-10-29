@@ -35,16 +35,20 @@
 			<ul>
 				<li>From lines 278 and 307 of <%= link_to "mod_unique_id", "http://svn.apache.org/viewvc/httpd/httpd/trunk/modules/metadata/mod_unique_id.c?revision=420983&view=markup" %> we have that request_time is a field of request_rec</li>
 				<li>From line 783 of <%= link_to "httpd.h", "http://svn.apache.org/viewvc/httpd/httpd/trunk/include/httpd.h?revision=420983&view=markup" %> we have that the request_time field of request_rec has type apr_time_t</li>
-				<li>From <%= link_to "", "http://svn.apache.org/viewvc/httpd/httpd/trunk/include/httpd.h?revision=420983&view=markup" %> we have that apr_time_t is type defined to be apr_int64_t</li>
-				<li>From <%= link_to "", "" %> we have that apr_int64_t is an 8 byte integer representing time from epoch in mico-seconds</li>
+				<li>From <%= link_to "httpd.h??", "http://svn.apache.org/viewvc/httpd/httpd/trunk/include/httpd.h?revision=420983&view=markup" %> we have that apr_time_t is type defined to be apr_int64_t</li>
+				<li>From <%= link_to "??", "" %> we have that apr_int64_t is an 8 byte integer representing time from epoch in mico-seconds</li>
 				<li>From line 307 of <%= link_to "mod_unique_id", "http://svn.apache.org/viewvc/httpd/httpd/trunk/modules/metadata/mod_unique_id.c?revision=420983&view=markup" %> we have a type cast of (effectively) an unsigned long int (ie. 8 bytes) into an unsigned int - this means that we only copy the bottom 4 bytes of the 8 byte value</li>
 			</ul>
 		</li>
 	</ul>
 	From the above, we see that when comparing our timestamp value (translated to seconds!) against our observed log event timestamp, we can only compare the bottom 4 bytes of the two values.
 </p>
-<p> That our timestamp correlates correctly with our observed log event timestamps has been confirmed using unit tests. The only log event that fails to match our expectations is the following log event taken from www-media.log:
+<p> That our timestamp correlates correctly with our observed log event timestamps has been confirmed using unit <%= github_link "test/unit/apache2/unknown_test.rb", "tests" %>. The only log events that fail to match our <%= github_link "test/unit/apache2/unknown_test.rb", "expectations" %> are the following log events:
 <pre>
-  201.229.176.217 - - [19/Apr/2010:11:19:21 -0700] "GET /favicon.ico HTTP/1.1" 200 3654 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.0.19) Gecko/2010031422 Firefox/3.0.19" AABohgoAAQ4AAHbXLg8AAAAK 839
+<% @anomalies[:unknown].each do |collect| %>
+  <% collect.all.each do |event| %>
+  <%= event.to_s %>
+  <% end %>
+<% end %>
 </pre>
 </p>

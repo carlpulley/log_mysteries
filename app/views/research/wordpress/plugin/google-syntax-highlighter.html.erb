@@ -8,10 +8,9 @@
 
 <p>Those URLs that are tagged with google-syntax-highlighter and that do not appear within version 1.5.1 of the downloaded <%= link_to "Google Syntax Highlighter", "http://wordpress.org/extend/plugins/google-syntax-highlighter/" %> plugin are as follows:
 	<ul>
-		<% ApacheAccess.tagged_with("google-syntax-highlighter").all.map { |d| d.http[:uri] }.uniq.each do |url| %>
-			<% expected_filename = $1 if url =~ /^\/wp\-content\/plugins\/(google\-syntax\-highlighter\/.*?)(\?.*)?$/ %>
-			<% unless GoogleSyntaxHighlighter.where(:name => expected_filename).exists? %>
-				<li><i><%= url %></i></li>
+		<% @anomalies[:google_syntax_highlighter].each do |collect| %>
+			<% collect.group(:http).all.each do |event| %>
+			<li><i><%= event.http[:uri] %></i></li>
 			<% end %>
 		<% end %>
 	</ul>
@@ -20,8 +19,10 @@
 
 <p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
 	<ul>
-		<% ["google-syntax-highlighter/Styles/SyntaxHighlighter.css", "google-syntax-highlighter/Scripts/shBrushPhp.js", "google-syntax-highlighter/Scripts/shBrushCSharp.js", "google-syntax-highlighter/Scripts/shBrushJScript.js", "google-syntax-highlighter/Scripts/shBrushSql.js", "google-syntax-highlighter/Scripts/shBrushJava.js", "google-syntax-highlighter/Scripts/shCore.js", "google-syntax-highlighter/Scripts/shBrushXml.js", "google-syntax-highlighter/Scripts/shBrushVb.js", "google-syntax-highlighter/Scripts/shBrushPython.js", "google-syntax-highlighter/Scripts/shBrushRuby.js", "google-syntax-highlighter/Scripts/shBrushCpp.js", "google-syntax-highlighter/Scripts/shBrushDelphi.js", "google-syntax-highlighter/Scripts/shBrushCss.js"].each do |filename| %>
-			<li><i>/wp-content/plugins/<%= filename %></i></li>
+		<% @matches[:google_syntax_highlighter].each do |collect| %>
+			<% collect.group(:http).all.each do |event| %>
+			<li><i><%= event.http[:uri] %></i></li>
+			<% end %>
 		<% end %>
 	</ul>
 have sizes consistent with the downloaded plugin - unit <%= github_link "test/unit/wordpress/plugin/google_syntax_highlighter_test.rb", "testing" %> further confirms this assertion.</p>

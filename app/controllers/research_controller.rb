@@ -1,6 +1,13 @@
 class ResearchController < ApplicationController
   def index
     @log_events = ApacheAccess.scoped
+    @anomalies = {}
+    @matches = {}
+    @matches[:contact_form_7] = ["contact-form-7/styles.css", "contact-form-7/scripts.js"].map { |filename| ApacheAccess.tagged_with("contact-form-7").url("/wp-content/plugins/#{filename}") }
+    @matches[:google_analyticator] = ["google-analyticator/external-tracking.min.js"].map { |filename| ApacheAccess.tagged_with("google-analyticator").url("/wp-content/plugins/#{filename}") }
+    @matches[:google_syntax_highlighter] = ["google-syntax-highlighter/Styles/SyntaxHighlighter.css", "google-syntax-highlighter/Scripts/shBrushPhp.js", "google-syntax-highlighter/Scripts/shBrushCSharp.js", "google-syntax-highlighter/Scripts/shBrushJScript.js", "google-syntax-highlighter/Scripts/shBrushSql.js", "google-syntax-highlighter/Scripts/shBrushJava.js", "google-syntax-highlighter/Scripts/shCore.js", "google-syntax-highlighter/Scripts/shBrushXml.js", "google-syntax-highlighter/Scripts/shBrushVb.js", "google-syntax-highlighter/Scripts/shBrushPython.js", "google-syntax-highlighter/Scripts/shBrushRuby.js", "google-syntax-highlighter/Scripts/shBrushCpp.js", "google-syntax-highlighter/Scripts/shBrushDelphi.js", "google-syntax-highlighter/Scripts/shBrushCss.js"].map { |filename| ApacheAccess.tagged_with("google-syntax-highlighter").url("/wp-content/plugins/#{filename}") }
+    @anomalies[:google_syntax_highlighter] = ["shBrushBash.js"].map { |filename| ApacheAccess.url("/wp-content/plugins/google-syntax-highlighter/Scripts/#{filename}") }
+    
     @filename = ""
         
     if params[:chapter] and params[:section]
