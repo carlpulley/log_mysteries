@@ -24,3 +24,6 @@ gem 'acts-as-taggable-on'
 
 # Following gem allows hierarchical data to be defined
 gem 'nested_set'
+
+# Following gem allows for geographical based queries using MaxMind's GeoIP Lite City database
+gem 'geoip'
