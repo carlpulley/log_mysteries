@@ -12,6 +12,7 @@
 </li>
 <li>Research
 <ul>
+	<li><%= link_to "IP Addresses", "/research/ip_address" %></li>
 	<li><%= link_to "Wordpress", "/research/by?tagged=wordpress" %>
 		<ul>
 			<li><%= link_to "Blog", "/research/wordpress/core" %>
@@ -104,69 +105,87 @@
 
 <p>Next, we <%= github_link "lib/tasks/auth.rake", "extract" %>, <%= github_link "test/unit/auth_test.rb", "verify" %> and check the <%= github_link "test/unit/auth/auth_log_contents_test.rb", "consistency" %> of auth.log followed by a  <%= github_link "lib/tasks/sudo.rake", "refactoring" %> (<%= github_link "test/unit/sudo_test.rb", "verification" %>) of the Auth model into the Sudo model.</p>
 
-<p>Using the logged remote IP address field for each Apache logged event allows us to build up the following network diagram (node colour encodes frequency of requests via a logarithmic heat scale):
-<%
-	def largest_common_prefix(data)
-		data.inject { |m, s| s[0,(0..m.length).find { |i| m[i] != s[i] }.to_i] }
-	end
-	
-	def prefix_ordered_tree(alphabet, data)
-		result = {}
-		lcp = largest_common_prefix(data.keys)
-		return data[lcp] if data.keys.member? lcp
-		result[lcp] = alphabet.map { |letter| prefix_ordered_tree(alphabet, data.select { |k, v| k =~ /^#{lcp}#{letter}/ }) }.inject({}) { |r, h| r.merge(h) }
-		result
-	end
-	
-	request_counts = ApacheAccess.group(:remote).count
-%>
-<script type="text/javascript+protovis">
-	var root = "";
-	var data = <%=raw prefix_ordered_tree(["0", "1"], ApacheAccess.select(:remote).all.map { |d| d.remote }.uniq.map { |d| [ d, d.split(".").inject(0) { |n,d| n*256 + d.to_i }.to_s(2) ] }.uniq.inject({}) { |h, d| h["#{'0'*(32-d.last.size)}#{d.last}"] = { d.first => request_counts[d.first] }; h }).to_json %>;
-
-	<%= render :partial => '/graph/dendrogram.js' %>
-
-	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= request_counts.values.min %>, <%= request_counts.values.max %>).range('blue', 'red')(n.nodeValue));
-	
-	label.text(function(n) n.firstChild ? "/"+n.nodeName.length : n.nodeName);
-	
-	vis.render();
-</script>
-</p>
-<p>
-Based on the above subnet groupings, we may now group the following IP addresses into potential networks:
+<p>By <%= link_to "analysing", "/research/ip_address" %> the Apache log remote IP addresses, we may now group IP addresses to form the following potential networks (based on country code, ASN and subnet):
 <ul>
 	<li>10.0.1.2 and 10.0.1.14 (/28 subnet)</li>
-	<li>123.4.42.80, 123.4.51.181, 123.4.59.21, 123.4.59.174 and 123.11.240.130 (/12 subnet)</li>
-	<li>125.45.106.168 and 125.45.106.180 (/27 subnet)</li>
-	<li>203.209.253.30, 203.209.253.31, 203.209.253.33 and 203.209.253.34 (/26 subnet)</li>
-	<li>193.109.122.15, 193.109.122.18, 193.109.122.33, 193.109.122.52, 193.109.122.56 and 193.109.122.57 (/26 subnet)</li>
-	<li>208.80.69.69 and 208.80.69.74 (/28 subnet)</li>
-	<li>221.192.199.35 and 221.194.47.162 (/14 subnet)</li>
-	<li>190.166.87.164 and 190.167.70.87 (/15 subnet)</li>
+	<li>China
+		<ul>
+			<li>ASN = 4837
+				<ul>
+					<li>123.4.42.80, 123.4.51.181, 123.4.59.21, 123.4.59.174 and 123.11.240.130 (/12 subnet)</li>
+					<li>125.45.106.168 and 125.45.106.180 (/27 subnet)</li>
+					<li>221.192.199.35 and 221.194.47.162 (/14 subnet)</li>
+				</ul>
+			</li>
+			<li>ASN = 24376
+				<ul>
+					<li>203.209.253.30, 203.209.253.31, 203.209.253.33 and 203.209.253.34 (/26 subnet)</li>
+				</ul>
+			</li>
+			<li>ASN = 4134
+				<ul>
+					<li>61.183.15.9</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li>Dominion Republic
+		<ul>
+			<li>ASN = 6400
+				<ul>
+					<li>190.166.87.164 and 190.167.70.87 (/15 subnet)</li>
+					<li>201.229.176.217</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li>Korea
+		<ul>
+			<li>ASN = 23576
+				<ul>
+					<li>114.111.36.26</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li>Netherlands
+		<ul>
+			<li>ASN = 12859
+				<ul>
+					<li>193.109.122.15, 193.109.122.18, 193.109.122.33, 193.109.122.52, 193.109.122.56 and 193.109.122.57 (/26 subnet)</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li>Norway
+		<ul>
+			<li>ASN = 44381
+				<ul>
+					<li>92.62.43.77</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li>United States
+		<ul>
+			<li>ASN = 19165
+				<ul>
+					<li>208.80.69.69 and 208.80.69.74 (/28 subnet)</li>
+				</ul>
+			</li>
+			<li>ASN = 3356
+				<ul>
+					<li>65.88.2.5</li>
+				</ul>
+			</li>
+			<li>ASN = 7065
+				<ul>
+					<li>76.191.195.140</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
 </ul>
-</p>
-
-<p>The following map (hovering the mouse displays list of originating IP addresses) shows the geographical distribution for our Apache server's visitors (country colour encodes frequency of requests via a logarithmic heat scale):
-</p>
-<% 
-	country_counts = ApacheAccess.group(:remote).count.map { |k, v| [@geoip.city(k)[2], v] unless @geoip.city(k).nil? }.compact.inject({}) { |h, p| h[p.first] = p.last; h }
-	country_ip_addresses = country_counts.keys.map { |c| [c, ApacheAccess.group(:remote).all.select { |d| @geoip.city(d.remote) and @geoip.city(d.remote)[2] == c }.map { |d| d.remote }.join("\n")] }.inject({}) { |h, p| h[p.first] = p.last; h }
-%>
-
-<script type="text/javascript+protovis">
-	var fill = pv.Scale.log(<%= country_counts.values.min %>, <%= country_counts.values.max %>).range('blue', 'red');
-	var data = <%=raw country_counts.to_json %>;
-	var ip_address = <%=raw country_ip_addresses.to_json %>;
-	
-	<%= render :partial => '/graph/globe.js' %>
-	
-	countryline.title(function(d, b, c) c.name+"\n"+ip_address[c.code]);
-
-	vis.render();
-</script>
-<p>
-	TODO: add in graph-based conclusions
 </p>
 
 <p>Given that IP address <%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2" %> accounts for ??% of the logged traffic, we analyse the log events associated with this IP address first. TODO: plot ip_address/user_agent vs number of events (pie chart?)</p>
@@ -200,8 +219,6 @@ Based on the above subnet groupings, we may now group the following IP addresses
 		<li>the server may have been restarted at ??</li>
 	</ul>
 </p>
-
-TODO: say something about timestamps and log event ordering
 
 <h2><a name="timeline">Timeline</a></h2>
 

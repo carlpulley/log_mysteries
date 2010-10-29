@@ -1,0 +1,162 @@
+<h1>Apache Request IP Address Analysis</h1>
+
+<p>Using the logged remote IP address field for each Apache logged event allows us to build up the following network diagram (node colour encodes frequency of requests via a logarithmic heat scale):
+<%
+	def largest_common_prefix(data)
+		data.inject { |m, s| s[0,(0..m.length).find { |i| m[i] != s[i] }.to_i] }
+	end
+	
+	def prefix_ordered_tree(alphabet, data)
+		result = {}
+		lcp = largest_common_prefix(data.keys)
+		return data[lcp] if data.keys.member? lcp
+		result[lcp] = alphabet.map { |letter| prefix_ordered_tree(alphabet, data.select { |k, v| k =~ /^#{lcp}#{letter}/ }) }.inject({}) { |r, h| r.merge(h) }
+		result
+	end
+	
+	request_counts = ApacheAccess.group(:remote).count
+%>
+<script type="text/javascript+protovis">
+	var root = "";
+	var data = <%=raw prefix_ordered_tree(["0", "1"], ApacheAccess.select(:remote).all.map { |d| d.remote }.uniq.map { |d| [ d, d.split(".").inject(0) { |n,d| n*256 + d.to_i }.to_s(2) ] }.uniq.inject({}) { |h, d| h["#{'0'*(32-d.last.size)}#{d.last}"] = { d.first => request_counts[d.first] }; h }).to_json %>;
+
+	<%= render :partial => '/graph/dendrogram.js' %>
+
+	vis.height(400).width(1000).bottom(100).top(20);
+
+	layout.orient("top");
+
+	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= request_counts.values.min %>, <%= request_counts.values.max %>).range('blue', 'red')(n.nodeValue));
+	
+	label.text(function(n) n.firstChild ? "/"+n.nodeName.length : n.nodeName);
+	
+	vis.render();
+</script>
+</p>
+
+<p>
+	Further grouping the above data using ASN numbers (here we have used Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %>) provides us with:
+</p>
+<script type="text/javascript+protovis">
+	var root = "";
+	var data = <%=raw ApacheAccess.group(:remote).count.map { |k, v| ["ASN: #{(asn_lookup(k) || { :asn => "undefined" })[:asn]}", k, v] }.inject({}) { |h, d| h[d.first] ||= {}; h[d.first][d[1]] = d[2]; h }.to_json %>;
+
+	<%= render :partial => '/graph/dendrogram.js' %>
+
+	vis.height(200).width(1000).bottom(100).top(20);
+
+	layout.orient("top");
+
+	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= request_counts.values.min %>, <%= request_counts.values.max %>).range('blue', 'red')(n.nodeValue));
+	
+	vis.render();
+</script>
+
+<p>The following map (hovering the mouse displays country name and a list of originating IP addresses) shows the geographical distribution for our Apache server's visitors (country colour encodes frequency of requests via a logarithmic heat scale):
+</p>
+<% 
+	country_counts = ApacheAccess.group(:remote).count.map { |k, v| [@geoip.city(k)[2], v] unless @geoip.city(k).nil? }.compact.inject({}) { |h, p| h[p.first] = p.last; h }
+	country_ip_addresses = country_counts.keys.map { |c| [c, ApacheAccess.group(:remote).all.select { |d| @geoip.city(d.remote) and @geoip.city(d.remote)[2] == c }.map { |d| d.remote }.join("\n")] }.inject({}) { |h, p| h[p.first] = p.last; h }
+%>
+
+<script type="text/javascript+protovis">
+	var fill = pv.Scale.log(<%= country_counts.values.min %>, <%= country_counts.values.max %>).range('blue', 'red');
+	var data = <%=raw country_counts.to_json %>;
+	var ip_address = <%=raw country_ip_addresses.to_json %>;
+	
+	<%= render :partial => '/graph/globe.js' %>
+	
+	countryline.title(function(d, b, c) c.name+"\n"+ip_address[c.code]);
+
+	vis.render();
+</script>
+
+<p>
+<b>Note:</b> for experimental reasons, we have used Maxmind's <%= link_to "GeoLiteCity database", "http://www.maxmind.com/app/geolitecity" %> here rather than pull the country code from Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %>.
+</p>
+
+<h3>Conclusions</h3>
+
+<p>
+	Using our subnet data, ASN data and geographical country data, we may now group IP addresses to form the following potential networks:
+	<ul>
+		<li>10.0.1.2 and 10.0.1.14 (/28 subnet)</li>
+		<li>China
+			<ul>
+				<li>ASN = 4837
+					<ul>
+						<li>123.4.42.80, 123.4.51.181, 123.4.59.21, 123.4.59.174 and 123.11.240.130 (/12 subnet)</li>
+						<li>125.45.106.168 and 125.45.106.180 (/27 subnet)</li>
+						<li>221.192.199.35 and 221.194.47.162 (/14 subnet)</li>
+					</ul>
+				</li>
+				<li>ASN = 24376
+					<ul>
+						<li>203.209.253.30, 203.209.253.31, 203.209.253.33 and 203.209.253.34 (/26 subnet)</li>
+					</ul>
+				</li>
+				<li>ASN = 4134
+					<ul>
+						<li>61.183.15.9</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>Dominion Republic
+			<ul>
+				<li>ASN = 6400
+					<ul>
+						<li>190.166.87.164 and 190.167.70.87 (/15 subnet)</li>
+						<li>201.229.176.217</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>Korea
+			<ul>
+				<li>ASN = 23576
+					<ul>
+						<li>114.111.36.26</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>Netherlands
+			<ul>
+				<li>ASN = 12859
+					<ul>
+						<li>193.109.122.15, 193.109.122.18, 193.109.122.33, 193.109.122.52, 193.109.122.56 and 193.109.122.57 (/26 subnet)</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>Norway
+			<ul>
+				<li>ASN = 44381
+					<ul>
+						<li>92.62.43.77</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>United States
+			<ul>
+				<li>ASN = 19165
+					<ul>
+						<li>208.80.69.69 and 208.80.69.74 (/28 subnet)</li>
+					</ul>
+				</li>
+				<li>ASN = 3356
+					<ul>
+						<li>65.88.2.5</li>
+					</ul>
+				</li>
+				<li>ASN = 7065
+					<ul>
+						<li>76.191.195.140</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</p>

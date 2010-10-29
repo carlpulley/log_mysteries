@@ -1,5 +1,6 @@
 class ResearchController < ApplicationController
   def index
+    @geoip = GeoIP.new('db/GeoLiteCity.dat')
     @log_events = ApacheAccess.scoped
     @anomalies = {}
     @matches = {}
