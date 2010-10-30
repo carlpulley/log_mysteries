@@ -1,6 +1,43 @@
-<h1>Research#index</h1>
-<p>Find me in app/views/research/index.html.erb</p>
+<h1>Research Notes</h1>
 
-<h2>Appendix</h2>
-
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join("&") }" %>
+<ul>
+	<li><%= link_to "IP Addresses", "/research/ip_address" %></li>
+	<li>Wordpress
+		<ul>
+			<li><%= link_to "Blog", "/research/wordpress" %>
+			<li>Plugins
+				<ul>
+					<li><%= link_to "Contact Form 7", "/research/wordpress/plugin/contact-form-7" %></li>
+					<li>Google Syntax Highlighter
+						<ul>
+							<li><%= link_to "Google Syntax Highlighter", "/research/wordpress/plugin/google-syntax-highlighter" %></li>
+							<li><%= link_to "Easy Google Syntax Highlighter", "/research/wordpress/plugin/easy-google-syntax-highlighter" %></li>
+						</ul>
+					</li>
+					<li><%= link_to "Google Analyticator", "/research/wordpress/plugin/google-analyticator" %></li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li>RSS News Feed Analysis for:
+		<ul>
+			<li><%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2" %></li>
+			<li><%= link_to "208.80.69.74", "/research/web_server/rss/208.80.69.74" %></li>
+			<li><%= link_to "65.88.2.5", "/research/web_server/rss/65.88.2.5" %></li>
+			<li><%= link_to "76.191.195.140", "/research/web_server/rss/76.191.195.140" %></li>
+		</ul>
+	</li>
+	<li>Scanning Analysis:
+		<ul>
+			<li><%= link_to "World of Warcraft", "/research/scan/world-of-warcraft" %></li>
+			<li><%= link_to "Proxy", "/research/scan/proxy" %></li>
+			<li><%= link_to "Port 6677", "/research/scan/port-6677" %></li>
+			<li><%= link_to "Port 6667", "/research/scan/port-6667" %></li>
+		</ul>
+	</li>
+	<li>Web Bot Analysis:
+		<ul>
+			<li><%= link_to "NaverBot", "/research/bot/naverbot" %></li>
+		</ul>
+	</li>
+</ul>
