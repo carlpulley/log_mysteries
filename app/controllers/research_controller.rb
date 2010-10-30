@@ -39,7 +39,7 @@ class ResearchController < ApplicationController
         render "index"
       else
         @data = ApacheAccess.group(:remote).count.map { |k, v| { :ip_address => k, :request_count => v, :asn => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:asn]), :cc => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:cc]) } } if params[:chapter] == "ip_address"
-        @data = ApacheAccess.tagged_with("wordpress").tagged_with("plugin", :exclude => true).joins("left outer join archive_contents on apache_accesses.http like '%archive_contents.name%'").where('archive_contents.type' => "WordpressArchive").where('archive_contents.directory' => false).all.map { |d| { :request_name => d.http[:uri], :request_size => d.bytes, :request_status => d.result, :archive_name => d.name, :archive_size => d.size } } if params[:chapter] == "wordpress"
+        @data = ApacheAccess.joins("left outer join archive_contents on apache_accesses.http like '@archive_contents.name%'").tagged_with("wordpress").tagged_with("plugin", :exclude => true).where('archive_contents.type' => "WordpressArchive").where('archive_contents.directory' => false).all.map { |d| { :request_name => d.http[:uri], :request_size => d.bytes, :request_status => d.result, :archive_name => d.name, :archive_size => d.size } } if params[:chapter] == "wordpress"
         
         render "research/#{params[:chapter]}"
       end

@@ -41,3 +41,11 @@
 		</ul>
 	</li>
 </ul>
+
+<% if params[:chapter] == "by" %>
+
+<h3>Log Entries tagged <%= params[:tagged] %>
+	
+<%= render :partial => 'data', :locals => { :data => @log_events } %>
+
+<% end %>
