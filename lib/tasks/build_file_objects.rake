@@ -13,8 +13,8 @@ end
 
 namespace :build do
   task :file_objects => :environment do
-    ApacheAccess.where(:result => 200).where("http not like '%\n:uri: http://%'").all.each do |event|
-      if event.http[:uri] =~ /^(.+?)(\?.+)?$/
+    ApacheAccess.where(:result => 200).where("http_url not like 'http://%'").all.each do |event|
+      if event.http_url =~ /^(.+?)(\?.+)?$/
         leaf = walk_path_list FileObject.find_or_create_by_name("/"), $1.split("/").select { |n| n != "" }
         event.file_object = leaf
         event.save!

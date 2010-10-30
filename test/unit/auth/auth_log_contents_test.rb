@@ -15,7 +15,7 @@ class AuthLogContentsTest < ActiveSupport::TestCase
         table_contents << data.to_s
       end
       table_contents << ""
-      assert_equal "f5af0048ac672c3a993be6a5a6c4af243b604dfa", Digest::SHA1.hexdigest(table_contents.join("\n"))
+      assert_equal "d08e509107f3e578ca22fb5c9358e75228ab869c", Digest::SHA1.hexdigest(table_contents.join("\n"))
     end
     
     should "have observed_at timestamps increasing with their position within auth.log" do

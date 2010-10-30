@@ -11,8 +11,8 @@
 <p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
 	<ul>
 		<% @matches[:contact_form_7].each do |collect| %>
-			<% collect.group(:http).all.each do |event| %>
-			<li><i><%= event.http[:uri] %></i></li>
+			<% collect.group(:http_url).all.each do |event| %>
+			<li><i><%= event.http_url %></i></li>
 			<% end %>
 		<% end %>
 	</ul>

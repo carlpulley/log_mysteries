@@ -1,12 +1,10 @@
 class ApacheAccess < ActiveRecord::Base
-  serialize :http, Hash
-  
   acts_as_taggable_on :tags
   acts_as_nested_set
   belongs_to :file_object
   
-  scope :get, lambda { where("http like '%\n:verb: GET%'") }
-  scope :url, lambda { |url| where(["http like ?", "%\n:uri: #{url}%"]) }
+  scope :get, lambda { where(:http_method => 'GET') }
+  scope :url, lambda { |url| where(["http_url like ?", "#{url}%"]) }
   scope :ip_address, lambda { |addr| where(["remote like ?", "#{addr}%"]) }
   scope :referer, lambda { |referer| where(["referer like ?", "#{referer}%"]) }
   scope :user_agent, lambda { |agent| where(agent == "-" ? ["user_agent like '-'"] : ["user_agent like ?", "%#{agent}%"]) }
@@ -22,16 +20,16 @@ class ApacheAccess < ActiveRecord::Base
   
   def self.parse_log_line(log_line)
     if log_line =~ /^([\d.]+)\s+(\w+|-)\s+(\w+|-)\s+\[([\d\w:\/\s\+\-]+)\]\s+\"([A-Z]+)\s+(.*?)\s+HTTP\/([\d\.]+)\"\s+(\d{3})\s+(\d+|-)\s+\"(.*?)\"\s+\"(.*?)\"\s+(.*?)\s+(\d+)$/
-      { :remote => $1, :host => $2, :user => $3, :http => { :verb => $5, :uri => $6, :version => $7 }, :result => $8.to_i, :bytes => $9.try(:to_i), :referer => $10, :user_agent => $11, :unknown => $12, :processing_time => $13.try(:to_i), :observed_at => DateTime.strptime($4, "%d/%b/%Y:%H:%M:%S %Z") }
+      { :remote => $1, :host => $2, :user => $3, :http_method => $5, :http_url => $6, :http_version => $7, :result => $8.to_i, :bytes => $9.try(:to_i), :referer => $10, :user_agent => $11, :unknown => $12, :processing_time => $13.try(:to_i), :observed_at => DateTime.strptime($4, "%d/%b/%Y:%H:%M:%S %Z") }
     end
   end
   
   def to_s
-    "#{remote} #{host} #{user} [#{observed_time "%d/%b/%Y:%H:%M:%S %z"}] \"#{http[:verb]} #{http[:uri]} HTTP/#{http[:version]}\" #{result} #{bytes == 0 ? "-" : bytes} \"#{referer}\" \"#{user_agent}\" #{unknown} #{processing_time}"
+    "#{remote} #{host} #{user} [#{observed_time "%d/%b/%Y:%H:%M:%S %z"}] \"#{http_method} #{http_url} HTTP/#{http_version}\" #{result} #{bytes == 0 ? "-" : bytes} \"#{referer}\" \"#{user_agent}\" #{unknown} #{processing_time}"
   end
   
   def to_html(log_events)
-    "#{observed_time "%d/%b/%Y:%H:%M:%S %z"} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{log_events.maximum(:bytes)}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{log_events.maximum(:processing_time)}).render();</script> #{counter} #{pid} #{thread_index} #{referer == '-' ? http[:verb] : "#{referer} -> #{http[:verb]}"} #{http[:uri]}"
+    "#{observed_time "%d/%b/%Y:%H:%M:%S %z"} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{log_events.maximum(:bytes)}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{log_events.maximum(:processing_time)}).render();</script> #{counter} #{pid} #{thread_index} #{referer == '-' ? http_method : "#{referer} -> #{http_method}"} #{http_url}"
   end
   
   def timestamp

@@ -32,11 +32,11 @@ class Sudo < Auth
   
   def message_to_s
     self.message = YAML::load(self.message) unless self.message.class == Hash
-    return "#{self.message[:subject] == "user1" ? ' '*2 : (self.message[:subject] == "dhg" ? ' '*5 : ' '*4)}#{self.message[:subject]} : #{self.message[:error]} ; TTY=#{self.message[:tty]} ; PWD=#{self.message[:pwd]} ; USER=#{self.message[:user]} ; COMMAND=#{self.message[:command]}" if self.message.keys.count == 6
+    return "#{self.message[:subject]} : #{self.message[:error]} ; TTY=#{self.message[:tty]} ; PWD=#{self.message[:pwd]} ; USER=#{self.message[:user]} ; COMMAND=#{self.message[:command]}" if self.message.keys.count == 6
     return "pam_unix(#{self.message[:token]}): session #{self.message[:state]} for user #{self.message[:for]}#{" by #{self.message[:by]}(uid=#{self.message[:uid]})" unless self.message[:by].nil?}" if self.message.keys.count == 5 and self.message.keys.member? :state
-    return "pam_unix(#{self.message[:token]}): #{self.message[:value]}; logname=#{self.message[:logname]} uid=#{self.message[:uid]} euid=#{self.message[:euid]} tty=#{self.message[:tty]} ruser=#{self.message[:ruser]} rhost=#{self.message[:rhost] == '' ? ' ' : self.message[:rhost]} user=#{self.message[:user]}" if self.message.keys.count == 9
-    return "#{self.message[:subject] == "user1" ? ' '*2 : ' '*4}#{self.message[:subject]} : unable to resolve host #{self.message[:host]}" if self.message.keys.count == 2
-    return "#{self.message[:subject] == "user1" ? ' '*2 : ' '*4}#{self.message[:subject]} : TTY=#{self.message[:tty]} ; PWD=#{self.message[:pwd]} ; USER=#{self.message[:user]} ; COMMAND=#{self.message[:command]}" if self.message.keys.count == 5 and not self.message.keys.member? :state
+    return "pam_unix(#{self.message[:token]}): #{self.message[:value]}; logname=#{self.message[:logname]} uid=#{self.message[:uid]} euid=#{self.message[:euid]} tty=#{self.message[:tty]} ruser=#{self.message[:ruser]} rhost=#{self.message[:rhost]} user=#{self.message[:user]}" if self.message.keys.count == 9
+    return "#{self.message[:subject]} : unable to resolve host #{self.message[:host]}" if self.message.keys.count == 2
+    return "#{self.message[:subject]} : TTY=#{self.message[:tty]} ; PWD=#{self.message[:pwd]} ; USER=#{self.message[:user]} ; COMMAND=#{self.message[:command]}" if self.message.keys.count == 5 and not self.message.keys.member? :state
   end
   
   def self.apache_timeline_starts

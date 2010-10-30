@@ -22,6 +22,17 @@
 	
 	vis.render();
 </script>
+<script type="text/javascript+protovis">
+	var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
+
+	<%= render :partial => '/graph/sunburst.js' %>
+
+	vis.bottom(0).top(10);
+	
+	label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+Math.round(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
+	
+	vis.render();
+</script>
 </center>
 </p>
 

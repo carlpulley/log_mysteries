@@ -4,7 +4,9 @@ class CreateApacheAccesses < ActiveRecord::Migration
       t.string :remote
       t.string :host
       t.string :user
-      t.text :http
+      t.string :http_method
+      t.string :http_url
+      t.string :http_version
       t.integer :result
       t.integer :bytes
       t.string :referer

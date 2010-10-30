@@ -9,10 +9,10 @@ var partition = vis.add(pv.Layout.Partition.Fill)
     .order("descending")
     .orient("radial");
 
-partition.node.add(pv.Wedge)
+var wedge = partition.node.add(pv.Wedge)
     .fillStyle(pv.Colors.category19().by(function(d) d.parentNode && d.parentNode.nodeName))
     .strokeStyle("#fff")
     .lineWidth(.5);
 
-partition.label.add(pv.Label)
+var label = partition.label.add(pv.Label)
     .visible(function(d) d.angle * d.outerRadius >= 6);
