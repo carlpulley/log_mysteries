@@ -27,6 +27,7 @@ Rake::Task["process:auth:sudo"].invoke
 # Tag events in the ApacheAccess model
 
 Rake::Task["tag:events:wordpress"].invoke
+Rake::Task["tag:events:wordpress:version"].invoke
 Rake::Task["tag:events:wordpress:plugins"].invoke
 Rake::Task["tag:events:bot"].invoke
 Rake::Task["tag:events:scan"].invoke

@@ -1,0 +1,15 @@
+<h2>Events Tagged wordpress and version</h2>
+
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
+TODO: implement unit tests asserting correctness of rake task
+
+<script type="text/javascript+protovis">
+	var data = pv.nest(raw_data);
+	
+	<%= render :partial => '/graph/pie.js' %>
+	
+	vis.render();
+</script>
