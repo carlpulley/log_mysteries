@@ -14,7 +14,7 @@ gem 'nokogiri'
 
 # Following gems help with testing
 gem "shoulda"
-gem "rspec-rails", "2.0.0.beta.12"
+gem "rspec-rails"
 
 # Following gem provides state machine modeling
 gem "transitions", :require => ["transitions", "active_record/transitions"]

@@ -23,4 +23,4 @@
 
 <h2>Appendix</h2>
 
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=google-syntax-highlighter"]).join("&") }" %>
+<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=easy-google-syntax-highlighter"]).join("&") }" %>
