@@ -6,28 +6,37 @@
 
 <h2>Overview</h2>
 
-<p>By examining the <i><%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %></i> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=wordpress,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 2.9.2 for WordPress.</p>
+<p>By examining the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=wordpress,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 2.9.2 for WordPress.</p>
 
-<p><%= github_link "lib/tasks/wordpress.rake", "Downloading" %> (<%= github_link "test/unit/wordpress_test.rb", "verification" %>) version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to match the contents of the resulting tar ball against instances of the ApacheAccess model.</p>
+<p><%= github_link "lib/tasks/wordpress.rake", "Downloading" %> (<%= github_link "test/unit/wordpress_test.rb", "verification" %>) version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to <%= github_link "lib/tasks/archive/add_url_names.rake", "match" %> (<%= github_link "test/unit/csv/report_wordpress_test.rb", "verification" %>) the contents of the resulting tar ball against instances of the ApacheAccess model.</p>
 
-<p>Those URLs that are tagged with wordpress but are not tagged as plugins, and that also do not appear within version 2.9.2 of the downloaded <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> archive are as follows:
+<p>URLs that are present in both the ApacheAccess model and version 2.9.2 of the downloaded WordPress archive are as follows:
 	<ul>
-		<% ApacheAccess.tagged_with("wordpress").tagged_with("plugin", :exclude => true).all.map { |d| d.http_url }.uniq.each do |url| %>
-			<% expected_filename = $1 if url =~ /^(.*?)(\?.*)?$/ %>
-			<% unless Wordpress.where(["name = ?", "wordpress#{expected_filename}"]).exists? %>
-				<li><i><%= expected_filename %></i></li>
-			<% end %>
+		<% @data.map { |d| d[:archive_name] }.uniq.each do |url| %>
+			<li><i><%= url %></i></li>
 		<% end %>
 	</ul>
 </p>
 
-<p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
+<p>Plotting a bar graph of plugin file name and ApacheAccess URL against the number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
 	<ul>
-		<% ["/wp-includes/js/jquery/jquery.form.js", "/wp-includes/js/jquery/jquery.js"].each do |filename| %>
+		<% @data.select { |d| d[:request_method] == 'GET' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
 			<li><i><%= filename %></i></li>
 		<% end %>
 	</ul>
-have sizes consistent with the downloaded plugin - unit <%= github_link "test/unit/wordpress/wordpress_archive_contents_test.rb", "testing" %> further confirms this assertion.</p>
+have sizes consistent with the downloaded plugin whenever we have a successful (ie. a HTTP 200 response) GET request. As redirects simply return a header with an empty body (ie. 0 bytes in size), our size inconsistencies with redirect responses (ie. HTTP 304 responses) can be explained. 
+</p>
+<p>
+Whilst the files:
+	<ul>
+		<% @data.select { |d| d[:request_method] == 'POST' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+			<li><i><%= filename %></i></li>
+		<% end %>
+	</ul>
+have sizes inconsistent with the downloaded plugin. These inconsistencies can be explained as, within the ApacheAccess model, the above URLs use the HTTP POST method and so the HTTP POST body has no content (ie. it is 0 bytes in size).
+</p>
+
+<p>These findings have been verified using unit <%= github_link "test/unit/wordpress/wordpress_archive_contents_test.rb", "testing" %>.</p>
 
 <h2>plugin file and URL file (file names) vs. file size (bytes)</h2>
 
@@ -36,8 +45,8 @@ have sizes consistent with the downloaded plugin - unit <%= github_link "test/un
 <script type="text/javascript+protovis">
 	//var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
 	//var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
-	var labels = raw_data.archive.map(function(d) d.name);
-	var data = pv.nest(raw_data).key(function(d) d.name).rollup(function(v) v.length);
+	var data = pv.nest(raw_data).key(function(d) d.partial_match).key(function(d) d.archive_name).key(function(d) d.request_status).rollup(function(v) v.map(function(d) [d.request_size, d.archive_size]));
+	var labels = raw_data.map(function(d) d.archive_name);
 	
 	<%= render :partial => '/graph/bar.js' %>
 

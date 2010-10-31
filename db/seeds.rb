@@ -46,3 +46,4 @@ Rake::Task["build:file_objects"].invoke
 # Build ArchiveContent and ApacheAccess relationships
 
 Rake::Task["add:names:url"].invoke
+Rake::Task["add:names:url:basename"].invoke
