@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101028103307) do
+ActiveRecord::Schema.define(:version => 20101031093407) do
 
   create_table "apache_accesses", :force => true do |t|
     t.string   "remote"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20101028103307) do
     t.integer  "lft"
     t.integer  "rgt"
     t.integer  "depth"
+    t.integer  "archive_content_id"
   end
 
   create_table "apache_errors", :force => true do |t|

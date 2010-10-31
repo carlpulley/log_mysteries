@@ -14,7 +14,7 @@ This is a Rails3 application that has been built within an Ubuntu 10.04 operatin
 4. Ensure the testing database uses the same DB shcema with:
         <tt>rake db:test:load</tt>
 
-5. Build the SQLite3 database with:
+5. Build the SQLite3 database tables and relationships with:
         <tt>rake db:seed</tt>
 
 6. Ensure that all unit tests pass successfully with:

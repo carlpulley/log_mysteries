@@ -42,3 +42,7 @@ Rake::Task["tag:files:dynamic"].invoke
 # Populate the FileObject model
 
 Rake::Task["build:file_objects"].invoke
+
+# Build ArchiveContent and ApacheAccess relationships
+
+Rake::Task["add:names:url"].invoke

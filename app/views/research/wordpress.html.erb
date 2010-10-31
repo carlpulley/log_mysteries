@@ -37,7 +37,7 @@ have sizes consistent with the downloaded plugin - unit <%= github_link "test/un
 	//var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
 	//var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
 	var labels = raw_data.archive.map(function(d) d.name);
-	var data = pv.nest(raw_data).key(function(d) d.name).rollup(function(v) );
+	var data = pv.nest(raw_data).key(function(d) d.name).rollup(function(v) v.length);
 	
 	<%= render :partial => '/graph/bar.js' %>
 
