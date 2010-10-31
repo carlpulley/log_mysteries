@@ -1,4 +1,4 @@
-<h2>Events Tagged wordpress and version</h2>
+<h2>Proportion of Wordpress Events with a version Parameter</h2>
 
 <script>
 	var raw_data = <%=raw @data.to_json %>;
@@ -6,10 +6,21 @@
 
 TODO: implement unit tests asserting correctness of rake task
 
+<center>
 <script type="text/javascript+protovis">
-	var data = pv.nest(raw_data);
+	var root = "Wordpress version";
+	var data = pv.nest(raw_data).key(function(d) d.version).key(function(d) d.http_url).rollup(function(v) v.length);
 	
-	<%= render :partial => '/graph/pie.js' %>
+	<%= render :partial => '/graph/sunburst.js' %>
+	
+	var radius = 500;
+	
+	vis.width(2*radius).height(2*radius).bottom(0);
+
+	wedge.fillStyle(pv.Colors.category19().by(function(d) d.parentNode && d.parentNode.nodeName));
 	
 	vis.render();
 </script>
+</center>
+
+TODO: add in arguments for assigning version numbers

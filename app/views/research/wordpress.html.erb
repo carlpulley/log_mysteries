@@ -6,7 +6,7 @@
 
 <h2>Overview</h2>
 
-<p>By examining the <i><%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %></i> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=wordpress,version" %>, we are able to extract the version number 2.9.2 which, because of its <%= link_to "frequency", "/research/version" %>, we believe it is the version for WordPress.</p>
+<p>By examining the <i><%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %></i> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=wordpress,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 2.9.2 for WordPress.</p>
 
 <p><%= github_link "lib/tasks/wordpress.rake", "Downloading" %> (<%= github_link "test/unit/wordpress_test.rb", "verification" %>) version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to match the contents of the resulting tar ball against instances of the ApacheAccess model.</p>
 
