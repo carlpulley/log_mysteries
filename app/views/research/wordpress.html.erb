@@ -1,7 +1,8 @@
 <h1>WordPress Analysis</h1>
 
-<script>
-	var raw_data = <%=raw @data.to_json %>;
+<script type="text/javascript+protovis">
+	// FIXME: tweak the following to ensure data is merged correctly
+	var raw_data = pv.nest(<%=raw @data.to_json %>).key(function(d) d.remove("partial_match")).rollup(function(v) v.forEach(function(d) d == true) || false).map(function(k,v) k["partial_match"] = v; k)
 </script>
 
 <h2>Overview</h2>

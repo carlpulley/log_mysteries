@@ -26,7 +26,7 @@ class ReportTest < ActionController::IntegrationTest
       should "be a CSV file and have a valid SHA1" do
         get '/research/wordpress.csv'
         assert_equal "text/csv", @response.content_type
-        assert_equal "306f7ed9bf958ee1be210a7355b397deaf84c40e", Digest::SHA1.hexdigest(@response.body)
+        assert_equal "beeb513e60fda81cc475b4ef0ee08cc07cccdb3a", Digest::SHA1.hexdigest(@response.body)
       end
     end
   end

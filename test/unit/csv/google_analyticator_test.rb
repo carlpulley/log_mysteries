@@ -26,7 +26,7 @@ class ReportTest < ActionController::IntegrationTest
       should "should be a CSV file and have a valid SHA1" do
         get '/research/wordpress/plugin/google-analyticator.csv'
         assert_equal "text/csv", @response.content_type
-        assert_equal "b5adb1a23ee33bc967a5bdc27e0781dc49eb89ea", Digest::SHA1.hexdigest(@response.body)
+        assert_equal "1490d4911abe065cda864f61a7ad8b524945ade0", Digest::SHA1.hexdigest(@response.body)
       end
     end
   end
