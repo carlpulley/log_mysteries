@@ -1,21 +1,62 @@
 <h1>WordPress Plugin Analysis: Easy Google Syntax Highlighter</h1>
 
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
 <h2>Overview</h2>
 
-<p>By examining the URL's of the log entries tagged with <%= link_to "google-syntax-highlighter", "/research/by?tagged=google-syntax-highlighter" %> and Googling with the keywords <%= link_to "wordpress plugin google-syntax-highlighter", "http://google.co.uk/search?q=wordpress+plugin+google-syntax-highlighter" %>, we are able to locate the <%= link_to "Easy Google Syntax Highlighter", "http://wordpress.org/extend/plugins/easy-google-syntax-highlighter/" %> plugin.</p>
+<p>Examination of the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "google-syntax-highlighter", "/research/by?tagged=google-syntax-highlighter,version" %> does not reveal anything regarding this plugin's version number.</p>
 
-<p>According to the <%= link_to "Easy Google Syntax Highlighter", "http://wordpress.org/extend/plugins/easy-google-syntax-highlighter/" %> plugin web page, this plugin was last updated on the 22<sup>nd</sup> October 2009. As a result, we are led to believe that this plugin is probably at version 1.2.1 since all our logged events occur in the year 2010.</p>
+<p>By Googling with the keywords <%= link_to "wordpress plugin google-syntax-highlighter", "http://google.co.uk/search?q=wordpress+plugin+google-syntax-highlighter" %>, we are able to locate the <%= link_to "Easy Google Syntax Highlighter", "http://wordpress.org/extend/plugins/easy-google-syntax-highlighter/" %> plugin.</p>
 
-<p>Using case-insensitive matching, no URLs that are tagged with google-syntax-highlighter size-match any of the URLs within version 1.2.1 of the downloaded <%= link_to "Easy Google Syntax Highlighter", "http://wordpress.org/extend/plugins/easy-google-syntax-highlighter/" %> plugin (see graph below). As a result, it is unlikely that this plugin has been used.</p>
+<p>According to the <%= link_to "Easy Google Syntax Highlighter", "http://wordpress.org/extend/plugins/easy-google-syntax-highlighter/" %> plugin web page, this plugin was last updated on the 22<sup>nd</sup> October 2009. As a result, we are led to believe that this plugin is probably at version 1.2.1 since all our ApacheAccess events occur with the logged year dates: <%= ApacheAccess.all.map { |d| d.observed_at.year }.uniq.join("; ") %>.</p>
+
+<p><%= github_link "lib/tasks/easy_google_syntax_highlighter.rake", "Downloading" %> (<%= github_link "test/unit/easy_google_syntax_highlighter_test.rb", "verification" %>) version 1.2.1 of Easy Google Syntax Highlighter then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_google_analyticator_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
+
+<p>This archive is found to contain the following information within its index:
+<pre>
+<%= EasyGoogleSyntaxHighlighter.all.map { |d| d.to_s }.join("\n") %>
+</pre>
+</p>
+
+<p>URLs that are present in both the ApacheAccess model and version 1.2.1 of the downloaded Easy Google Syntax Highlighter archive are as follows:
+	<ul>
+		<li>
+		<% full_matches = @data.select { |d| not d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+		<%= "No URL matches found" if full_matches.empty? %>
+		<% unless full_matches.empty? %>
+		Full URL matches:
+			<ul>
+			<% full_matches.each do |url| %>
+				<li><i><%= url %></i></li>
+			<% end %>
+			</ul>
+		<% end %>
+		</li>
+		<li>
+		<% partial_matches = @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+		<%= "No partial (ie. basename) URL matches found" if partial_matches.empty? %>
+		<% unless partial_matches.empty? %>
+		Partial (ie. basename) URL matches:
+			<ul>
+			<% partial_matches.each do |url| %>
+				<li><i><%= url %></i></li>
+			<% end %>
+			</ul>
+		<% end %>
+		</li>
+	</ul>
+</p>
+
+<p>Beyond file names, the lack of any size based matches suggest that it is highly unlikely that this plugin has been used.</p>
 
 <h2>plugin file and URL file (file names) vs. file size (bytes)</h2>
 
-<% archive_data = EasyGoogleSyntaxHighlighter.where(:directory => false).select([:name, :size]).all %>
-<% log_event_sizes = archive_data.map { |d| @log_events.url("/wp-content/plugins/#{d.name[("easy-".size)..-1]}").where(:result => 200).get.maximum(:bytes) || 0 } %>
 <script type="text/javascript+protovis">
-	var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
-	var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
-	
+	var labels = raw_data.map(function(d) d.request_method+" "+d.archive_name+(d.partial_match ? " (basename match)" : "")+": "+d.request_status);
+	var data = raw_data.map(function(d) [d.archive_size, d.request_size]);
+
 	<%= render :partial => '/graph/bar.js' %>
 
 	vis.render();
@@ -23,4 +64,4 @@
 
 <h2>Appendix</h2>
 
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=easy-google-syntax-highlighter"]).join("&") }" %>
+<%= link_to "Data Set (CSV)", "/research/wordpress/plugin/easy-google-syntax-highlighter.csv" %>

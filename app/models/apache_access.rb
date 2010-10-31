@@ -19,7 +19,8 @@ class ApacheAccess < ActiveRecord::Base
   acts_as_nested_set
   
   belongs_to :file_object
-  belongs_to :archive_content
+  has_many :matches
+  has_many :archive_contents, :through => :matches
   
   scope :get, lambda { where(:http_method => 'GET') }
   scope :url, lambda { |url| where(["http_url like ?", "#{url}%"]) }

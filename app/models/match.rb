@@ -14,20 +14,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'test_helper'
-
-class ReportTest < ActionController::IntegrationTest
-  context "Using development DB" do
-    setup do
-      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
-    end
-    
-    context "report-wordpress.csv" do
-      should "be a CSV file and have a valid SHA1" do
-        get '/research/wordpress.csv'
-        assert_equal "text/csv", @response.content_type
-        assert_equal "5981a3113e586197eba0130b81e40d43fa4dee38", Digest::SHA1.hexdigest(@response.body)
-      end
-    end
-  end
+class Match < ActiveRecord::Base
+  acts_as_taggable_on :tags
+  
+  scope :file, lambda { includes(:archive_content).where('archive_contents.directory' => false) }
+  scope :type, lambda { |nm| includes([:apache_access, :archive_content]).joins(["left outer join taggings on apache_accesses.id = taggings.tagger_id and taggings.tagger_type = 'ApacheAccess' and taggings.tag_id = ?", ActsAsTaggableOn::Tag.named(nm).first]).where('archive_contents.type' => nm.titleize.split(" ").join("")) }
+  
+  belongs_to :archive_content
+  belongs_to :apache_access
 end

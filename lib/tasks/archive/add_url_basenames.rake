@@ -21,12 +21,10 @@ namespace :add do
         ArchiveContent.where(:directory => false).all.each do |archive|
           if archive.name =~ /\/([^\/]+)$/
             ApacheAccess.where(["http_url like ?", "%#{$1}%"]).all.each do |event|
-              if event.archive_content.nil?
-                event.tag_list << "match"
-                event.tag_list << "basename"
-                event.archive_content = archive
-                event.save!
-              end
+              match = Match.new(:archive_content => archive, :apache_access => event)
+              match.tag_list << "match"
+              match.tag_list << "basename"
+              match.save!
             end
           end
         end

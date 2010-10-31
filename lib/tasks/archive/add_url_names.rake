@@ -18,8 +18,12 @@ namespace :add do
   namespace :names do
     task :url => :environment do
       ArchiveContent.where(:directory => false).all.each do |archive|
-        archive.apache_accesses << ApacheAccess.where(["http_url like ?", "%#{archive.name}%"]).all
-        archive.save!
+        ApacheAccess.where(["http_url like ?", "%#{archive.name}%"]).all.each do |event|
+          match = Match.new(:archive_content => archive, :apache_access => event)
+          match.tag_list << "match"
+          match.tag_list << "full"
+          match.save!
+        end
       end
     end
   end

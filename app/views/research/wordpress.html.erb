@@ -8,19 +8,46 @@
 
 <p>By examining the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=wordpress,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 2.9.2 for WordPress.</p>
 
-<p><%= github_link "lib/tasks/wordpress.rake", "Downloading" %> (<%= github_link "test/unit/wordpress_test.rb", "verification" %>) version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to <%= github_link "lib/tasks/archive/add_url_names.rake", "match" %> (<%= github_link "test/unit/csv/report_wordpress_test.rb", "verification" %>) the contents of the resulting tar ball against instances of the ApacheAccess model.</p>
+<p><%= github_link "lib/tasks/wordpress.rake", "Downloading" %> (<%= github_link "test/unit/wordpress_test.rb", "verification" %>) version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_wordpress_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
+
+<p>This archive is found to contain the following information within its index:
+<pre>
+<%= Wordpress.all.map { |d| d.to_s }.join("\n") %>
+</pre>
+</p>
 
 <p>URLs that are present in both the ApacheAccess model and version 2.9.2 of the downloaded WordPress archive are as follows:
 	<ul>
-		<% @data.map { |d| d[:archive_name] }.uniq.each do |url| %>
-			<li><i><%= url %></i></li>
+		<li>
+		<% full_matches = @data.select { |d| not d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+		<%= "No URL matches found" if full_matches.empty? %>
+		<% unless full_matches.empty? %>
+		Full URL matches:
+			<ul>
+			<% full_matches.each do |url| %>
+				<li><i><%= url %></i></li>
+			<% end %>
+			</ul>
 		<% end %>
+		</li>
+		<li>
+		<% partial_matches = @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+		<%= "No partial (ie. basename) URL matches found" if partial_matches.empty? %>
+		<% unless partial_matches.empty? %>
+		Partial (ie. basename) URL matches:
+			<ul>
+			<% partial_matches.each do |url| %>
+				<li><i><%= url %></i></li>
+			<% end %>
+			</ul>
+		<% end %>
+		</li>
 	</ul>
 </p>
 
 <p>Plotting a bar graph of plugin file name and ApacheAccess URL against the number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
 	<ul>
-		<% @data.select { |d| d[:request_method] == 'GET' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+		<% @data.select { |d| not d[:partial_match] and d[:request_method] == 'GET' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
 			<li><i><%= filename %></i></li>
 		<% end %>
 	</ul>
@@ -29,24 +56,29 @@ have sizes consistent with the downloaded plugin whenever we have a successful (
 <p>
 Whilst the files:
 	<ul>
-		<% @data.select { |d| d[:request_method] == 'POST' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+		<% @data.select { |d| not d[:partial_match] and d[:request_method] == 'POST' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
 			<li><i><%= filename %></i></li>
 		<% end %>
 	</ul>
 have sizes inconsistent with the downloaded plugin. These inconsistencies can be explained as, within the ApacheAccess model, the above URLs use the HTTP POST method and so the HTTP POST body has no content (ie. it is 0 bytes in size).
 </p>
 
-<p>These findings have been verified using unit <%= github_link "test/unit/wordpress/wordpress_archive_contents_test.rb", "testing" %>.</p>
+<p>The following (partially matched) files have sizes inconsistent with the downloaded plugin:
+	<ul>
+		<% @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+			<li><i><%= filename %></i></li>
+		<% end %>
+	</ul>
+These inconsistencies can be explained by asserting that these files are not present within version 2.9.2 of the downloaded WordPress archive.
+</p>
+
+TODO: add in tests to verify above assertions
 
 <h2>plugin file and URL file (file names) vs. file size (bytes)</h2>
 
-<% archive_data = Wordpress.where(:directory => false).select([:name, :size]).all %>
-<% log_event_sizes = archive_data.map { |d| @log_events.url(d.name).where(:result => 200).get.maximum(:bytes) || 0 } %>
 <script type="text/javascript+protovis">
-	//var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
-	//var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
-	var data = pv.nest(raw_data).key(function(d) d.partial_match).key(function(d) d.archive_name).key(function(d) d.request_status).rollup(function(v) v.map(function(d) [d.request_size, d.archive_size]));
-	var labels = raw_data.map(function(d) d.archive_name);
+	var labels = raw_data.map(function(d) d.request_method+" "+d.archive_name+(d.partial_match ? " (basename match)" : "")+": "+d.request_status);
+	var data = raw_data.map(function(d) [d.archive_size, d.request_size]);
 	
 	<%= render :partial => '/graph/bar.js' %>
 

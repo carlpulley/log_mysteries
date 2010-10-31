@@ -1,4 +1,4 @@
-<%= data.first.keys.join(",") %>
+<%= data.first.keys.map { |d| d.to_s.titleize }.join(",") %>
 <% data.each do |d| -%>
 <%=raw d.values.map { |d| d.to_json }.join(",") %>
 <% end -%>

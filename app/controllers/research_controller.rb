@@ -27,6 +27,10 @@ class ResearchController < ApplicationController
     @filename = ""
         
     if params[:chapter] and params[:section]
+      if params[:chapter] == "wordpress" and params[:section] == "plugin"
+        @data = Match.type(params[:subsection]).file.all.map { |m| { :request_method => m.apache_access.http_method, :request_name => m.apache_access.http_url, :request_size => m.apache_access.bytes, :request_status => m.apache_access.result, :archive_name => m.archive_content.name, :archive_size => m.archive_content.size, :partial_match => m.tag_list.member?("basename") } }
+      end
+      
       if params[:subsection]
         @log_events = @log_events.tagged_with(params[:section])
       end
@@ -55,7 +59,8 @@ class ResearchController < ApplicationController
         render "index"
       else
         @data = ApacheAccess.group(:remote).count.map { |k, v| { :ip_address => k, :request_count => v, :asn => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:asn]), :cc => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:cc]) } } if params[:chapter] == "ip_address"
-        @data = ApacheAccess.joins(:archive_content).where('archive_contents.type' => "Wordpress").where('archive_contents.directory' => false).tagged_with("wordpress").tagged_with("plugin", :exclude => true).all.map { |d| { :request_method => d.http_method, :request_name => d.http_url, :request_size => d.bytes, :request_status => d.result, :archive_name => d.archive_content.name, :archive_size => d.archive_content.size, :partial_match => d.tag_list.member?("basename") } } if params[:chapter] == "wordpress"
+        # TODO: compact @data so that full matches take presendence over partial matches?
+        @data = Match.type("wordpress").file.all.map { |m| { :request_method => m.apache_access.http_method, :request_name => m.apache_access.http_url, :request_size => m.apache_access.bytes, :request_status => m.apache_access.result, :archive_name => m.archive_content.name, :archive_size => m.archive_content.size, :partial_match => m.tag_list.member?("partial") } } if params[:chapter] == "wordpress"
         # TODO: add in tagging data to help in version accountability/auditing?
         @data = ApacheAccess.tagged_with(["wordpress", "version"]).all.map { |d| { :http_method => d.http_method, :http_url => $1, :http_status => d.result, :version => $2 } if d.http_url =~ /^(.*?)\?ver=([^&^\s]+$)/ } if params[:chapter] == "version"
         

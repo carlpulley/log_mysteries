@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101031093407) do
+ActiveRecord::Schema.define(:version => 20101031154211) do
 
   create_table "apache_accesses", :force => true do |t|
     t.string   "remote"
@@ -75,6 +75,13 @@ ActiveRecord::Schema.define(:version => 20101031093407) do
     t.integer  "rgt"
     t.integer  "parent_id"
     t.integer  "depth"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "matches", :force => true do |t|
+    t.integer  "archive_content_id"
+    t.integer  "apache_access_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -1,32 +1,69 @@
 <h1>WordPress Plugin Analysis: Contact Form 7</h1>
 
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
 <h2>Overview</h2>
 
-<p>By examining the <i>ver</i> parameter string for log entries tagged with <%= link_to "contact-form-7", "/research/by?tagged=contact-form-7" %>, we are able to extract version 2.1.1 for the WordPress plugin Contact Form 7.</p>
+<p>By examining the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "contact-form-7", "/research/by?tagged=contact-form-7,version" %>, we are able to <%= link_to "extract", "/research/version" %> version 2.1.1 for the WordPress plugin Contact Form 7.</p>
 
-<p>By examining the URL's of the log entries tagged with <%= link_to "contact-form-7", "/research/by?tagged=contact-form-7" %> and Googling with the keywords <%= link_to "wordpress plugin contact-form-7", "http://google.co.uk/search?q=wordpress+plugin+contact-form-7" %>, we are able to locate and download version 2.1.1 of <%= link_to "Contact Form 7", "http://wordpress.org/extend/plugins/contact-form-7/" %>.</p>
+<p>By Googling with the keywords <%= link_to "wordpress plugin contact-form-7", "http://google.co.uk/search?q=wordpress+plugin+contact-form-7" %>, we are able to locate version 2.1.1 of <%= link_to "Contact Form 7", "http://wordpress.org/extend/plugins/contact-form-7/" %>.</p>
 
-<p>All URLs that are tagged with contact-form-7 appear within version 2.1.1 of the downloaded <%= link_to "Contact Form 7", "http://wordpress.org/extend/plugins/contact-form-7/" %> plugin.</p>
+<p><%= github_link "lib/tasks/contact_form_7.rake", "Downloading" %> (<%= github_link "test/unit/contact_form_7_test.rb", "verification" %>) version 2.1.1 of Contact Form 7 then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_wordpress_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
 
-<p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
+<p>This archive is found to contain the following information within its index:
+<pre>
+<%= ContactForm7.all.map { |d| d.to_s }.join("\n") %>
+</pre>
+</p>
+
+<p>URLs that are present in both the ApacheAccess model and version 2.1.1 of the downloaded Contact Form 7 archive are as follows:
 	<ul>
-		<% @matches[:contact_form_7].each do |collect| %>
-			<% collect.group(:http_url).all.each do |event| %>
-			<li><i><%= event.http_url %></i></li>
+		<li>
+		<% full_matches = @data.select { |d| not d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+		<%= "No URL matches found" if full_matches.empty? %>
+		<% unless full_matches.empty? %>
+		Full URL matches:
+			<ul>
+			<% full_matches.each do |url| %>
+				<li><i><%= url %></i></li>
 			<% end %>
+			</ul>
+		<% end %>
+		</li>
+		<li>
+		<% partial_matches = @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+		<%= "No partial (ie. basename) URL matches found" if partial_matches.empty? %>
+		<% unless partial_matches.empty? %>
+		Partial (ie. basename) URL matches:
+			<ul>
+			<% partial_matches.each do |url| %>
+				<li><i><%= url %></i></li>
+			<% end %>
+			</ul>
+		<% end %>
+		</li>
+	</ul>
+</p>
+
+<p>Plotting a bar graph of plugin file name and ApacheAccess URL against the number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
+	<ul>
+		<% @data.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+			<li><i><%= filename %></i></li>
 		<% end %>
 	</ul>
-have sizes consistent with the downloaded plugin - unit <%= github_link "test/unit/wordpress/plugin/contact_form_7_test.rb", "testing" %> further confirms this assertion.
+have sizes consistent with the downloaded plugin whenever we have a successful (ie. a HTTP 200 response) GET request. As redirects simply return a header with an empty body (ie. 0 bytes in size), our size inconsistencies with redirect responses (ie. HTTP 304 responses) can be explained.
 </p>
+
+TODO: add in tests to verify above assertions
 
 <h2>file size (bytes) vs. plugin/URL file (file names)</h2>
 
-<% archive_data = ContactForm7.where(:directory => false).select([:name, :size]).all %>
-<% log_event_sizes = archive_data.map { |d| @log_events.url("/wp-content/plugins/#{d.name}").where(:result => 200).get.maximum(:bytes) || 0 } %>
 <script type="text/javascript+protovis">
-	var labels = <%=raw archive_data.map { |d| d.name }.to_json %>;
-	var data = <%=raw archive_data.map { |x| x.size}.zip(log_event_sizes).to_json %>;
-	
+	var labels = raw_data.map(function(d) d.request_method+" "+d.archive_name+(d.partial_match ? " (basename match)" : "")+": "+d.request_status);
+	var data = raw_data.map(function(d) [d.archive_size, d.request_size]);
+
 	<%= render :partial => '/graph/bar.js' %>
 
 	vis.render();
@@ -34,4 +71,4 @@ have sizes consistent with the downloaded plugin - unit <%= github_link "test/un
 
 <h2>Appendix</h2>
 
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=contact-form-7"]).join("&") }" %>
+<%= link_to "Data Set (CSV)", "/research/wordpress/plugin/contact-form-7.csv" %>
