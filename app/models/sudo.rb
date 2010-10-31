@@ -40,19 +40,28 @@ class Sudo < Auth
   # sudo:   user1 : TTY=pts/0 ; PWD=/opt/software/web/app ; USER=root ; COMMAND=/usr/bin/svn commit profile/ -m Customer fixtures dont have an owner now more.
   def self.parse_message(message)
     return { :subject => $1, :error => $2, :tty => $3, :pwd => $4, :user => $5, :command => $6 } if message =~ /^\s*([\w\d]+)\s+:\s+(user NOT in sudoers)\s+;\s+TTY=([^\s]+)\s+;\s+PWD=([^\s]+)\s+;\s+USER=([\w\d]+)\s+;\s+COMMAND=(.*)$/
-    return { :token => "sudo:session", :state => $1, :for => $2, :by => $4, :uid => $5 } if message =~ /^\s*pam_unix\(sudo:session\):\s+session\s+(\w+)\s+for\s+user\s+([\w\d]+)(\s+by\s+([\w\d]*)\(uid=(\d+)\))?$/
-    return { :token => "sudo:auth", :value => $1, :logname => $2, :uid => $3, :euid => $4, :tty => $5, :ruser => $6, :rhost => $7, :user => $8 } if message =~ /^\s*pam_unix\(sudo:auth\):\s+([^;]+?);\s+logname=([\w\d]+)\s+uid=(\d+)\s+euid=(\d+)\s+tty=([^\s]+)\s+ruser=([\w\d]*)\s+rhost=([\w\d]*)\s+user=([\w\d]+)$/
+    return { :token => $1, :state => $2, :for => $3, :by => $5, :uid => $6 } if message =~ /^\s*pam_unix\((.*?)\):\s+session\s+(\w+)\s+for\s+user\s+([\w\d]+)(\s+by\s+([\w\d]*)\(uid=(\d+)\))?$/
+    return { :token => $1, :value => $2, :logname => $3, :uid => $4, :euid => $5, :tty => $6, :ruser => $7, :rhost => $8, :user => $9 } if message =~ /^\s*pam_unix\((.*?)\):\s+([^;]+?);\s+logname=([\w\d]+)\s+uid=(\d+)\s+euid=(\d+)\s+tty=([^\s]+)\s+ruser=([\w\d]*)\s+rhost=([\w\d]*)\s+user=([\w\d]+)$/
     return { :subject => $1, :host => $2 } if message =~ /^\s*([\w\d]+)\s*:\s*unable to resolve host (.*)$/
     return { :subject => $1, :tty => $2, :pwd => $3, :user => $4, :command => $5 } if message =~ /^\s*([\w\d]+)\s*:\s*TTY=([^;]+?)\s*;\s*PWD=([^;]+?)\s*;\s*USER=([^;]+?)\s*;\s*COMMAND=(.*)$/
   end
   
-  def message_to_s
-    self.message = YAML::load(self.message) unless self.message.class == Hash
-    return "#{self.message[:subject]} : #{self.message[:error]} ; TTY=#{self.message[:tty]} ; PWD=#{self.message[:pwd]} ; USER=#{self.message[:user]} ; COMMAND=#{self.message[:command]}" if self.message.keys.count == 6
-    return "pam_unix(#{self.message[:token]}): session #{self.message[:state]} for user #{self.message[:for]}#{" by #{self.message[:by]}(uid=#{self.message[:uid]})" unless self.message[:by].nil?}" if self.message.keys.count == 5 and self.message.keys.member? :state
-    return "pam_unix(#{self.message[:token]}): #{self.message[:value]}; logname=#{self.message[:logname]} uid=#{self.message[:uid]} euid=#{self.message[:euid]} tty=#{self.message[:tty]} ruser=#{self.message[:ruser]} rhost=#{self.message[:rhost]} user=#{self.message[:user]}" if self.message.keys.count == 9
-    return "#{self.message[:subject]} : unable to resolve host #{self.message[:host]}" if self.message.keys.count == 2
-    return "#{self.message[:subject]} : TTY=#{self.message[:tty]} ; PWD=#{self.message[:pwd]} ; USER=#{self.message[:user]} ; COMMAND=#{self.message[:command]}" if self.message.keys.count == 5 and not self.message.keys.member? :state
+  def self.parse_log_line(log_line)
+    super log_line do |message|
+      parse_message message
+    end
+  end
+  
+  def to_s
+    super do |message|
+      message = YAML::load(message) unless message.class == Hash
+      result = "#{message[:subject]} : #{message[:error]} ; TTY=#{message[:tty]} ; PWD=#{message[:pwd]} ; USER=#{message[:user]} ; COMMAND=#{message[:command]}" if message.keys.count == 6
+      result = "pam_unix(#{message[:token]}): session #{message[:state]} for user #{message[:for]}#{" by #{message[:by]}(uid=#{message[:uid]})" unless message[:by].nil?}" if message.keys.count == 5 and message.keys.member? :state
+      result = "pam_unix(#{message[:token]}): #{message[:value]}; logname=#{message[:logname]} uid=#{message[:uid]} euid=#{message[:euid]} tty=#{message[:tty]} ruser=#{message[:ruser]} rhost=#{message[:rhost]} user=#{message[:user]}" if message.keys.count == 9
+      result = "#{message[:subject]} : unable to resolve host #{message[:host]}" if message.keys.count == 2
+      result = "#{message[:subject]} : TTY=#{message[:tty]} ; PWD=#{message[:pwd]} ; USER=#{message[:user]} ; COMMAND=#{message[:command]}" if message.keys.count == 5 and not message.keys.member? :state
+      result
+    end
   end
   
   def self.apache_timeline_starts
