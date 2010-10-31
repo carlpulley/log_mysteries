@@ -1,5 +1,5 @@
-#    <one line to give the program's name and a brief idea of what it does.>
-#    Copyright (C) 2010  Carl J. Pulley
+#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -55,8 +55,7 @@ class ResearchController < ApplicationController
         render "index"
       else
         @data = ApacheAccess.group(:remote).count.map { |k, v| { :ip_address => k, :request_count => v, :asn => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:asn]), :cc => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:cc]) } } if params[:chapter] == "ip_address"
-        # TODO: add in relationships between ApacheAccess and Wordpress model and so get this outer join working!
-        @data = ApacheAccess.joins("left outer join archive_contents on apache_accesses.http_url like '@archive_contents.name%'").tagged_with("wordpress").tagged_with("plugin", :exclude => true).where('archive_contents.type' => "WordpressArchive").where('archive_contents.directory' => false).all.map { |d| { :request_name => d.http_url, :request_size => d.bytes, :request_status => d.result, :archive_name => d.name, :archive_size => d.size } } if params[:chapter] == "wordpress"
+        @data = ApacheAccess.joins(:archive_content).where('archive_contents.type' => "Wordpress").where('archive_contents.directory' => false).tagged_with("wordpress").tagged_with("plugin", :exclude => true).all.map { |d| { :request_method => d.http_method, :request_name => d.http_url, :request_size => d.bytes, :request_status => d.result, :archive_name => d.archive_content.name, :archive_size => d.archive_content.size, :partial_match => d.tag_list.member?("basename") } } if params[:chapter] == "wordpress"
         # TODO: add in tagging data to help in version accountability/auditing?
         @data = ApacheAccess.tagged_with(["wordpress", "version"]).all.map { |d| { :http_method => d.http_method, :http_url => $1, :http_status => d.result, :version => $2 } if d.http_url =~ /^(.*?)\?ver=([^&^\s]+$)/ } if params[:chapter] == "version"
         

@@ -1,5 +1,5 @@
-#    <one line to give the program's name and a brief idea of what it does.>
-#    Copyright (C) 2010  Carl J. Pulley
+#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ class ReportTest < ActionController::IntegrationTest
     
     context "report-wordpress.csv" do
       should "be a CSV file and have a valid SHA1" do
-        get '/research/by.csv?tagged=wordpress'
+        get '/research/wordpress.csv'
         assert_equal "text/csv", @response.content_type
         assert_equal "5981a3113e586197eba0130b81e40d43fa4dee38", Digest::SHA1.hexdigest(@response.body)
       end
