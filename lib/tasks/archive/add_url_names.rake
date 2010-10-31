@@ -17,7 +17,7 @@
 namespace :add do
   namespace :names do
     task :url => :environment do
-      ArchiveContent.all.each do |archive|
+      ArchiveContent.where(:directory => false).all.each do |archive|
         archive.apache_accesses << ApacheAccess.where(["http_url like ?", "%#{archive.name}%"]).all
         archive.save!
       end
