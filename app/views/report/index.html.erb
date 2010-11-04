@@ -79,6 +79,7 @@
 <p>All log data has been parsed and processed using Rake tasks and then loaded into various Rail's models (for each log file, we have an associated model). The author has found that ActiveSupport provides an excellent platform by which one may slice and dice the data sets for further examination and analysis. Additionally:
 	<ul>
 		<li>the use of single table inheritance allows complex log files (eg. auth.log) to be partitioned into submodels for each process entry</li>
+		<li>hooks and events are used to trigger the collection of extra meta-information from, for example, trusted web site sources.</li>
 		<li>the use of <%= link_to "acts as nested set", "http://github.com/joaovitor/nested_set" %> allows for log event models to be partitioned into related event hierarchies (eg. www-access.log referrer relationships)</li>
 		<li>the use of <%= link_to "acts as taggable on", "http://github.com/mbleigh/acts-as-taggable-on" %> allows the examiner to tag events so that categorisation and classifications can be derived</li>
 		<li><%= link_to "finite state machines", "http://github.com/qoobaa/transitions" %> allow models to be parsed and their events grouped into agent or process traces.</li>

@@ -39,6 +39,10 @@ Rake::Task["tag:files:dynamic"].invoke
 
 #Rake::Task["build:hierarchy:referrer"].invoke
 
+# Carve IP Addresses
+
+Rake::Task["add:ip_addresses"].invoke
+
 # Populate the FileObject model
 
 Rake::Task["build:file_objects"].invoke

@@ -19,6 +19,7 @@ class ApacheAccess < ActiveRecord::Base
   acts_as_nested_set
   
   belongs_to :file_object
+  belongs_to :ip_address
   has_many :matches
   has_many :archive_contents, :through => :matches
   

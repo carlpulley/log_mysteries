@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101031154211) do
+ActiveRecord::Schema.define(:version => 20101104164943) do
 
   create_table "apache_accesses", :force => true do |t|
     t.string   "remote"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
     t.integer  "rgt"
     t.integer  "depth"
     t.integer  "archive_content_id"
+    t.integer  "ip_address_id"
   end
 
   create_table "apache_errors", :force => true do |t|
@@ -44,6 +45,7 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
     t.string   "message"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "ip_address_id"
   end
 
   create_table "archive_contents", :force => true do |t|
@@ -69,12 +71,32 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
     t.string   "state"
   end
 
+  create_table "blacklists", :force => true do |t|
+    t.integer  "ip_address_id"
+    t.integer  "web_page_id"
+    t.string   "site"
+    t.string   "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "file_objects", :force => true do |t|
     t.string   "name"
     t.integer  "lft"
     t.integer  "rgt"
     t.integer  "parent_id"
     t.integer  "depth"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "ip_addresses", :force => true do |t|
+    t.string   "value"
+    t.string   "cc"
+    t.integer  "asn"
+    t.string   "bgp_prefix"
+    t.string   "registry"
+    t.datetime "allocated_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -101,6 +123,13 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
 
   create_table "tags", :force => true do |t|
     t.string "name"
+  end
+
+  create_table "web_pages", :force => true do |t|
+    t.string   "url"
+    t.text     "page"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end

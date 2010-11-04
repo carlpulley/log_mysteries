@@ -61,7 +61,12 @@ class ResearchController < ApplicationController
         
         render "index"
       else
-        @data = ApacheAccess.group(:remote).count.map { |k, v| { :ip_address => k, :request_count => v, :asn => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:asn]), :cc => (asn_lookup(k).nil? ? "" : asn_lookup(k)[:cc]) } } if params[:chapter] == "ip_address"
+        if params[:chapter] == "ip_address"
+          def map_to_hash(data)
+            data.map { |ip_address| { :ip_address => ip_address.value, :request_count => ip_address.apache_accesses.count + ip_address.apache_errors.count, :asn => ip_address.asn || "", :cc => ip_address.cc || "", :blacklists => ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
+          end
+          @data = map_to_hash IpAddress.all
+        end
         if params[:chapter] == "wordpress"
           def map_to_hash(data)
             data.map { |m| { :request_method => m.apache_access.http_method, :request_name => m.apache_access.http_url, :request_size => m.apache_access.bytes, :request_status => m.apache_access.result, :archive_name => m.archive_content.name, :archive_size => m.archive_content.size, :partial_match => m.tag_list.member?("basename") } }

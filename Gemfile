@@ -24,3 +24,11 @@ gem 'acts-as-taggable-on'
 
 # Following gem allows hierarchical data to be defined
 gem 'nested_set'
+
+# Add in SSDeep bindings for fuzzy hashing
+# NOTES:
+#  bundle config build.ssdeep --with-ssdeep-include=/usr/local/include/
+#  bundle config build.ssdeep --with-ssdeep-lib=/usr/local/lib/
+#  Need to manually patch ruby-ssdeep.c to deal with ruby 1.9.2
+# TODO: need to work out how to get thi sgem to build under ruby 1.9.2!
+#gem 'ssdeep'

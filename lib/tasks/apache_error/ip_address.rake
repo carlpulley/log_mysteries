@@ -13,9 +13,13 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-class ApplicationController < ActionController::Base
-  protect_from_forgery
-  
-  protected
+    
+namespace :add do
+  task :ip_addresses => :environment do
+    ApacheError.all.each do |event|
+      ip_address = IpAddress.find_or_create_by_value(event.client)
+      ip_address.apache_errors << event
+      ip_address.save!
+    end
+  end
 end
