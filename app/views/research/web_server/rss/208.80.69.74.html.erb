@@ -1,17 +1,60 @@
 <h1>News Feed Data Analysis</h1>
 
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
 <h2>Overview</h2>
 
 <p>Unit testing demonstrates that news feeds can be uniquely identified using either: the user agent string <i>Apple-PubSub</i>; or the URL <i>/feed/</i>.</p>
 
-<p>According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, the IP address 208.80.69.74 originates from California, USA and is not present on any blacklist.</p>
+<h3>IP Addresses</h3>
+
+<p>Grouping our IP Address data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
+<center>
+<% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
+<script type="text/javascript+protovis">
+	var root = "";
+	var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
+
+	<%= render :partial => '/graph/dendrogram.js' %>
+
+	vis.height(500).width(1000).bottom(100).top(20);
+
+	layout.orient("top");
+
+	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= @data.map{ |d| d[:request_count] }.min %>, <%= @data.map{ |d| d[:request_count] }.max %>).range('blue', 'red')(n.nodeValue));
+	
+	label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
+	
+	vis.render();
+</script>
+</center>
+
+<h3>IP Address Blacklisting</h3>
+
+<ul>
+<% @data.map { |d| d[:ip_address] }.uniq.sort.each do |ip_address| %>
+	<% if IpAddress.where(:value => ip_address).first.blacklists.empty? %>
+	<li><%= ip_address %> not listed on any blacklists</li>
+	<% else %>
+	<li><%= ip_address %> listed on:
+		<ul>
+			<% IpAddress.where(:value => ip_address).first.blacklists.each do |blacklist| %>
+			<li><%= link_to blacklist.site, blacklist.reference %></li>
+			<% end %>
+		</ul>
+	</li>
+	<% end %>
+<% end %>
+</ul>
 	
 <h2>Graphs</h2>
 
 <h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
-<% data = @log_events.select(["apache_accesses.id", "apache_accesses.observed_at"]).all.map_with_index { |d, i| { :x => i, :y => d.observed_at.to_f, :id => d.id } } %>
+
 <script type="text/javascript+protovis">	
-	var data = <%=raw data.to_json %>;
+	var data = raw_data.map(function(d) { var h = {}; h['x'] = d['position']; h['y'] = d['observed_at']; return h; });
 	
 	<%= render :partial => '/graph/area.js' %>
 	
@@ -23,12 +66,12 @@
 	<b>Notes:</b>
 	<ul>
 		<%
-			grad1 = data[2][:y] - data[1][:y]
-			grad2 = data[4][:y] - data[3][:y]
-			grad3 = data[6][:y] - data[5][:y]
-			grad4 = data[8][:y] - data[7][:y]
-			grad5 = data[10][:y] - data[9][:y]
-			grad6 = data[12][:y] - data[11][:y]
+			grad1 = @data[2][:observed_at] - @data[1][:observed_at]
+			grad2 = @data[4][:observed_at] - @data[3][:observed_at]
+			grad3 = @data[6][:observed_at] - @data[5][:observed_at]
+			grad4 = @data[8][:observed_at] - @data[7][:observed_at]
+			grad5 = @data[10][:observed_at] - @data[9][:observed_at]
+			grad6 = @data[12][:observed_at] - @data[11][:observed_at]
 			
 			mean = mean([grad1, grad2, grad3, grad4, grad5, grad6])
 			stddev = standard_deviation([grad1, grad2, grad3, grad4, grad5, grad6])
@@ -42,49 +85,8 @@
 				<li>between event indexes 7 and 8 we have a gradient of <%= grad4 %></li>
 				<li>between event indexes 9 and 10 we have a gradient of <%= grad5 %></li>
 				<li>between event indexes 11 and 12 we have a gradient of <%= grad6 %></li>
-				<li>Thus, we get mean gradient of <%= mean %> and a standard deviation of <%= stddev %></li>
+				<li>Thus, we get mean gradient of <%= mean %> and a standard deviation of <%= number_with_precision stddev, :precision => 2 %></li>
 				<li>Whence we have that our RSS feed refresh rate is estimated as being once every <%= number_with_precision(mean/60, :precision => 2) %>±<%= number_with_precision(stddev/60, :precision => 2) %> minutes.</li>
-			</ul>
-		</li>
-	</ul>
-</p>
-	
-<h3>plot of event creation time (seconds from epoch) vs processing time (micro seconds)</h3>
-
-<% data = @log_events.select(["apache_accesses.observed_at", :processing_time]).order("apache_accesses.observed_at").all.map { |d| { :x => d.observed_at.to_f, :y => d.processing_time } } %>
-
-<%
-	mean = mean(data.map { |d| d[:y] })/(10**6)
-	stddev = standard_deviation(data.map { |d| d[:y] })/(10**6)
-	averg = average(data.map { |d| d[:y] })/(10**6)
-	max_load = data.map { |d| d[:y] }.max/(10**6)
-	upper_time_bound = [mean+stddev, averg+stddev].max
-	upper_bound_color = "#B3C6FF"
-%>
-
-<script type="text/javascript+protovis">	
-	var data = <%=raw data.to_json %>;
-	
-	<%= render :partial => '/graph/area.js' %>
-
-	vis.add(pv.Rule)
-		.bottom(y(<%= upper_time_bound*(10**6) %>))
-		.strokeStyle(<%=raw upper_bound_color.to_json %>);
-
-	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
-	ylabel.text(function(d) (d/1000000)+" &mu;s");
-
-	vis.render();
-</script>
-<p>
-	<b>Notes:</b>
-	<ul>
-		<li>Here our mean processing time is <%= mean %> seconds (standard deviation is <%= stddev %> seconds) and our average is <%= averg %> seconds.</li>
-		<li>Thus, any processing times that are greater than <%= number_with_precision(upper_time_bound, :precision => 0) %> seconds indicate when the server is being loaded. This cut off point has been plotted as a <font color="<%= upper_bound_color %>">blue</font> line on the above graph.</li>
-		<li>The following features of this graph are worth noting:
-			<ul>
-				<li>the largest peak is <%= number_with_precision(max_load/upper_time_bound, :precision => 1) %> times larger than our expected upper time bound (ie. the <font color="<%= upper_bound_color %>">blue</font> line)</li>
-				<li>notice how we have repeated requests at each time index that result in increasing processing times</li>
 			</ul>
 		</li>
 	</ul>

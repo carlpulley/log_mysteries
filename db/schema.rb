@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(:version => 20101104164943) do
   create_table "blacklists", :force => true do |t|
     t.integer  "ip_address_id"
     t.integer  "web_page_id"
+    t.string   "reference"
     t.string   "site"
     t.string   "status"
     t.datetime "created_at"

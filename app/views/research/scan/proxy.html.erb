@@ -1,5 +1,9 @@
 <h1>Scanning Analysis: Web Proxy</h1>
 
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
 <h2>Overview</h2>
 
 <p>All these scan attempts result in 400 (the request had bad syntax or was inherently impossible to be satisfied) or 404 (the server has not found anything matching the URI given) error responses from the web server - ie. these scans failed.</p>
@@ -8,43 +12,50 @@
 
 <p>The Wantsfly URLs contain the hash value FABB83E72D135F1018046CC4005088B36F8D0BEDCEA7. This hash value is probably being used as a session value by the proxy scanner. Googling suggests that this is Chinese proxy scanner.</p>
 
-<p>All these scans originate from the 123.4.59.0/32, 123.11.240.130 and 125.45.106.0/24 range of IP addresses. According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, all these IP addresses originate from China and are present on the following blacklists:
-	<ul>
-		<li><%= link_to "Barracuda Reputation Block List", "http://whatismyipaddress.com/blacklist/barracudacentral" %>
-		<li><%= link_to "Spamhaus Policy Blacklist", "http://whatismyipaddress.com/blacklist/spamhaus" %>
-		<li><%= link_to "Fabel Spamsources", "http://whatismyipaddress.com/blacklist-details?dnsbl=spamsources.fabel.dk" %></li>
-		<li><%= link_to "Blackholes Five 10 SG", "http://whatismyipaddress.com/blacklist/five-ten-sg" %></li>
-		<li><%= link_to "No More Funn", "http://whatismyipaddress.com/blacklist-details?dnsbl=no-more-funn.moensted.dk" %></li>
-		<li>dev.null.dk</li>
-	</ul>
-</p>
-
 <h3>Proxyfire</h3>
 
 <p>Using the requested URL, we have that the web site <%= link_to "Proxyfire", "http://www.proxyfire.net" %> appears to be a forum listing various proxies and discussing proxy related issues.</p>
 
-<p>Most of these scans originate from the IP address 221.192.199.35. According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, this IP addresses originates from China and is present on the following blacklists:
-	<ul>
-		<li><%= link_to "Blackholes Five 10 SG", "http://whatismyipaddress.com/blacklist/five-ten-sg" %></li>
-		<li><%= link_to "No More Funn", "http://whatismyipaddress.com/blacklist-details?dnsbl=no-more-funn.moensted.dk" %>
-	</ul>
-	In addition, we have one Proxyfire scan from the IP address 61.183.15.9. According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, this IP addresses originates from China and is present on the following blacklists:
-	<ul>
-		<li><%= link_to "Fabel Spamsources", "http://whatismyipaddress.com/blacklist-details?dnsbl=spamsources.fabel.dk" %></li>
-		<li><%= link_to "Blackholes Five 10 SG", "http://whatismyipaddress.com/blacklist/five-ten-sg" %></li>
-		<li><%= link_to "No More Funn", "http://whatismyipaddress.com/blacklist-details?dnsbl=no-more-funn.moensted.dk" %></li>
-		<li>dev.null.dk</li>
-	</ul>
-</p>
+<h3>IP Addresses</h3>
 
-<h3>Miscellaneous</h3>
+<p>Grouping our IP Address data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
+<center>
+<% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
+<script type="text/javascript+protovis">
+	var root = "";
+	var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
 
-<p>We have one proxy scan from 221.194.47.162. According to <%= link_to "What is my IP address?", "http://whatismyipaddress.com" %>, this IP addresses originates from China and is present on the following blacklists:
-	<ul>
-		<li><%= link_to "Blackholes Five 10 SG", "http://whatismyipaddress.com/blacklist/five-ten-sg" %></li>
-		<li><%= link_to "No More Funn", "http://whatismyipaddress.com/blacklist-details?dnsbl=no-more-funn.moensted.dk" %></li>
-	</ul>
-</p>
+	<%= render :partial => '/graph/dendrogram.js' %>
+
+	vis.height(500).width(1000).bottom(100).top(20);
+
+	layout.orient("top");
+
+	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= @data.map{ |d| d[:request_count] }.min %>, <%= @data.map{ |d| d[:request_count] }.max %>).range('blue', 'red')(n.nodeValue));
+	
+	label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
+	
+	vis.render();
+</script>
+</center>
+
+<h3>IP Address Blacklisting</h3>
+
+<ul>
+<% @data.map { |d| d[:ip_address] }.uniq.sort.each do |ip_address| %>
+	<% if IpAddress.where(:value => ip_address).first.blacklists.empty? %>
+	<li><%= ip_address %> not listed on any blacklists</li>
+	<% else %>
+	<li><%= ip_address %> listed on:
+		<ul>
+			<% IpAddress.where(:value => ip_address).first.blacklists.each do |blacklist| %>
+			<li><%= link_to blacklist.site, blacklist.reference %></li>
+			<% end %>
+		</ul>
+	</li>
+	<% end %>
+<% end %>
+</ul>
 
 <h2>Appendix</h2>
 

@@ -86,9 +86,14 @@
 	</ul>
 </p>
 
-<p>We use controllers to partition our data analysis phases: the research controller produces views based on the analysis of defined subsets of data; the report controller produces views that draw together the individual analyses into a single report. Within our Git repository we intend to place the research and report controller code development on the obviously named branches (although this has yet to be done!). We reserve the master Git branch to model the code for our final product where both the research and report branches have been merged.</p>
+<p>We use controllers to partition our data analysis phases:
+	<ul>
+		<li>the research controller produces views based on the analysis of defined subsets of data;</li>
+		<li>the report controller produces views that draw together the individual analyses into a single report.</li>
+	</ul>
+Within our Git repository we intend to place the research and report controller code development on the obviously named branches (although this has yet to be done!). We reserve the master Git branch to model the code for our final product where both the research and report branches have been merged.</p>
 
-<p>Unit testing (using <%= link_to "shoulda", "http://github.com/thoughtbot/shoulda" %>) has been used to perform any hash based verification of downloaded files and to verify any facts that subsequent analysis might wish to use. Integration testing (eg. via <%= link_to "cucumber", "http://cukes.info/" %>) is used to ensure that all downloadable files (eg. CSV and PDF) are identical to those used in producing this report.</p>
+<p>Unit testing (using <%= link_to "shoulda", "http://github.com/thoughtbot/shoulda" %>) has been used to perform any hash based verification of downloaded files and to verify any facts that subsequent analysis might wish to use. Integration testing is used to ensure that all downloadable files (ie. CSV and PDF) are identical to those used in producing this report.</p>
 
 <p>The automatic generation of CSV data in the research appendices allows readers to independently analyse data sets outside of this Rails application.</p>
 

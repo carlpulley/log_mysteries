@@ -48,8 +48,8 @@ class ApacheAccess < ActiveRecord::Base
     "#{remote} #{host} #{user} [#{observed_time "%d/%b/%Y:%H:%M:%S %z"}] \"#{http_method} #{http_url} HTTP/#{http_version}\" #{result} #{bytes == 0 ? "-" : bytes} \"#{referer}\" \"#{user_agent}\" #{unknown} #{processing_time}"
   end
   
-  def to_html(log_events)
-    "#{observed_time "%d/%b/%Y:%H:%M:%S %z"} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{log_events.maximum(:bytes)}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{log_events.maximum(:processing_time)}).render();</script> #{counter} #{pid} #{thread_index} #{referer == '-' ? http_method : "#{referer} -> #{http_method}"} #{http_url}"
+  def to_html(max_bytes, max_processing_time)
+    "#{observed_time "%d/%b/%Y:%H:%M:%S %z"} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{max_bytes}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{max_processing_time}).render();</script> #{counter} #{pid} #{thread_index} #{referer == '-' ? http_method : "#{referer} -> #{http_method}"} #{http_url}"
   end
   
   def timestamp

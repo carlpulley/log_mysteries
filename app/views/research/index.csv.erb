@@ -1,5 +1,5 @@
 <% headers['Content-Disposition'] = "attachment; filename=\"report#{@filename}\"" -%>
 Observed At (secs), Processing Time (micro-secs), Remote IP, Local IP, PID, Thread Index, Counter, HTTP Status, Method, URL, Referrer, User Agent
-<% @log_events.all.each do |event| -%>
+<% @data.all.each do |event| -%>
 <%= event.observed_at.to_i %>, <%= event.processing_time %>, "<%= event.remote %>", "<%= event.local %>", <%= event.pid %>, <%= event.thread_index %>, <%= event.counter %>, <%= event.result %>, <%= event.bytes %>, "<%= event.http_method %>", "<%= event.http_url %>", "<%= event.referer %>", "<%= event.user_agent %>"
 <% end -%>

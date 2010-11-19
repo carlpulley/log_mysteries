@@ -45,10 +45,14 @@
 </p>
 <p> That our timestamp correlates correctly with our observed log event timestamps has been confirmed using unit <%= github_link "test/unit/apache2/unknown_test.rb", "tests" %>. The only log events that fail to match our <%= github_link "test/unit/apache2/unknown_test.rb", "expectations" %> are the following log events:
 <pre>
-<% @anomalies[:unknown].each do |collect| %>
-  <% collect.all.each do |event| %>
-  <%= event.to_s %>
-  <% end %>
-<% end %>
+< % @anomalies[:unknown].each do |collect| %>
+  < % collect.all.each do |event| %>
+  < %= event.to_s %>
+  < % end %>
+< % end %>
 </pre>
 </p>
+
+<h3>Appendix</h3>
+
+<%= link_to "Data Set (CSV)", "/research/unknown.csv" %>

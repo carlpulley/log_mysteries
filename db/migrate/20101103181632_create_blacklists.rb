@@ -3,6 +3,7 @@ class CreateBlacklists < ActiveRecord::Migration
     create_table :blacklists do |t|
       t.integer :ip_address_id
       t.integer :web_page_id
+      t.string :reference
       t.string :site
       t.string :status
 

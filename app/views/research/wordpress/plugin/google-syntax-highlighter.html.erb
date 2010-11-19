@@ -2,6 +2,8 @@
 
 <script>
 	var raw_data = <%=raw @data.to_json %>;
+	var raw_full_data = <%=raw @data.select { |d| not d[:partial_match] }.to_json %>;
+	var raw_partial_data = <%=raw @data.select { |d| d[:partial_match] }.to_json %>;
 </script>
 
 <h2>Overview</h2>
@@ -51,11 +53,11 @@
 
 <p>FIXME: Those URLs that are tagged with google-syntax-highlighter and that do not appear within version 1.5.1 of the downloaded <%= link_to "Google Syntax Highlighter", "http://wordpress.org/extend/plugins/google-syntax-highlighter/" %> plugin are as follows:
 	<ul>
-		<% @anomalies[:google_syntax_highlighter].each do |collect| %>
-			<% collect.group(:http_url).all.each do |event| %>
-			<li><i><%= event.http_url %></i></li>
-			<% end %>
-		<% end %>
+		< % @anomalies[:google_syntax_highlighter].each do |collect| %>
+			< % collect.group(:http_url).all.each do |event| %>
+			<li><i>< %= event.http_url %></i></li>
+			< % end %>
+		< % end %>
 	</ul>
 </p>
 
@@ -70,12 +72,25 @@ have sizes consistent with the downloaded plugin whenever we have a successful (
 
 TODO: add in tests to verify above assertions
 
-<h2>plugin file and URL file (file names) vs. file size (bytes)</h2>
+<h2>Full Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
+
+<h2>Full Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
 
 <script type="text/javascript+protovis">
-	var labels = raw_data.map(function(d) d.request_method+" "+d.archive_name+(d.partial_match ? " (basename match)" : "")+": "+d.request_status);
-	var data = raw_data.map(function(d) [d.archive_size, d.request_size]);
+	var labels = raw_full_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status);
+	var data = raw_full_data.map(function(d) [d.archive_size, d.request_size]);
+	
+	<%= render :partial => '/graph/bar.js' %>
 
+	vis.render();
+</script>
+
+<h2>Partial Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
+
+<script type="text/javascript+protovis">
+	var labels = raw_partial_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status+" =?= "+d.archive_name);
+	var data = raw_partial_data.map(function(d) [d.archive_size, d.request_size]);
+	
 	<%= render :partial => '/graph/bar.js' %>
 
 	vis.render();

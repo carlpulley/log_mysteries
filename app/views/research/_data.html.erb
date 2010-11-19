@@ -1,5 +1,5 @@
 <div class="events">
-	<% data.order(:observed_at).all.each do |event| %>
-		<div class="event"><%=raw event.to_html(data) %></div>
+	<% data.each do |event| %>
+		<div class="event"><%=raw event.to_html(data.map { |d| d.bytes }.max, data.map { |d| d.processing_time }.max) %></div>
 	<% end %>
 </div>

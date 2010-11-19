@@ -6,6 +6,7 @@
 
 <p>Using our www-access.log and www-media.log events and grouping the data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
 <center>
+<% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
 <script type="text/javascript+protovis">
 	var root = "";
 	var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
@@ -52,6 +53,22 @@
 </center>
 </p>
 
+<h3>IP Address Blacklisting</h3>
+
+<ul>
+<% IpAddress.all.each do |ip_address| %>
+	<% unless ip_address.blacklists.empty? %>
+	<li><%= ip_address.value %> listed on:
+		<ul>
+			<% ip_address.blacklists.each do |blacklist| %>
+			<li><%= link_to blacklist.site, blacklist.reference %></li>
+			<% end %>
+		</ul>
+	</li>
+	<% end %>
+<% end %>
+</ul>
+
 <h3>Conclusions</h3>
 
 <p>TODO: implement tagging of apache events to add in ASN numbers, country codes and identified subnets.</p>
@@ -60,7 +77,8 @@
 <h3>References</h3>
 
 <ul>
-	<li>Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %> has been used determine country codes and ASN numbers.</li>
+	<li>Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %> has been used to determine country codes and ASN numbers.</li>
+	<li>Blacklist queries have been determined using the <%= link_to "whatismyipaddress.com", "http://whatismyipaddress.com/blacklist-check" %> proxy service.</li>
 </ul>
 
 <h3>Appendix</h3>

@@ -33,5 +33,23 @@ class WordpressTest < ActiveSupport::TestCase
     should "have the correct file type" do
       assert_match "gzip compressed data", `file #{@wordpress}`
     end
+    
+    context "evidence/wordpress/wp-includes/js/jquery" do
+      setup do
+        @wordpress = "evidence/wordpress/wp-includes/js/jquery"
+      end
+      
+      should "have a valid SHA1 for jquery.js" do
+        assert_equal "91de43338aa9f26ea33017bbc556359ce4b556a2", Digest::SHA1.hexdigest(open("#{@wordpress}/jquery.js", "r").read)
+      end
+      
+      should "have a valid SHA1 for jquery.form.js" do
+        assert_equal "e62afe5a965027e818b4a24321fe2ac53bd75d75", Digest::SHA1.hexdigest(open("#{@wordpress}/jquery.form.js", "r").read)
+      end
+      
+      should "have a valid SHA1 for jquery.form.dev.js" do
+        assert_equal "a48f47033b36d76ccc0f5a8c9dfc91cc8917449e", Digest::SHA1.hexdigest(open("#{@wordpress}/jquery.form.dev.js", "r").read)
+      end
+    end
   end
 end

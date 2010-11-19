@@ -1,9 +1,9 @@
 <h1>Research Notes</h1>
 
 <ul>
-	<li><%= link_to "IP Addresses", "/research/ip_address" %></li>
 	<li><%= link_to "URL Version Parameters", "/research/version" %></li>
-	<li>Wordpress
+	<li><%= link_to "IP Addresses", "/research/ip_address" %></li>
+	<li>Wordpress Analysis:
 		<ul>
 			<li><%= link_to "Blog", "/research/wordpress" %>
 			<li>Plugins
@@ -28,6 +28,14 @@
 			<li><%= link_to "76.191.195.140", "/research/web_server/rss/76.191.195.140" %></li>
 		</ul>
 	</li>
+	<li>Server Loading Estimates:
+		<ul>
+			<li><%= link_to "Number of Requests", "/research/loading/requests" %></li>
+			<li><%= link_to "Newsfeed Requests", "/research/loading/rss" %></li>
+			<li><%= link_to "Static File Requests", "/research/loading/static" %></li>
+			<li><%= link_to "Out of Order Log Events", "/research/loading/out_of_order" %></li>
+		</ul>
+	</li>
 	<li>Scanning Analysis:
 		<ul>
 			<li><%= link_to "World of Warcraft", "/research/scan/world-of-warcraft" %></li>
@@ -41,6 +49,13 @@
 			<li><%= link_to "NaverBot", "/research/bot/naverbot" %></li>
 		</ul>
 	</li>
+	<li>Consistency Checks:
+		<ul>
+			<li>processing time attribute of Apache access log events</li>
+			<li><%= link_to "unknown", "/research/unknown" %> attribute of Apache access log events</li>
+		</ul>
+	</li>
+	<li><%= link_to "Worker Thread", "/research/process" %> Analysis</li>
 </ul>
 
 <% if params[:chapter] == "by" %>
@@ -48,11 +63,11 @@
 <h3>Log Entries tagged <%= params[:tagged] %></h3>
 	
 <p>
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join('&') }" unless @log_events.empty? %>
-<%= "No log events tagged #{params[:tagged]}" if @log_events.empty? %>
+<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join('&') }" unless @data.empty? %>
+<%= "No log events tagged #{params[:tagged]}" if @data.empty? %>
 </p>
 	
 <% # TODO: add in paging code %>
-<%= render :partial => 'data', :locals => { :data => @log_events } %>
+<%= render :partial => 'data', :locals => { :data => @data.order(:observed_at).all } %>
 
 <% end %>

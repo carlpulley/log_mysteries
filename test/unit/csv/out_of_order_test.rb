@@ -14,18 +14,20 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace :process do
-  task :wordpress => :environment do
-    archive = "evidence/wordpress-2.9.2.tar.gz"
-    
-    puts `curl http://wordpress.org/wordpress-2.9.2.tar.gz -o #{archive}` unless FileTest.file?(archive)
-  
-    `tar -ztvf #{archive}`.split("\n").map do |d| 
-      Wordpress.create!({ :archive => archive, :name => $4, :observed_at => DateTime.strptime($3, "%d %b %Y"), :size => $2.to_i, :directory => ($1 == 'd') }) if d =~ /^([d\-]).*?www\-data\s+(\d+)\s+(.*?)\s+wordpress(.*)$/
+require 'test_helper'
+
+class OutOfOrderTest < ActionController::IntegrationTest
+  context "Using development DB" do
+    setup do
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
     end
-    
-    `tar -zxvf #{archive} -C evidence wordpress/wp-includes/js/jquery/jquery.js`
-    `tar -zxvf #{archive} -C evidence wordpress/wp-includes/js/jquery/jquery.form.js`
-    `tar -zxvf #{archive} -C evidence wordpress/wp-includes/js/jquery/jquery.form.dev.js`
+  
+    context "loading-estimate-out-of-order.csv" do
+      should "should be a CSV file and have a valid SHA1" do
+        get '/research/loading/out_of_order.csv'
+        assert_equal "text/csv", @response.content_type
+        assert_equal "36617ee7b9fe9ccff9266ff329e0ae2554541291", Digest::SHA1.hexdigest(@response.body)
+      end
+    end
   end
 end
