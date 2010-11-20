@@ -1,5 +1,9 @@
 <h1>Analysis of Apache Worker Threads</h1>
 
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
 <h2>Overview</h2>
 
 <p>By analysing the <i>unknown</i> attribute we are able to determine that:
@@ -28,7 +32,7 @@
 <h3>Scatter Plot of Observed Time (seconds from epoch) vs Process ID vs Observed Time (seconds from epoch on a blue to red scale)</h3>
 
 <script type="text/javascript+protovis">
-	var data = <%=raw @log_events.all.map { |d| { :y => d.pid, :x => d.observed_at.to_i, :z => d.observed_at.to_i } }.to_json %>;
+	var data = raw_data.map(function(d) { h = {}; h['x'] = d.observed_at; h['y'] = d.pid; h['z'] = d.observed_at; return h; });
 	
 	<%= render :partial => '/graph/scatter.js' %>
 	
@@ -41,7 +45,7 @@
 <h3>Scatter Plot of Thread Index vs Process ID vs Observed Time (seconds from epoch on a blue to red scale)</h3>
 
 <script type="text/javascript+protovis">
-	var data = <%=raw @log_events.all.map { |d| { :y => d.pid, :z => d.observed_at.to_i, :x => (d.thread_index || 0) } }.to_json %>;
+	var data = raw_data.map(function(d) { h = {}; h['x'] = d.thread_index; h['y'] = d.pid; h['z'] = d.observed_at; return h; });
 	
 	<%= render :partial => '/graph/scatter.js' %>
 
@@ -53,7 +57,7 @@
 <h3>Scatter Plot of Process ID vs Counter vs Observed Time (seconds from epoch on a blue to red scale)</h3>
 
 <script type="text/javascript+protovis">
-	var data = <%=raw @log_events.all.map { |d| { :y => d.counter, :z => d.observed_at.to_i, :x => d.pid } }.to_json %>;
+	var data = raw_data.map(function(d) { h = {}; h['x'] = d.pid; h['y'] = d.counter; h['z'] = d.observed_at; return h; });
 	
 	<%= render :partial => '/graph/scatter.js' %>
 
@@ -65,8 +69,8 @@
 <h3>Process ID Timeline</h3>
 
 <% data = [] %>
-<% @log_events.all.map { |d| d.pid }.compact.uniq.sort.each do |pid| %>
-	<% data << { :label => "PID: #{pid}", :timeline => @log_events.all.select { |d| d.pid == pid }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% ApacheAccess.all.map { |d| d.pid }.compact.uniq.sort.each do |pid| %>
+	<% data << { :label => "PID: #{pid}", :timeline => ApacheAccess.all.select { |d| d.pid == pid }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
 <% end %>
 <% data << { :label => "Apache2 Start Times", :timeline => Sudo.apache_timeline_starts } %>
 <% data << { :label => "Apache2 Stop Times", :timeline => Sudo.apache_timeline_ends } %>

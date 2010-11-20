@@ -1,28 +1,59 @@
-<h1>Honeynet Answers</h1>
+<h1>Honeynet Challenge: Log Mysteries</h1>
+<h3>by Dr. Carl Pulley</h3>
+
+<p>This partial analysis of <%= link_to "santized_log.zip", "http://honeynet.org/challenges/2010_5_log_mysteries" %> arose out of an attempt at the Log Mysteries Honeynet challenge (unfortunately teaching workloads stopped any chance of a realistic challenge submission by the author!). The author's partial attempt was then refined into an exercise to see how much of the challenge could be solved by <b>just</b> examining data within <%= link_to "santized_log.zip", "http://honeynet.org/challenges/2010_5_log_mysteries" %> that was <b>only</b> related to the Apache process - this meant that the author intentionally restricted their analysis to just the Apache2 web logs (ie. <code>apache2/*.log</code>) and the sudo events within <code>auth.log</code> (eg. via <code>grep sudo auth.log</code>).</p>
+
+<p>Throughout the analysis, we are attempting to follow the scientific method (eg. see the <%= link_to "Handbook of Digital Forensics and Investigation", "http://www.elsevierdirect.com/product.jsp?isbn=9780123742674" %> by Eoghan Casey) and to utilise data visualisation techniques (eg. see <%= link_to "Applied Security Visualisation", "http://www.informit.com/store/product.aspx?isbn=0321510100" %> by Raffael Marty and <%= link_to "Security Data Visualisation", "http://nostarch.com/securityvisualization.htm" %> by Greg Conti) to mine our (restricted) data set for as much forensic data as is realistically possible.</p>
+
+<p>In addition to our attempt at answering this challenge (see below), we have also provided access to our investigative or research <%= link_to "notes", "/research" %>. IMHO, our self-imposed data restrictions make these research <%= link_to "notes", "/research" %> better reading than our challenge answers!</p>
+
+<p>We have chosen here to build a Rails 3 application (running on top of Ruby 1.9.2 RC2 within a RVM environment) to offer a visual and interactive web report. All report graphing is performed using <%= link_to "Protovis 3.2", "http://vis.stanford.edu/protovis/" %>. All analysis has been performed using an Ubuntu 10.04 operating system. We have made the code for this application available on <%= link_to "GitHub", "http://github.com/carlpulley/log_mysteries" %>.</p>
+
+<p>All log data has been parsed and processed using Rake tasks and then loaded into various Rail's models (eg. for each log file, we have an associated model). The author has found that ActiveSupport provides an excellent platform by which one may slice and dice the data sets for further examination, exploration and analysis.</p>
+	
+<p>The automatic generation of CSV data in the research appendices allows readers to independently analyse data sets outside of this Rails application.</p>
+
+<p>Currently, we have used unit testing (via <%= link_to "shoulda", "http://github.com/thoughtbot/shoulda" %>) to perform any hash based verification of downloaded files. Integration testing is used to ensure that all downloadable files (ie. CSV data sets) are identical to those used in producing the original report. In doing this, we are trying to ensure that our results (and so conclusions) are verifiably repeatable by other parties.</p>
+	
+<h3>Challenge Answers</h3>
 
 <ol>
 	<li><i>Was the system compromised and when? How do you know that for sure?</i> <br />
-		We believe that the system was compromised (this is based on the presence of psybnc and eggdrop sudo entries in auth.log) by 23:21:08 on 19th April 2010 PDT.</li>
+		We believe that the system was compromised by 23:21:08 on the 19th April 2010 PDT. This is based on: 
+		<ul>
+			<li>the presence of the <code>psybnc</code> and <code>eggdrop</code> sudo entries in <code>auth.log</code> - both of these tools are well known IRC bot components;</li>
+			<li>the non-standard username <code>dhg</code> - all other usernames match the pattern <code>user\d+</code>;</li>
+			<li>the fact that <code>auth.log</code> records the user <code>dhg</code> configuring the UFW firewall and then IP Tables directly;</li>
+			<li>at 23:02:37 on the 19th April 2010 PDT, root installed the Debian package <code>build-essential</code>. This event may well point to a much earlier compromise if one views this event as being part of a need for the attacker to ensure that their OS environment is suitably sane for software building purposes.</li>
+		</ul>
+	</li>
 	<li><i>If the system was compromised, what was the method used?</i><br />
-		TODO: ??</li>
+		?</li>
 	<li><i>Can you locate how many attackers failed? If some succeeded, how many were they? How many stopped attacking after the first success?</i><br />
-		TODO: ??</li>
+		?</li>
 	<li><i>What happened after the brute force attack?</i><br />
-		TODO: ??</li>
+		?</li>
 	<li><i>Locate the authentication logs, was a bruteforce attack performed? If yes how many?</i><br />
-		TODO: ??</li>
+		?</li>
 	<li><i>What is the timeline of significant events? How certain are you of the timing?</i><br />
-		See below for our timeline.<br />
-		The Apache2 log files have their timestamps (at least in theory!) all originating from a single time source (ie. the Apache2 process, which in turn uses the system time).<br />
-		Apache2 logging has here been configured to use mod unique ID. This means that each Apache2 log line may have its time source verified. Only one Apache2 log event is to be found with an inaccurate mod unique ID field and so, in the absence of a suitable explanation, we assume that this log entry has been forged.<br />
-		Regular access to the RSS newsfeeds (particularly by IP address 10.0.1.2) allows one to further validate the relative consistency of our timestamps.<br />
-		It is for these time-based reasons that we originally chose to start our log file analysis with the Apache2 log events. By relating Apache2 restart events to the sudo Apache2 restart events in auth.log, we are able to partially extend our timestamp consistency checks to the auth.log file.</li>
+		Our timeline is displayed below.<br />
+		Whilst we do not have enough data to say anything about the accuracy of the system clock, we can say something about the consistency of each timestamped process-based log events.<br />
+		The Apache2 log files have their timestamps (at least in theory!) all originating from a single time source (ie. the Apache2 process, which in turn uses the system clock via system function calls).<br />
+		Apache2 logging has here been configured to use mod unique ID. This means that each Apache2 log line may have its time source <%= link_to "verified", "/research/unknown" %> to some degree. Only one Apache2 log event is to be found with an inaccurate mod unique ID field:
+		<div class="events">
+			<% ApacheAccess.tagged_with(["anomaly", "unknown"]).all.each do |event| %>
+			<div class="event"><%= event.to_s %></div>
+			<% end %>
+		</div>
+		and so, in the absence of a suitable explanation, we assume that this log entry has been tainted in some way.<br />
+		Regularly timed event logging (eg. by IP address <%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2"%>) allows one to further validate the relative consistency of our log timestamps.<br />
+		<b>Note:</b> It is for these time-based reasons that we originally chose to start our log file analysis with the Apache2 log events. By relating Apache2 restart events to the sudo Apache2 restart events in <code>auth.log</code>, we are able to partially extend our timestamp consistency checks to the <code>auth.log</code> file.</li>
 	<li><i>Anything else that looks suspicious in the logs? Any misconfigurations? Other issues?</i><br />
 		TODO: ??</li>
 	<li><i>Was an automatic tool used to perform the attack? If yes which one?</i><br />
-		TODO: ??</li>
+		?</li>
 	<li><i>What can you say about the attacker's goals and methods?</i><br />
-		The presence of eggdrop and psybnc suggest that the attacker(s) plan to add this system to a node in their botnet.</li>
+		The presence of <code>eggdrop</code> and <code>psybnc</code> suggest that the attacker(s) plan to use this system as part of a botnet.</li>
 </ol>
 
 <p><b>Bonus:</b> <i>What would you have done to avoid this attack?</i><br />

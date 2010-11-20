@@ -142,6 +142,13 @@ class ResearchController < ApplicationController
           @data = map_to_hash ApacheAccess.tagged_with(["wordpress", "version"]).all
         end
         
+        if params[:chapter] == "process"
+          def map_to_hash(data)
+            data.map { |d| { :pid => d.pid, :observed_at => d.observed_at.to_f, :thread_index => (d.thread_index || 0), :counter => d.counter } }
+          end
+          @data = map_to_hash ApacheAccess.all
+        end
+        
         if params[:chapter] == "cron"
           def map_to_hash(data)
             data.map_with_index { |d, i| { :position => i, :observed_at => d.observed_at.to_f, :pid => d.pid, :thread_index => d.thread_index, :counter => d.counter, :bytes => d.bytes, :processing_time => d.processing_time } } 
