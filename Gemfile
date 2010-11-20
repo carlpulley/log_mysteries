@@ -32,3 +32,5 @@ gem 'nested_set'
 #  Need to manually patch ruby-ssdeep.c to deal with ruby 1.9.2
 # TODO: need to work out how to get thi sgem to build under ruby 1.9.2!
 #gem 'ssdeep'
+
+gem 'tabs_on_rails'

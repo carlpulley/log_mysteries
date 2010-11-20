@@ -1,0 +1,34 @@
+<h1>Web Server URL Hierarchy</h1>
+
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
+<%
+def walk_tree(node)
+	if node.leaf?
+		"'#{node.name}': #{node.apache_accesses.map { |d| d.bytes }.max}"
+	else
+		"'#{node.name}': { #{node.children.map { |n| walk_tree n }.join(", ")} }"
+	end
+end
+%>
+
+<% FileObject.roots.each do |root| %>
+	<script type="text/javascript+protovis">	
+		var root = "$WEB_ROOT";
+		var data = { <%= walk_tree(root) %> };
+		
+		<%= render :partial => '/graph/dendrogram.js' %>
+		
+		vis.left(80)
+		   .width(650)
+		   .height(800);
+	
+		vis.render();
+	</script>
+<% end %>
+
+<h3>Appendix</h3>
+
+<%= link_to "Data Set (CSV)", "/research/file_system.csv" %>

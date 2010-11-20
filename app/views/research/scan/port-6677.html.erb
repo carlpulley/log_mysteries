@@ -7,7 +7,7 @@
 <h2>Overview</h2>
 
 <%
-	data = @log_events.tagged_with(["port-6677", "scan"]).where(:result => 400).all.map { |d| d.processing_time }
+	data = @data.map { |d| d[:processing_time] }
 	mean = mean(data)/(10**6)
 	stddev = standard_deviation(data)/(10**6)
 	averg = average(data)/(10**6)
@@ -34,46 +34,7 @@
 
 <p>All the scans that use a CONNECT method return 301 redirect responses (the data requested has been assigned a new URI and the change is permanent) - ie. these scans may have worked, thus allowing the web server to proxy socket connections to port 6677.</p>
 
-<h3>IP Addresses</h3>
-
-<p>Grouping our IP Address data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
-<center>
-<% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
-<script type="text/javascript+protovis">
-	var root = "";
-	var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
-
-	<%= render :partial => '/graph/dendrogram.js' %>
-
-	vis.height(500).width(1000).bottom(100).top(20);
-
-	layout.orient("top");
-
-	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= @data.map{ |d| d[:request_count] }.min %>, <%= @data.map{ |d| d[:request_count] }.max %>).range('blue', 'red')(n.nodeValue));
-	
-	label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
-	
-	vis.render();
-</script>
-</center>
-
-<h3>IP Address Blacklisting</h3>
-
-<ul>
-<% @data.map { |d| d[:ip_address] }.uniq.sort.each do |ip_address| %>
-	<% if IpAddress.where(:value => ip_address).first.blacklists.empty? %>
-	<li><%= ip_address %> not listed on any blacklists</li>
-	<% else %>
-	<li><%= ip_address %> listed on:
-		<ul>
-			<% IpAddress.where(:value => ip_address).first.blacklists.each do |blacklist| %>
-			<li><%= link_to blacklist.site, blacklist.reference %></li>
-			<% end %>
-		</ul>
-	</li>
-	<% end %>
-<% end %>
-</ul>
+<%= render :partial => 'ip_address', :locals => { :data => @data } %>
 
 <h2>Appendix</h2>
 

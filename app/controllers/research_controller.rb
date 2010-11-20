@@ -15,12 +15,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class ResearchController < ApplicationController
-  def index        
+  def index
+    set_tab :tree
+    if params[:view]
+      set_tab :sunburst if params[:view] == 'sunburst'
+      set_tab :world if params[:view] == 'world'
+    end
+    
     if params[:chapter] and params[:section]
       
       if params[:chapter] == "scan"
         def map_to_hash(data)
-          data.map { |d| { :ip_address => d.ip_address.value, :request_count => d.ip_address.apache_accesses.count + d.ip_address.apache_errors.count, :asn => d.ip_address.asn || "", :cc => d.ip_address.cc || "", :blacklists => d.ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
+          data.map { |d| { :ip_address => d.ip_address.value, :processing_time => d.processing_time, :request_count => d.ip_address.apache_accesses.count + d.ip_address.apache_errors.count, :asn => d.ip_address.asn || "", :cc => d.ip_address.cc || "", :blacklists => d.ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
         end
         @data = map_to_hash ApacheAccess.tagged_with(["scan", params[:section]]).order(:observed_at).all
       end
@@ -127,6 +133,20 @@ class ResearchController < ApplicationController
             data.map { |d| { :http_method => d.http_method, :http_url => $1, :http_status => d.result, :version => $2 } if d.http_url =~ /^(.*?)\?ver=([^&^\s]+$)/ } 
           end
           @data = map_to_hash ApacheAccess.tagged_with(["wordpress", "version"]).all
+        end
+        
+        if params[:chapter] == "file_system"
+          def map_to_hash(data)
+            data.map { |d| { :http_method => d.http_method, :http_url => $1, :http_status => d.result, :version => $2 } if d.http_url =~ /^(.*?)\?ver=([^&^\s]+$)/ } 
+          end
+          @data = map_to_hash ApacheAccess.tagged_with(["wordpress", "version"]).all
+        end
+        
+        if params[:chapter] == "cron"
+          def map_to_hash(data)
+            data.map_with_index { |d, i| { :position => i, :observed_at => d.observed_at.to_f, :pid => d.pid, :thread_index => d.thread_index, :counter => d.counter, :bytes => d.bytes, :processing_time => d.processing_time } } 
+          end
+          @data = map_to_hash ApacheAccess.url("/wp-cron.php").all
         end
         
         render "research/#{params[:chapter]}"
