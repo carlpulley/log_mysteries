@@ -1,0 +1,80 @@
+<h1>Honeynet Answers</h1>
+
+<ol>
+	<li><i>Was the system compromised and when? How do you know that for sure?</i> <br />
+		We believe that the system was compromised (this is based on the presence of psybnc and eggdrop sudo entries in auth.log) by 23:21:08 on 19th April 2010 PDT.</li>
+	<li><i>If the system was compromised, what was the method used?</i><br />
+		TODO: ??</li>
+	<li><i>Can you locate how many attackers failed? If some succeeded, how many were they? How many stopped attacking after the first success?</i><br />
+		TODO: ??</li>
+	<li><i>What happened after the brute force attack?</i><br />
+		TODO: ??</li>
+	<li><i>Locate the authentication logs, was a bruteforce attack performed? If yes how many?</i><br />
+		TODO: ??</li>
+	<li><i>What is the timeline of significant events? How certain are you of the timing?</i><br />
+		See below for our timeline.<br />
+		The Apache2 log files have their timestamps (at least in theory!) all originating from a single time source (ie. the Apache2 process, which in turn uses the system time).<br />
+		Apache2 logging has here been configured to use mod unique ID. This means that each Apache2 log line may have its time source verified. Only one Apache2 log event is to be found with an inaccurate mod unique ID field and so, in the absence of a suitable explanation, we assume that this log entry has been forged.<br />
+		Regular access to the RSS newsfeeds (particularly by IP address 10.0.1.2) allows one to further validate the relative consistency of our timestamps.<br />
+		It is for these time-based reasons that we originally chose to start our log file analysis with the Apache2 log events. By relating Apache2 restart events to the sudo Apache2 restart events in auth.log, we are able to partially extend our timestamp consistency checks to the auth.log file.</li>
+	<li><i>Anything else that looks suspicious in the logs? Any misconfigurations? Other issues?</i><br />
+		TODO: ??</li>
+	<li><i>Was an automatic tool used to perform the attack? If yes which one?</i><br />
+		TODO: ??</li>
+	<li><i>What can you say about the attacker's goals and methods?</i><br />
+		The presence of eggdrop and psybnc suggest that the attacker(s) plan to add this system to a node in their botnet.</li>
+</ol>
+
+<p><b>Bonus:</b> <i>What would you have done to avoid this attack?</i><br />
+TODO: ??</p>
+
+<h2><a name="timeline">Timeline</a></h2>
+
+<% data = [] %>
+<% data << { :label => "10.0.1.14: POST /wp-cron.php?doing_wp_cron", :timeline => @data.ip_address("10.0.1.14").tagged_with("wordpress").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "10.0.1.2: Apple-PubSub", :timeline => @data.ip_address("10.0.1.2").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "10.0.1.2: OSX 10.6; Firefox 3.6.3", :timeline => @data.ip_address("10.0.1.2").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "10.0.1.2: OSX 10.6; Safari 4.0.5", :timeline => @data.ip_address("10.0.1.2").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2; en-us) AppleWebKit/531.22.7 (KHTML, like Gecko) Version/4.0.5 Safari/531.22.7").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "65.88.2.5: Apple-PubSub", :timeline => @data.ip_address("65.88.2.5").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "65.88.2.5: OSX 10.6; Firefox 3.6.3", :timeline => @data.ip_address("65.88.2.5").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "208.80.69.74: Apple-PubSub", :timeline => @data.ip_address("208.80.69.74").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "208.80.69.69: OSX 10.6; Safari 4.0.4", :timeline => @data.ip_address("208.80.69.69").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "76.191.195.140: Apple-PubSub", :timeline => @data.ip_address("76.191.195.140").tagged_with("rss").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "123.4.59.174: Windows XP; IE 6.0", :timeline => @data.ip_address("123.4.59.174").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "125.45.106.180: Windows XP; IE 6.0", :timeline => @data.ip_address("125.45.106.180").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.4.59.21: Windows XP; IE 6.0", :timeline => @data.ip_address("123.4.59.21").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "125.45.106.168: Windows XP; IE 6.0", :timeline => @data.ip_address("125.45.106.168").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.4.42.80: Windows XP; IE 6.0", :timeline => @data.ip_address("123.4.42.80").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.11.240.130: Windows XP; IE 6.0", :timeline => @data.ip_address("123.11.240.130").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "123.4.51.181: Windows XP; IE 6.0", :timeline => @data.ip_address("123.4.51.181").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "190.167.70.87: Windows XP; Chrome 4.1.249.1045", :timeline => @data.ip_address("190.167.70.87").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "190.166.87.164: Windows XP; Chrome 4.1.249.1059", :timeline => @data.ip_address("190.166.87.164").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "201.229.176.217: Windows XP; Firefox 3.0.19", :timeline => @data.ip_address("201.229.176.217").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "Naverbot", :timeline => @data.tagged_with("bot").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "World of Warcraft Scanning", :timeline => @data.tagged_with("world-of-warcraft,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "Proxy Scanning", :timeline => @data.tagged_with("proxy,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "Port 6677 Scanning", :timeline => @data.tagged_with("port-6677,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+<% data << { :label => "Port 6667 Scanning", :timeline => @data.tagged_with("port-6667,scan").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "Server Loading Estimate", :timeline => @data.ip_address("10.0.1.2").tagged_with("rss").order(:observed_at).all.select { |d| d.processing_time >= 3*(10**6) }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "Out of order Log Events", :timeline => @data.ip_address("10.0.1.2").tagged_with("rss").order(:observed_at).all.select { |d| d.processing_time >= 3*(10**6) }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } } } %>
+
+<% data << { :label => "Apache2 Start Times", :timeline => Sudo.apache_timeline_starts } %>
+<% data << { :label => "Apache2 Stop Times", :timeline => Sudo.apache_timeline_ends } %>
+
+<script type="text/javascript+protovis">
+	var data = <%=raw data.to_json %>;
+
+	<%= render :partial => '/graph/timeline.js' %>
+
+	vis.render();
+</script>

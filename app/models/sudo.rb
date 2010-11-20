@@ -20,6 +20,7 @@ class Sudo < Auth
   serialize :message, Hash
   
   scope :command, lambda { |cmd| where(["message like ?", "%\n:command: %#{cmd}%"]) }
+  scope :tty, lambda { |tty| where(["message like ?", "%\n:tty: %#{tty}\n%"]) }
   
   #state_machine :apache2 do
   #  state :stopped # initial state

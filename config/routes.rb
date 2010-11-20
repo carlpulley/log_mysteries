@@ -15,6 +15,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Answer::Application.routes.draw do
+  get "honeynet/index"
+
   match 'research/by' => "research#index", :chapter => "by"
   
   match 'research/web_server/rss/:subsection' => "research#index", :chapter => "web_server", :section => "rss", :subsection => /\d+\.\d+\.\d+\.\d+/
