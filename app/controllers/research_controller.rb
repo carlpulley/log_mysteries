@@ -94,7 +94,7 @@ class ResearchController < ApplicationController
       render "research/#{params[:chapter]}/#{params[:section]}" unless params[:subsection]
     elsif params[:chapter]
       # TODO: need to make this code more generic and less tied to Apache logs
-      @data = ApacheAccess.scoped    
+      @data = Auth.scoped    
       @filename = ""
       if params[:chapter] == "by"
         filename = []
@@ -155,6 +155,13 @@ class ResearchController < ApplicationController
             data.map_with_index { |d, i| { :position => i, :observed_at => d.observed_at.to_f, :pid => d.pid, :thread_index => d.thread_index, :counter => d.counter, :bytes => d.bytes, :processing_time => d.processing_time } } 
           end
           @data = map_to_hash ApacheAccess.url("/wp-cron.php").all
+        end
+        
+        if params[:chapter] == "maintenance"
+          def map_to_hash(data)
+            data.map { |t, c| { :count => c, :observed_at => t.to_f } } 
+          end
+          @data = map_to_hash Sudo.tagged_with("maintenance").group(:observed_at).count
         end
         
         render "research/#{params[:chapter]}"

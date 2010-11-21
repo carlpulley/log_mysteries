@@ -1,0 +1,2 @@
+<% headers['Content-Disposition'] = "attachment; filename=\"maintenance\"" -%>
+<%= render :partial => 'data.csv', :locals => { :data => @data } %>

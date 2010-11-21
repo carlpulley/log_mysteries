@@ -1,0 +1,20 @@
+<h2>System Maintenance</h2>
+
+<script>
+	var raw_data = <%=raw @data.to_json %>;
+</script>
+
+TODO: ??
+<script type="text/javascript+protovis">	
+	var data = raw_data.map(function(d) { h = {}; h['x'] = d['observed_at']; h['y'] = d['count']; return h; });
+	
+	<%= render :partial => '/graph/area.js' %>
+	
+	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+
+	vis.render();
+</script>
+
+<h3>Appendix</h3>
+
+<%= link_to "Data Set (CSV)", "/research/maintenance.csv" %>
