@@ -34,6 +34,15 @@ Rake::Task["tag:events:scan"].invoke
 Rake::Task["tag:events:rss"].invoke
 Rake::Task["tag:files:static"].invoke
 Rake::Task["tag:files:dynamic"].invoke
+Rake::Task["tag:events:unknown:anomalies"].invoke
+
+# Tag events in the Auth models
+
+Rake::Task["tag:events:apache"].invoke
+Rake::Task["tag:events:maintenance"].invoke
+Rake::Task["tag:events:python"].invoke
+Rake::Task["tag:events:firewall"].invoke
+Rake::Task["tag:events:subversion"].invoke
 
 # Build referrer hierarchy for the ApacheAccess model
 

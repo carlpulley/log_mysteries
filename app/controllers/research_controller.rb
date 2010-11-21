@@ -93,6 +93,7 @@ class ResearchController < ApplicationController
       render "research/#{params[:chapter]}/#{params[:section]}/#{params[:subsection]}" if params[:subsection]
       render "research/#{params[:chapter]}/#{params[:section]}" unless params[:subsection]
     elsif params[:chapter]
+      # TODO: need to make this code more generic and less tied to Apache logs
       @data = ApacheAccess.scoped    
       @filename = ""
       if params[:chapter] == "by"
