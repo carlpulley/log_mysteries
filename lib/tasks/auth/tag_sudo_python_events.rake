@@ -17,8 +17,8 @@
 namespace :tag do
   namespace :events do
     task :python => :environment do 
-      Sudo.command(".py").all.each do |event|
-        event.tag_list << "python"
+      Sudo.all.each do |event|
+        event.tag_list << "python" if event.message[:command] =~ /\.py(\s|$)/
         event.save!
       end
       

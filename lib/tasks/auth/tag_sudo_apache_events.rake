@@ -19,6 +19,8 @@ namespace :tag do
     task :apache => :environment do 
       Sudo.command("apache").all.each do |event|
         event.tag_list << "apache"
+        event.tag_list << "start" if event.message[:command] =~ /^\/etc\/init.d\/apache2 start$/ or event.message[:command] =~ /^\/etc\/init.d\/apache2 restart$/
+        event.tag_list << "stop" if event.message[:command] =~ /^\/etc\/init.d\/apache2 stop$/ or event.message[:command] =~ /^\/etc\/init.d\/apache2 restart$/ or event.message[:command] =~ /^\/usr\/bin\/killall .*?apache2$/
         event.save!
       end
     end
