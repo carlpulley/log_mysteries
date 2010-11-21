@@ -158,10 +158,7 @@ class ResearchController < ApplicationController
         end
         
         if params[:chapter] == "maintenance"
-          def map_to_hash(data)
-            data.map { |t, c| { :count => c, :observed_at => t.to_f } } 
-          end
-          @data = map_to_hash Sudo.tagged_with("maintenance").group(:observed_at).count
+          @data = Sudo.scoped
         end
         
         render "research/#{params[:chapter]}"
