@@ -17,7 +17,7 @@ var vis = new pv.Panel()
     .left(50)
     .right(400)
     .events("all")
-    .event("mousemove", pv.Behavior.point(Infinity).collapse("y"));
+    .event("mousemove", function() this.i(this.mouse().x));
 
 vis.add(pv.Rule)
     .data(dates.ticks())
@@ -55,7 +55,6 @@ data.forEach(function(ds) {
 vis.add(pv.Rule)
     .left(function() this.parent.i())
     .strokeStyle("red")
-    .event("point", function() this.parent.i(this.parent.mouse().x))
     .anchor("top").add(pv.Label)
         .textAlign("center")
         .textStyle("red")
