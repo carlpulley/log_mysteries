@@ -43,6 +43,9 @@ Rake::Task["tag:events:maintenance"].invoke
 Rake::Task["tag:events:python"].invoke
 Rake::Task["tag:events:firewall"].invoke
 Rake::Task["tag:events:subversion"].invoke
+Rake::Task["tag:events:botnet"].invoke
+Rake::Task["tag:events:odd:user"].invoke
+Rake::Task["tag:events:install"].invoke
 
 # Build referrer hierarchy for the ApacheAccess model
 

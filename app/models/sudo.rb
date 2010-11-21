@@ -21,6 +21,7 @@ class Sudo < Auth
   
   scope :command, lambda { |cmd| where(["message like ?", "%\n:command: %#{cmd}%"]) }
   scope :tty, lambda { |tty| where(["message like ?", "%\n:tty: %#{tty}\n%"]) }
+  scope :pwd, lambda { |pwd| where(["message like ?", "%\n:pwd: %#{pwd}%"]) }
   
   #state_machine :apache2 do
   #  state :stopped # initial state

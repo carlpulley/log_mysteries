@@ -21,9 +21,9 @@
 	<li><i>Was the system compromised and when? How do you know that for sure?</i> <br />
 		We believe that the system was compromised by 23:21:08 on the 19th April 2010 PDT. After grouping our sudo log entries by their TTY value, our assertion is based on: 
 		<ul>
-			<li>the presence of the <code>psybnc</code> and <code>eggdrop</code> sudo entries in <code>auth.log</code> - both of these tools are known IRC bot components;</li>
-			<li>the non-standard username <code>dhg</code> - all other usernames match the pattern <code>user\d+</code>;</li>
-			<li>the fact that <code>auth.log</code> records the user <code>dhg</code> configuring the UFW firewall and then IP Tables directly at a time that is after the server is estimated to have been configured;</li>
+			<li>the presence of the <code>psybnc</code> and <code>eggdrop</code> sudo entries in <code>auth.log</code> - both of these tools are known IRC bot components (see <%= link_to "botnet events", "/research/by?tagged=botnet" %>);</li>
+			<li>the non-standard username <code>dhg</code> - all other usernames match the pattern <code>user\d+</code> (see <%= link_to "odd user events", "/research/by?tagged=odd,user" %>);</li>
+			<li>the fact that <code>auth.log</code> records the user <code>dhg</code> configuring the UFW firewall and then IP Tables directly at a time that is after the server is estimated to have been configured (see <%= link_to "firewall events", "/research/by?tagged=firewall" %>);</li>
 			<li>at 23:02:37 on the 19th April 2010 PDT, root installed the Debian package <code>build-essential</code>. This event may well point to a much earlier compromise if one views this event as being part of a need for the attacker to ensure that their OS environment is suitably sane for software building purposes. FIXME: can we make this idea any stronger?</li>
 		</ul>
 	</li>

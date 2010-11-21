@@ -1,6 +1,6 @@
 <div class="events">
 	<% data.each do |event| %>
-		<% if event.method_defined? :to_html %>
+		<% if event.respond_to? :to_html %>
 			<div class="event"><%=raw event.to_html(data.map { |d| d.bytes }.max, data.map { |d| d.processing_time }.max) %></div>
 		<% else %>
 			<div class="event"><%=raw event.to_s %></div>
