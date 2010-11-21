@@ -31,7 +31,8 @@ data.forEach(function(ds) {
         .data(ds.timeline)
         .left(dates(begin(ds)))
         .width(dates(end(ds)) - dates(begin(ds)))
-        .top(function() data.indexOf(ds) * c + p - 2)
+        .def("di", data.indexOf(ds))
+        .top(function() this.di() * c + p - 2)
         .height(h)
         .strokeStyle("#c4d8ff");
 
@@ -39,14 +40,16 @@ data.forEach(function(ds) {
         var line = vis.add(pv.Bar)
             .left(dates(d.begin))
             .width(dates(d.end) - dates(d.begin))
-            .top(function() data.indexOf(ds) * c + p - 2)
+            .def("di", data.indexOf(ds))
+            .top(function() this.di() * c + p - 2)
             .height(h)
             .strokeStyle("#142f97");        
     });
         
     var label = vis.add(pv.Label)
         .left(dates(begin(ds)))
-        .top(function() data.indexOf(ds) * c + p)
+        .def("di", data.indexOf(ds))
+        .top(function() this.di() * c + p)
         .textAlign("left")
         .textBaseline("bottom")
         .text(ds.label);
