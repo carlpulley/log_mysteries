@@ -6,6 +6,7 @@ var height = data.length * c + 10;
 
 var begin = function(ds) { return ds.timeline.map(function (d) { return d.begin; }).min(); }
 var end = function(ds) { return ds.timeline.map(function (d) { return d.end; }).max(); }
+// TODO: modify scale so that area under cursor is magnified
 var dates = pv.Scale.linear(data.map(function(ds) { return begin(ds); }).min(), data.map(function(ds) { return end(ds); }).max()).range(0, width);
 
 var vis = new pv.Panel()
@@ -32,8 +33,7 @@ data.forEach(function(ds) {
         .width(dates(end(ds)) - dates(begin(ds)))
         .top(function() data.indexOf(ds) * c + p - 2)
         .height(h)
-        .strokeStyle("#c4d8ff")
-        .event("point", function() this.parent.i(this.parent.mouse().x));
+        .strokeStyle("#c4d8ff");
 
     ds.timeline.forEach(function(d) {
         var line = vis.add(pv.Bar)
@@ -41,8 +41,7 @@ data.forEach(function(ds) {
             .width(dates(d.end) - dates(d.begin))
             .top(function() data.indexOf(ds) * c + p - 2)
             .height(h)
-            .strokeStyle("#142f97")
-            .event("point", function() this.parent.i(this.parent.mouse().x));        
+            .strokeStyle("#142f97");        
     });
         
     var label = vis.add(pv.Label)
@@ -55,6 +54,9 @@ data.forEach(function(ds) {
   
 vis.add(pv.Rule)
     .left(function() this.parent.i())
+    .strokeStyle("red")
+    .event("point", function() this.parent.i(this.parent.mouse().x))
     .anchor("top").add(pv.Label)
         .textAlign("center")
+        .textStyle("red")
         .text(function() pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(dates.invert(this.parent.i())*1000)));
