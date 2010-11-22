@@ -3,11 +3,17 @@
 var pb = 4, pt = 6, p = pb+pt, h = 3, c = p+h;
 var width = 1100;
 var height = data.length * c + 10;
+var cursor = 20;
 
+// FIXME: work out why, with multiple timeline panels, last panel needs to init. first in order to see cursors
+// FIXME: need to put bounds checks in place for cursors!
 var begin = function(ds) { return ds.timeline.map(function (d) { return d.begin; }).min(); }
 var end = function(ds) { return ds.timeline.map(function (d) { return d.end; }).max(); }
 // TODO: modify scale so that area under cursor is magnified
-var dates = pv.Scale.linear(data.map(function(ds) { return begin(ds); }).min(), data.map(function(ds) { return end(ds); }).max()).range(0, width);
+// TODO: add in JS code so that cursor highlighted log events can be displayed
+var start = data.map(function(ds) { return begin(ds); }).min();
+var finish = data.map(function(ds) { return end(ds); }).max();
+var dates = pv.Scale.linear(start, finish).range(0, width);
 
 var vis = new pv.Panel()
     .def("i", 0)
@@ -55,9 +61,19 @@ data.forEach(function(ds) {
         .text(ds.label);
 });
   
+
+vis.add(pv.Rule)
+    .left(function() this.parent.i()-cursor)
+    .strokeStyle("#BCC2BA")
+    .visible(function() vis.i() > 0);
+vis.add(pv.Rule)
+    .left(function() this.parent.i()+cursor)
+    .strokeStyle("#BCC2BA")
+    .visible(function() vis.i() > 0);
 vis.add(pv.Rule)
     .left(function() this.parent.i())
     .strokeStyle("red")
+    .visible(function() vis.i() > 0)
     .anchor("top").add(pv.Label)
         .textAlign("center")
         .textStyle("red")
