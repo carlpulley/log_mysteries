@@ -65,12 +65,4 @@ class Sudo < Auth
       result
     end
   end
-  
-  def self.apache_timeline_starts
-    Sudo.command("apache2").command("start").all.sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i, :event => d.to_s } }
-  end
-  
-  def self.apache_timeline_ends
-    (Sudo.command("apache2").command("stop").all + Sudo.command("apache2").command("killall").all).sort { |a, b| a.observed_at.to_i <=> b.observed_at.to_i }.map { |d| { :begin => d.observed_at.to_i, :end => d.observed_at.to_i, :event => d.to_s } }
-  end
 end
