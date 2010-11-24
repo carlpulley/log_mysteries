@@ -1,9 +1,11 @@
-// INPUT: data = [ { 'label': <timeline label>, 'timeline': [ { 'begin': <event start (double expressing seconds)>, 'end': <event end (double expressing microseconds)> }, ... ] }]
+// INPUT: data = [ { 'label': <timeline label>, 'timeline': [ { 'begin': <event start (double expressing seconds)>, 'end': <event end (double expressing microseconds)>, 'event': string }, ... ] }]
+// OPTIONAL INPUT: events = string
 
 var pb = 4, pt = 6, p = pb+pt, h = 3, c = p+h;
 var width = 1100;
 var height = data.length * c + 10;
 var cursor = 20;
+var delta = 1;
 
 // FIXME: work out why, with multiple timeline panels, last panel needs to init. first in order to see cursors
 // FIXME: need to put bounds checks in place for cursors!
@@ -15,15 +17,20 @@ var start = data.map(function(ds) { return begin(ds); }).min();
 var finish = data.map(function(ds) { return end(ds); }).max();
 var dates = pv.Scale.linear(start, finish).range(0, width);
 
+function get_logged_events(position) {
+    return data.map(function(ds) { return ds.timeline; }).map(function(ds) { return ds.select(function(d) { return (d.begin-delta <= position && position <= d.end+delta); }).map(function(d) { return "<div class='event'>"+d.event+"</div>"; }).join("\n"); } ).join("\n");
+}
+
 var vis = new pv.Panel()
     .def("i", 0)
+    .def("log", events)
     .width(width)
     .height(height)
     .margin(20)
     .left(50)
     .right(400)
     .events("all")
-    .event("mousemove", function() this.i(this.mouse().x));
+    .event("mousemove", function() { var result = this.i(this.mouse().x); $(this.log()).update(get_logged_events(dates.invert(this.i()))); return result; });
 
 vis.add(pv.Rule)
     .data(dates.ticks())
@@ -62,14 +69,14 @@ data.forEach(function(ds) {
 });
   
 
-vis.add(pv.Rule)
-    .left(function() this.parent.i()-cursor)
-    .strokeStyle("#BCC2BA")
-    .visible(function() vis.i() > 0);
-vis.add(pv.Rule)
-    .left(function() this.parent.i()+cursor)
-    .strokeStyle("#BCC2BA")
-    .visible(function() vis.i() > 0);
+//vis.add(pv.Rule)
+//    .left(function() this.parent.i()-cursor)
+//    .strokeStyle("#BCC2BA")
+//    .visible(function() vis.i() > 0);
+//vis.add(pv.Rule)
+//    .left(function() this.parent.i()+cursor)
+//    .strokeStyle("#BCC2BA")
+//    .visible(function() vis.i() > 0);
 vis.add(pv.Rule)
     .left(function() this.parent.i())
     .strokeStyle("red")

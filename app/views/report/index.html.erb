@@ -266,16 +266,19 @@ Within our Git repository we intend to place the research and report controller 
 
 <% data << { :label => "Out of order Log Events", :timeline => @log_events.ip_address("10.0.1.2").tagged_with("rss").order(:observed_at).all.select { |d| d.processing_time >= 3*(10**6) }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)), :event => d.to_s } } } %>
 
-<% data << { :label => "Apache2 Start Times", :timeline => Sudo.apache_timeline_starts } %>
-<% data << { :label => "Apache2 Stop Times", :timeline => Sudo.apache_timeline_ends } %>
+<% data << { :label => "Apache events", :timeline => Sudo.tagged_with("apache").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f, :event => d.to_s } } } %>
 
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
+	var events = "current-events";
 
 	<%= render :partial => '/graph/timeline.js' %>
 
 	vis.render();
 </script>
+
+<div id="current-events" class="events">
+</div>
 
 <h2>Appendix</h2>
 

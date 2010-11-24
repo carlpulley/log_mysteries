@@ -39,12 +39,15 @@
 
 		<script type="text/javascript+protovis">
 			var data = <%=raw data.to_json %>;
+			var events = "sudo-events";
 
 			<%= render :partial => '/graph/timeline.js' %>
 
 			vis.render();
 		</script>
 		
+		<div id="sudo-events" class="events">
+		</div>
 	</li>
 	<li><i>If the system was compromised, what was the method used?</i><br />
 		?</li>
@@ -64,11 +67,15 @@
 
 		<script type="text/javascript+protovis">
 			var data = <%=raw data.to_json %>;
+			var events = "loading-events";
 
 			<%= render :partial => '/graph/timeline.js' %>
 
 			vis.render();
 		</script>
+		
+		<div id="loading-events" class="events">
+		</div>
 		
 		If we take the view that a sustained brute force attack would result in resource consumption (and so observable server loading), then we may use a timeline plot of our various server loading estimates (see our <%= link_to "research notes", "/research" %>) to estimate when we think that any brute force attacks might have occurred.<br />
 		This timeline analysis results in the following predictions for potential brute force attacks:
@@ -119,12 +126,16 @@
 
 		<script type="text/javascript+protovis">
 			var data = <%=raw data.to_json %>;
+			var events = "major-events";
 
 			<%= render :partial => '/graph/timeline.js' %>
 
 			vis.render();
 		</script>
 
+		<div id="major-events" class="events">
+		</div>
+		
 		Apache2 logging has here been configured to use mod unique ID. This means that each Apache2 log line may have its timestamp <%= link_to "verified", "/research/unknown" %> to some degree. Only one Apache2 log event is to be found with an inaccurate (ie. by more than ±1 second) mod unique ID field:
 		<div class="events">
 			<% ApacheAccess.tagged_with(["anomaly", "unknown"]).all.each do |event| %>

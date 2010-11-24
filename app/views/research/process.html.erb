@@ -75,11 +75,15 @@
 <% data << { :label => "Apache events", :timeline => Sudo.tagged_with("apache").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f, :event => d.to_s } } } %>
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
+	var events = "process-events";
 
 	<%= render :partial => '/graph/timeline.js' %>
 
 	vis.render();
 </script>
+
+<div id="process-events" class="events">
+</div>
 
 <h2>Appendix</h2>
 

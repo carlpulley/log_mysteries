@@ -116,11 +116,15 @@
 
 <script type="text/javascript+protovis">
 	var data = <%=raw data.to_json %>;
+	var events = "current-events";
 
 	<%= render :partial => '/graph/timeline.js' %>
 
 	vis.render();
 </script>
+
+<div id="current-events" class="events">
+</div>
 <% end %>
 <% if params[:chapter] == "by" %>
 
