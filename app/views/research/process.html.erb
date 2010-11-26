@@ -68,22 +68,13 @@
 
 <h3>Process ID Timeline</h3>
 
-<% data = [] %>
+<% timeline = ApplicationHelper::Timeline.new %>
 <% ApacheAccess.all.map { |d| d.pid }.compact.uniq.sort.each do |pid| %>
-	<% data << { :label => "PID: #{pid}", :timeline => ApacheAccess.all.select { |d| d.pid == pid }.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)), :event => d.to_s } } } %>
+	<% timeline.add_event("PID: #{pid}", ApacheAccess.where("pid = ?", pid)) %>
 <% end %>
-<% data << { :label => "Apache events", :timeline => Sudo.tagged_with("apache").order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f, :event => d.to_s } } } %>
-<script type="text/javascript+protovis">
-	var data = <%=raw data.to_json %>;
-	var events = "process-events";
+<% timeline.add_event("Apache events", Sudo.tagged_with("apache")) %>
 
-	<%= render :partial => '/graph/timeline.js' %>
-
-	vis.render();
-</script>
-
-<div id="process-events" class="events">
-</div>
+<%= render :partial => '/graph/timeline', :object => timeline %>
 
 <h2>Appendix</h2>
 

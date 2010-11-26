@@ -40,7 +40,7 @@ class ApacheAccess < ActiveRecord::Base
   
   def self.parse_log_line(log_line)
     if log_line =~ /^([\d.]+)\s+(\w+|-)\s+(\w+|-)\s+\[([\d\w:\/\s\+\-]+)\]\s+\"([A-Z]+)\s+(.*?)\s+HTTP\/([\d\.]+)\"\s+(\d{3})\s+(\d+|-)\s+\"(.*?)\"\s+\"(.*?)\"\s+(.*?)\s+(\d+)$/
-      { :remote => $1, :host => $2, :user => $3, :http_method => $5, :http_url => $6, :http_version => $7, :result => $8.to_i, :bytes => $9.try(:to_i), :referer => $10, :user_agent => $11, :unknown => $12, :processing_time => $13.try(:to_i), :observed_at => DateTime.strptime($4, "%d/%b/%Y:%H:%M:%S %Z") }
+      { :remote => $1, :host => $2, :user => $3, :http_method => $5, :http_url => $6, :http_version => $7, :result => $8.to_i, :bytes => $9.try(:to_i), :referer => $10, :user_agent => $11, :unknown => $12, :pid => pid($12), :timestamp => timestamp($12), :local => local($12), :thread_index => thread_index($12), :counter => counter($12), :processing_time => $13.try(:to_i), :observed_at => DateTime.strptime($4, "%d/%b/%Y:%H:%M:%S %Z") }
     end
   end
   
@@ -52,24 +52,24 @@ class ApacheAccess < ActiveRecord::Base
     "#{observed_time "%d/%b/%Y:%H:%M:%S %z"} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{max_bytes}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{max_processing_time}).render();</script> #{counter} #{pid} #{thread_index} #{referer == '-' ? http_method : "#{referer} -> #{http_method}"} #{http_url}"
   end
   
-  def timestamp
-    decode_unknown[0..3].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n }/10**6 unless unknown == '-'
+  def self.timestamp(unknown)
+    decode_unknown(unknown)[0..3].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n }/10**6 unless unknown == '-'
   end
   
-  def local
-    decode_unknown[4..7].split("").map { |n| n.ord }.join(".") unless unknown == '-'
+  def self.local(unknown)
+    decode_unknown(unknown)[4..7].split("").map { |n| n.ord }.join(".") unless unknown == '-'
   end
   
-  def pid
-    decode_unknown[8..11].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
+  def self.pid(unknown)
+    decode_unknown(unknown)[8..11].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
   end
   
-  def thread_index
-    decode_unknown[14..17].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
+  def self.thread_index(unknown)
+    decode_unknown(unknown)[14..17].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
   end
   
-  def counter
-    decode_unknown[12..13].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
+  def self.counter(unknown)
+    decode_unknown(unknown)[12..13].split("").map { |n| n.ord }.inject(0) { |t, n| t*256 + n } unless unknown == '-'
   end
   
   def observed_time(format)
@@ -78,7 +78,7 @@ class ApacheAccess < ActiveRecord::Base
   
   private
   
-  def decode_unknown
+  def self.decode_unknown(unknown)
     Base64.decode64(unknown.tr('-', '/').tr('@', '+'))
   end
 end

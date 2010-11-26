@@ -1,43 +1,55 @@
-// INPUT: data = [ { 'label': <timeline label>, 'timeline': [ { 'begin': <event start (double expressing seconds)>, 'end': <event end (double expressing microseconds)>, 'event': string }, ... ] }]
-// OPTIONAL INPUT: events = string
+// INPUT: data = [ { 'label': <timeline label>, 'timeline': [ { 'begin': <event start (double expressing seconds)>, 'end': <event end (double expressing seconds)> }, ... ] }]
+// INPUT events = [ { 'observed_at': integer, 'event': string } ]
+// OPTIONAL INPUT: events_id = string
 
 var pb = 4, pt = 6, p = pb+pt, h = 3, c = p+h;
 var width = 1100;
 var height = data.length * c + 10;
 var cursor = 20;
-var delta = 1;
+var delta = 10;
 
 // FIXME: work out why, with multiple timeline panels, last panel needs to init. first in order to see cursors
-// FIXME: need to put bounds checks in place for cursors!
+// FIXME: need to put bounds checks in place for cursors!?
 var begin = function(ds) { return ds.timeline.map(function (d) { return d.begin; }).min(); }
 var end = function(ds) { return ds.timeline.map(function (d) { return d.end; }).max(); }
 // TODO: modify scale so that area under cursor is magnified
-// TODO: add in JS code so that cursor highlighted log events can be displayed
+// TODO: add in click functionality - each click: fixes cursor line, detaches mouse and presents magnified cursor view; and vica versa (reattaching should move/snap mouse to cursor!)
+// TODO: link magnification view cursor to a red highlighting of displayed log events we are currently over
 var start = data.map(function(ds) { return begin(ds); }).min();
 var finish = data.map(function(ds) { return end(ds); }).max();
 var dates = pv.Scale.linear(start, finish).range(0, width);
 
-function get_logged_events(position) {
-    return data.map(function(ds) { return ds.timeline; }).map(function(ds) { return ds.select(function(d) { return (d.begin-delta <= position && position <= d.end+delta); }).map(function(d) { return "<div class='event'>"+d.event+"</div>"; }).join("\n"); } ).join("\n");
+function get_event_index(events, cursor) {
+    var position = dates.invert(cursor);
+    return events.select(function(d) { return d.observed_at <= position; }).length;
+}
+
+function goto_line(events_id, line) {
+  var ta = $(events_id);
+  var lineHeight = ta.clientHeight / ta.rows;
+  var jump = (line - 1) * lineHeight;
+  ta.scrollTop = jump;
 }
 
 var vis = new pv.Panel()
     .def("i", 0)
-    .def("log", events)
+    .def("log", events_id)
+    .def("evnts", events)
+    .def("line", 0)
     .width(width)
     .height(height)
     .margin(20)
     .left(50)
     .right(400)
     .events("all")
-    .event("mousemove", function() { var result = this.i(this.mouse().x); $(this.log()).update(get_logged_events(dates.invert(this.i()))); return result; });
+    .event("mousemove", function() { var cursor = this.i(this.mouse().x); this.line(get_event_index(this.evnts(), this.i())); goto_line(this.log(), this.line()); return cursor; });
 
 vis.add(pv.Rule)
     .data(dates.ticks())
     .strokeStyle("#eee")
     .left(dates)
     .anchor("bottom").add(pv.Label)
-        .text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+        .text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000))); // Date works with milliseconds
             
 data.forEach(function(ds) {
     var line = vis.add(pv.Bar)
@@ -81,6 +93,7 @@ vis.add(pv.Rule)
     .left(function() this.parent.i())
     .strokeStyle("red")
     .visible(function() vis.i() > 0)
+    // FIXME: label should follow mouse
     .anchor("top").add(pv.Label)
         .textAlign("center")
         .textStyle("red")

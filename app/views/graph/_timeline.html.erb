@@ -1,0 +1,18 @@
+<% eid = (rand*(10**17)).to_i -%>
+<script type="text/javascript+protovis">
+	var data = <%=raw timeline.data.to_json %>;
+	var events = <%=raw timeline.events.to_json %>;
+	var events_id = "events_<%= eid %>";
+	
+	<%= render :partial => '/graph/timeline.js' %>
+	<%= yield %>
+	vis.render();
+</script>
+<p>
+	<% # TODO: add in code to highlight log lines under the display cursor -%>
+	<textarea id='events_<%= eid %>' class='events' rows="20" cols="160" readonly="true">
+	<% timeline.events.each do |line| %>
+		<%= line[:event] %>
+	<% end %>
+	</textarea>
+</p>

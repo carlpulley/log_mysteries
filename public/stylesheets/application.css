@@ -14,7 +14,7 @@
 /*    You should have received a copy of the GNU General Public License       */
 /*    along with this program.  If not, see <http://www.gnu.org/licenses/>.   */
 
-.events .event {
+textarea.events {
     font-family: "Courier New";
     font-size: 0.8em;
     font-weight: normal;

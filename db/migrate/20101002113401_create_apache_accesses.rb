@@ -12,6 +12,11 @@ class CreateApacheAccesses < ActiveRecord::Migration
       t.string :referer
       t.string :user_agent
       t.string :unknown
+      t.string :local
+      t.integer :timestamp
+      t.integer :pid
+      t.integer :counter
+      t.integer :thread_index
       t.integer :processing_time
       t.datetime :observed_at
 
