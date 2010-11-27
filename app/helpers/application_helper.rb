@@ -17,7 +17,7 @@ module ApplicationHelper
     end
     
     def events
-      @events.inject([]) { |t,h| t+h }.sort { |a,b| a[:observed_at] <=> b[:observed_at] }
+      @events.inject([]) { |t,h| t+h }.uniq.sort { |a,b| a[:observed_at] <=> b[:observed_at] }
     end
   end
 

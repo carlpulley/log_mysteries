@@ -14,9 +14,21 @@
 /*    You should have received a copy of the GNU General Public License       */
 /*    along with this program.  If not, see <http://www.gnu.org/licenses/>.   */
 
-textarea.events {
+.events {
     font-family: "Courier New";
     font-size: 0.8em;
     font-weight: normal;
+    height: 25em;
+    width: 100em;
+    overflow: auto;
+    border: 1px solid #BCC2BA;
+    padding-left: 1em;
+}
+
+.events .event {
     white-space: pre;
+}
+
+.events .event[highlight='true'] {
+    color: red;
 }

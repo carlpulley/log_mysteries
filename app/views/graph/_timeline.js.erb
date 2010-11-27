@@ -1,15 +1,12 @@
 // INPUT: data = [ { 'label': <timeline label>, 'timeline': [ { 'begin': <event start (double expressing seconds)>, 'end': <event end (double expressing seconds)> }, ... ] }]
-// INPUT events = [ { 'observed_at': integer, 'event': string } ]
+// INPUT: events = [ { 'observed_at': double, 'type': string, 'id': integer } ]
 // OPTIONAL INPUT: events_id = string
 
 var pb = 4, pt = 6, p = pb+pt, h = 3, c = p+h;
 var width = 1100;
 var height = data.length * c + 10;
-var cursor = 20;
-var delta = 10;
+var timezone = -7*60*60; // -7 hours
 
-// FIXME: work out why, with multiple timeline panels, last panel needs to init. first in order to see cursors
-// FIXME: need to put bounds checks in place for cursors!?
 var begin = function(ds) { return ds.timeline.map(function (d) { return d.begin; }).min(); }
 var end = function(ds) { return ds.timeline.map(function (d) { return d.end; }).max(); }
 // TODO: modify scale so that area under cursor is magnified
@@ -19,37 +16,29 @@ var start = data.map(function(ds) { return begin(ds); }).min();
 var finish = data.map(function(ds) { return end(ds); }).max();
 var dates = pv.Scale.linear(start, finish).range(0, width);
 
-function get_event_index(events, cursor) {
-    var position = dates.invert(cursor);
-    return events.select(function(d) { return d.observed_at <= position; }).length;
-}
-
-function goto_line(events_id, line) {
-  var ta = $(events_id);
-  var lineHeight = ta.clientHeight / ta.rows;
-  var jump = (line - 1) * lineHeight;
-  ta.scrollTop = jump;
-}
-
 var vis = new pv.Panel()
     .def("i", 0)
     .def("log", events_id)
     .def("evnts", events)
-    .def("line", 0)
     .width(width)
     .height(height)
     .margin(20)
     .left(50)
     .right(400)
     .events("all")
-    .event("mousemove", function() { var cursor = this.i(this.mouse().x); this.line(get_event_index(this.evnts(), this.i())); goto_line(this.log(), this.line()); return cursor; });
+    .event("mousemove", function() {
+        var current_date = dates.invert(this.mouse().x);
+        var point = (this.evnts().select(function(d) { return d.observed_at <= current_date; }).last() || this.evnts().select(function(d) { return current_date < d.observed_at; }).first());
+        $(this.log()).fire("timeline:position", { 'observed_at': current_date, 'event_type': point.type, 'event_id': point.id });
+        return this.i(this.mouse().x);
+    });
 
 vis.add(pv.Rule)
     .data(dates.ticks())
     .strokeStyle("#eee")
     .left(dates)
     .anchor("bottom").add(pv.Label)
-        .text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000))); // Date works with milliseconds
+        .text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date((d + timezone)*1000))); // Date works with milliseconds
             
 data.forEach(function(ds) {
     var line = vis.add(pv.Bar)
@@ -79,22 +68,12 @@ data.forEach(function(ds) {
         .textBaseline("bottom")
         .text(ds.label);
 });
-  
 
-//vis.add(pv.Rule)
-//    .left(function() this.parent.i()-cursor)
-//    .strokeStyle("#BCC2BA")
-//    .visible(function() vis.i() > 0);
-//vis.add(pv.Rule)
-//    .left(function() this.parent.i()+cursor)
-//    .strokeStyle("#BCC2BA")
-//    .visible(function() vis.i() > 0);
 vis.add(pv.Rule)
     .left(function() this.parent.i())
     .strokeStyle("red")
-    .visible(function() vis.i() > 0)
-    // FIXME: label should follow mouse
-    .anchor("top").add(pv.Label)
+    // FIXME: label should follow mouse?
+    .anchor('mouse').add(pv.Label)
         .textAlign("center")
         .textStyle("red")
-        .text(function() pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(dates.invert(this.parent.i())*1000)));
+        .text(function() pv.Format.date("%d/%b/%y %H:%M:%S")(new Date((dates.invert(this.parent.i()) + timezone)*1000)));
