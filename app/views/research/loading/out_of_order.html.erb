@@ -4,7 +4,7 @@
 	<ul>
 		<% @data.map { |d| d[:log_name] }.uniq.each do |log_name| %>
 			<li><i><%= log_name %></i> delayed log events are:
-				<%= render :partial => 'data', :locals => { :data => ApacheAccess.where(["id in (?)", @data.select { |d| d[:log_name] == log_name }.map { |d| d[:id] }]).all } %>
+				<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "out-of-order"]).all } %>
 			</li>
 		<% end %>
 	</ul>

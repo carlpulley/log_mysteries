@@ -40,7 +40,7 @@
 				<li>the largest peak is <%= number_with_precision(max_load/upper_time_bound, :precision => 1) %> times larger than our expected upper time bound (ie. the <font color="<%= upper_bound_color %>">red</font> line)</li>
 				<li>notice how we have repeated requests before time indexes 19/Apr/2010 19:00:00 and 22/Apr/2010 16:26:40 that result in increasing processing times</li>
 				<li>the following log events indicate when the server appears to be experiencing higher than expected loading:
-					<%= render :partial => 'data', :locals => { :data => ApacheAccess.where(["id in (?)", @data.select { |d| d[:processing_time]/(10**6) >= upper_time_bound }.map { |d| d[:id] }]).all } %>
+					<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "rss"]).all } %>
 				</li>
 			</ul>
 		</li>

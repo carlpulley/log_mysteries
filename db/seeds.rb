@@ -35,6 +35,7 @@ Rake::Task["tag:events:rss"].invoke
 Rake::Task["tag:files:static"].invoke
 Rake::Task["tag:files:dynamic"].invoke
 Rake::Task["tag:events:unknown:anomalies"].invoke
+Rake::Task["tag:process:restarts"].invoke
 
 # Tag events in the Auth models
 

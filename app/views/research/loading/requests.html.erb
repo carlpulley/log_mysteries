@@ -38,7 +38,7 @@
 			<ul>
 				<li>the largest peak is <%= number_with_precision(max_load/upper_time_bound, :precision => 1) %> times larger than our expected upper time bound (ie. the <font color="<%= upper_bound_color %>">blue</font> line)</li>
 				<li>the following log events indicate when the server appears to be experiencing higher than expected loading:
-					<%= render :partial => 'data', :locals => { :data => ApacheAccess.where(["observed_at in (?)", @data.select { |d| d[:num_requests] >= upper_time_bound }.map { |d| d[:observed_at] } ]).order(:observed_at).all } %>
+					<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "speed"]).order(:observed_at).all } %>
 				</li>
 			</ul>
 		</li>
