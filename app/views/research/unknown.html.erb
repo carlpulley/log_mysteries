@@ -1,4 +1,4 @@
-<h1>Log Event Analysis of <i>unknown</i> Attribute</h1>
+<h1>Analysis of <i>unknown</i> Attribute</h1>
 
 <h2>Overview</h2>
 
@@ -44,13 +44,9 @@
 	From the above, we see that when comparing our timestamp value (translated to seconds!) against our observed log event timestamp, we can only compare the bottom 4 bytes of the two values.
 </p>
 <p> That our timestamp correlates correctly with our observed log event timestamps has been confirmed using unit <%= github_link "test/unit/apache2/unknown_test.rb", "tests" %>. The only log events that fail to match our <%= github_link "test/unit/apache2/unknown_test.rb", "expectations" %> are the following log events:
-<pre>
-<% @data.tagged_with(["anomaly", "unknown"]).all.each do |event| %>
-  <%= event.to_s %>
+<div class="events">
+<% ApacheAccess.tagged_with(["anomaly", "unknown"]).all.each do |event| %>
+  <div class="event"><%= event.to_s %></div>
 <% end %>
-</pre>
+</div>
 </p>
-
-<h3>Appendix</h3>
-
-<%= link_to "Data Set (CSV)", "/research/unknown.csv" %>

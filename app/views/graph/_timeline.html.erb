@@ -8,7 +8,7 @@
 	<%= yield %>
 	vis.render();
 </script>
-<div id='events_<%= eid %>' class='events'>
+<div id='events_<%= eid %>' class='events timeline'>
 <% timeline.events.each do |line| -%>
 	<div id='<%= line[:type] %><%= line[:id] %>' class='event' observed_at='<%= line[:observed_at] %>'><%= line[:event] %></div>
 <% end -%>
