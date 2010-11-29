@@ -1,19 +1,23 @@
-<h1>NaverBot Analysis</h1>
+<% content_for :title do %>
+	NaverBot Analysis
+<% end %>
 
-<script>
-	var raw_data = <%=raw @data.to_json %>;
-</script>
+<% content_for :data do %>
+	<script>
+		var raw_data = <%=raw @data.to_json %>;
+	</script>
+<% end %>
 
-<h2>Overview</h2>
+<% content_for :note do %>
+	<p>The URL (taken from the user agent string) <%= link_to "help.naver.com", "http://help.naver.com/customer_webtxt_02.jsp" %> redirects to a web page written in Korean. Using Google translator, this page discusses how to configure and install a robots.txt file.</p>
+	
+	<p>According to <%= link_to "internetofficer.com", "http://www.internetofficer.com/web-robot/naver/" %>, NaverBot appears to be a legitimate South Korean search engine.</p>
+	
+	<p><%= link_to "user-agent-string.info", "http://user-agent-string.info/list-of-ua/bot-detail?bot=NaverBot" %> reaffirms that NaverBot is a Korean web crawler and, moreover, confirms that the IP addresses logged below are consistent with NaverBot.</p>
+	
+	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+<% end %>
 
-<p>The URL (taken from the user agent string) <%= link_to "help.naver.com", "http://help.naver.com/customer_webtxt_02.jsp" %> redirects to a web page written in Korean. Using Google translator, this page discusses how to configure and install a robots.txt file.</p>
+<!-- h2>Appendix</h2 -->
 
-<p>According to <%= link_to "internetofficer.com", "http://www.internetofficer.com/web-robot/naver/" %>, NaverBot appears to be a legitimate South Korean search engine.</p>
-
-<p><%= link_to "user-agent-string.info", "http://user-agent-string.info/list-of-ua/bot-detail?bot=NaverBot" %> reaffirms that NaverBot is a Korean web crawler and, moreover, confirms that the IP addresses logged below are consistent with NaverBot.</p>
-
-<%= render :partial => 'ip_address', :locals => { :data => @data } %>
-
-<h2>Appendix</h2>
-
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=bot", "user_agent=naverbot"]).join("&") }" %>
+<!-- %= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=bot", "user_agent=naverbot"]).join("&") }" % -->

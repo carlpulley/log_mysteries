@@ -1,52 +1,54 @@
-<h2>Server Loading Estimate: Newsfeed Requests</h2>
+<% content_for :title do %>
+	Server Loading Estimate: Newsfeed Requests
+<% end %>
 
-<script>
-	var raw_data = <%=raw @data.to_json %>;
-</script>
+<% content_for :data do %>
+	<script>
+		var raw_data = <%=raw @data.to_json %>;
+	</script>
+<% end %>
+
+<% content_for :note do %>	
+	<h3>plot of event creation time (seconds from epoch) vs processing time (micro seconds)</h3>
 	
-<h3>plot of event creation time (seconds from epoch) vs processing time (micro seconds)</h3>
-
-<%
-	mean = mean(@data.map { |d| d[:processing_time] })/(10**6)
-	stddev = standard_deviation(@data.map { |d| d[:processing_time] })/(10**6)
-	averg = average(@data.map { |d| d[:processing_time] })/(10**6)
-	max_load = @data.map { |d| d[:processing_time] }.max/(10**6)
-	upper_time_bound = [mean+stddev, averg+stddev].max
-	upper_bound_color = "#FF2D26"
-%>
-
-<script type="text/javascript+protovis">	
-	var data = raw_data.map(function(d) { var h = {}; h['x'] = d['observed_at']; h['y'] = d['processing_time']; return h; });
+	<%
+		mean = mean(@data.map { |d| d[:processing_time] })/(10**6)
+		stddev = standard_deviation(@data.map { |d| d[:processing_time] })/(10**6)
+		averg = average(@data.map { |d| d[:processing_time] })/(10**6)
+		max_load = @data.map { |d| d[:processing_time] }.max/(10**6)
+		upper_time_bound = [mean+stddev, averg+stddev].max
+		upper_bound_color = "#FF2D26"
+	%>
 	
-	<%= render :partial => '/graph/area.js' %>
-
-	vis.add(pv.Rule)
-		.bottom(y(<%= upper_time_bound*(10**6) %>))
-		.strokeStyle(<%=raw upper_bound_color.to_json %>);
-
-	xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
-	ylabel.text(function(d) (d/1000000)+" us");
-
-	vis.render();
-</script>
-<p>
-	<b>Notes:</b>
-	<ul>
-		<li>Here our mean processing time is <%= number_with_precision mean, :precision => 1 %> seconds (standard deviation is <%= number_with_precision stddev, :precision => 1 %> seconds) and our average is <%= number_with_precision averg, :precision => 1 %> seconds.</li>
-		<li>Thus, any processing times that are greater than <%= number_with_precision(upper_time_bound, :precision => 1) %> seconds indicates when the server is being loaded. This cut off point has been plotted as a <font color="<%= upper_bound_color %>">red</font> line on the above graph.</li>
-		<li>We know from our unit tests that each of these HTTP GET requests and responses are probably identical (this is based on the URLs being identical and the response body sizes being identical). As a result, our expectation is that, under ideal conditions (ie. with network latency and server load remaining constant), our processing_time attribute should be constant. Clearly, this is not the case here! As a result, if we assume no network latency, then we gain an estimate of server loading.</li>
-		<li>The following features of this graph are worth noting (as they are indicators that are further consistent with server loading):
-			<ul>
-				<li>the largest peak is <%= number_with_precision(max_load/upper_time_bound, :precision => 1) %> times larger than our expected upper time bound (ie. the <font color="<%= upper_bound_color %>">red</font> line)</li>
-				<li>notice how we have repeated requests before time indexes 19/Apr/2010 19:00:00 and 22/Apr/2010 16:26:40 that result in increasing processing times</li>
-				<li>the following log events indicate when the server appears to be experiencing higher than expected loading:
-					<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "rss"]).all } %>
-				</li>
-			</ul>
-		</li>
-	</ul>
-</p>
-
-<h3>Appendix</h3>
-
-<%= link_to "Data Set (CSV)", "/research/loading/rss.csv" %>
+	<script type="text/javascript+protovis">	
+		var data = raw_data.map(function(d) { var h = {}; h['x'] = d['observed_at']; h['y'] = d['processing_time']; return h; });
+		
+		<%= render :partial => '/graph/area.js' %>
+	
+		vis.add(pv.Rule)
+			.bottom(y(<%= upper_time_bound*(10**6) %>))
+			.strokeStyle(<%=raw upper_bound_color.to_json %>);
+	
+		xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+		ylabel.text(function(d) (d/1000000)+" us");
+	
+		vis.render();
+	</script>
+	<p>
+		<b>Notes:</b>
+		<ul>
+			<li>Here our mean processing time is <%= number_with_precision mean, :precision => 1 %> seconds (standard deviation is <%= number_with_precision stddev, :precision => 1 %> seconds) and our average is <%= number_with_precision averg, :precision => 1 %> seconds.</li>
+			<li>Thus, any processing times that are greater than <%= number_with_precision(upper_time_bound, :precision => 1) %> seconds indicates when the server is being loaded. This cut off point has been plotted as a <font color="<%= upper_bound_color %>">red</font> line on the above graph.</li>
+			<li>We know from our unit tests that each of these HTTP GET requests and responses are probably identical (this is based on the URLs being identical and the response body sizes being identical). As a result, our expectation is that, under ideal conditions (ie. with network latency and server load remaining constant), our processing_time attribute should be constant. Clearly, this is not the case here! As a result, if we assume no network latency, then we gain an estimate of server loading.</li>
+			<li>The following features of this graph are worth noting (as they are indicators that are further consistent with server loading):
+				<ul>
+					<li>the largest peak is <%= number_with_precision(max_load/upper_time_bound, :precision => 1) %> times larger than our expected upper time bound (ie. the <font color="<%= upper_bound_color %>">red</font> line)</li>
+					<li>notice how we have repeated requests before time indexes 19/Apr/2010 19:00:00 and 22/Apr/2010 16:26:40 that result in increasing processing times</li>
+					<li>the following log events indicate when the server appears to be experiencing higher than expected loading:
+						<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "rss"]).all } %>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</p>
+<% end %>

@@ -26,4 +26,9 @@ module ApplicationHelper
     #link_to location_label, "http://github.com/carlpulley/log_mysteries/#{location}"
     link_to location_label, "file://#{File.expand_path('.')}/#{location}"
   end
+  
+  def display(testfile)
+    return `cat test/unit/csv/#{testfile}` if testfile =~ /_test\.rb$/
+    return `cat lib/tasks/#{testfile}` if testfile =~ /\.rake$/
+  end
 end

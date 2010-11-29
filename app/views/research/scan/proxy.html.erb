@@ -1,23 +1,23 @@
-<h1>Scanning Analysis: Web Proxy</h1>
+<% content_for :title do %>
+	Scanning Analysis: Web Proxy
+<% end %>
 
-<script>
-	var raw_data = <%=raw @data.to_json %>;
-</script>
+<% content_for :data do %>
+	<script>
+		var raw_data = <%=raw @data.to_json %>;
+	</script>
+<% end %>
 
-<h2>Overview</h2>
-
-<p>All these scan attempts result in 400 (the request had bad syntax or was inherently impossible to be satisfied) or 404 (the server has not found anything matching the URI given) error responses from the web server - ie. these scans failed.</p>
-
-<h3>Wantsfly</h3>
-
-<p>The Wantsfly URLs contain the hash value FABB83E72D135F1018046CC4005088B36F8D0BEDCEA7. This hash value is probably being used as a session value by the proxy scanner. Googling suggests that this is Chinese proxy scanner.</p>
-
-<h3>Proxyfire</h3>
-
-<p>Using the requested URL, we have that the web site <%= link_to "Proxyfire", "http://www.proxyfire.net" %> appears to be a forum listing various proxies and discussing proxy related issues.</p>
-
-<%= render :partial => 'ip_address', :locals => { :data => @data } %>
-
-<h2>Appendix</h2>
-
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=proxy,scan"]).join("&") }" %>
+<% content_for :note do %>
+	<p>All these scan attempts result in 400 (the request had bad syntax or was inherently impossible to be satisfied) or 404 (the server has not found anything matching the URI given) error responses from the web server - ie. these scans failed.</p>
+	
+	<h3>Wantsfly</h3>
+	
+	<p>The Wantsfly URLs contain the hash value FABB83E72D135F1018046CC4005088B36F8D0BEDCEA7. This hash value is probably being used as a session value by the proxy scanner. Googling suggests that this is Chinese proxy scanner.</p>
+	
+	<h3>Proxyfire</h3>
+	
+	<p>Using the requested URL, we have that the web site <%= link_to "Proxyfire", "http://www.proxyfire.net" %> appears to be a forum listing various proxies and discussing proxy related issues.</p>
+	
+	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+<% end %>

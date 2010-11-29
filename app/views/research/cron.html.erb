@@ -1,20 +1,22 @@
-<h2>CRON timekeeping</h2>
+<% content_for :title do %>
+	CRON timekeeping
+<% end %>
 
-<script>
-	var raw_data = <%=raw @data.to_json %>;
-</script>
+<% content_for :data do %>
+	<script>
+		var raw_data = <%=raw @data.to_json %>;
+	</script>
+<% end %>
 
-TODO: ??
-<script type="text/javascript+protovis">	
-	var data = raw_data.map(function(d) { var h = {}; h['x'] = d['position']; h['y'] = d['observed_at']; return h; });
+<% content_for :note do %>
+	TODO: ??
+	<script type="text/javascript+protovis">	
+		var data = raw_data.map(function(d) { var h = {}; h['x'] = d['position']; h['y'] = d['observed_at']; return h; });
+		
+		<%= render :partial => '/graph/area.js' %>
+		
+		ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 	
-	<%= render :partial => '/graph/area.js' %>
-	
-	ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
-
-	vis.render();
-</script>
-
-<h3>Appendix</h3>
-
-<%= link_to "Data Set (CSV)", "/research/cron.csv" %>
+		vis.render();
+	</script>
+<% end %>

@@ -1,19 +1,23 @@
-<h1>Apache Request IP Address Analysis</h1>
+<% content_for :title do %>
+	Apache Request IP Address Analysis
+<% end %>
 
-<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+<% content_for :data do %>
+	FIXME: data is in the ip_address partial!?
+<% end %>
 
-<h3>Conclusions</h3>
-
-<p>TODO: implement tagging of apache events to add in ASN numbers, country codes and identified subnets.</p>
-<p>TODO: add integration tests to verify that this tagging data is correctly performed.</p>
-
-<h3>References</h3>
-
-<ul>
-	<li>Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %> has been used to determine country codes and ASN numbers.</li>
-	<li>Blacklist queries have been determined using the <%= link_to "whatismyipaddress.com", "http://whatismyipaddress.com/blacklist-check" %> proxy service.</li>
-</ul>
-
-<h3>Appendix</h3>
-
-<%= link_to "Data Set (CSV)", "/research/ip_address.csv" %>
+<% content_for :note do %>
+	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+	
+	<h3>Conclusions</h3>
+	
+	<p>TODO: implement tagging of apache events to add in ASN numbers, country codes and identified subnets.</p>
+	<p>TODO: add integration tests to verify that this tagging data is correctly performed.</p>
+	
+	<h3>References</h3>
+	
+	<ul>
+		<li>Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %> has been used to determine country codes and ASN numbers.</li>
+		<li>Blacklist queries have been determined using the <%= link_to "whatismyipaddress.com", "http://whatismyipaddress.com/blacklist-check" %> proxy service.</li>
+	</ul>
+<% end %>

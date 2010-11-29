@@ -1,10 +1,13 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.0'
+gem 'rails'
 gem 'sqlite3-ruby', :require => 'sqlite3'
 
 # To use debugger
 gem 'ruby-debug19', :require => 'ruby-debug'
+
+# To use JQuery rather than Prototype
+gem 'jquery-rails'
 
 # Following gems are used for screen scraping
 gem 'nokogiri'
@@ -16,11 +19,11 @@ gem 'nokogiri'
 gem "shoulda"
 gem "rspec-rails"
 
-# Following gem provides state machine modeling
-gem "transitions", :require => ["transitions", "active_record/transitions"]
-
 # Following gem allows data to be tagged
 gem 'acts-as-taggable-on'
+
+# Following gem provides state machine modeling
+gem "transitions", :require => ["transitions", "active_record/transitions"]
 
 # Following gem allows hierarchical data to be defined
 gem 'nested_set'
@@ -30,7 +33,7 @@ gem 'nested_set'
 #  bundle config build.ssdeep --with-ssdeep-include=/usr/local/include/
 #  bundle config build.ssdeep --with-ssdeep-lib=/usr/local/lib/
 #  Need to manually patch ruby-ssdeep.c to deal with ruby 1.9.2
-# TODO: need to work out how to get thi sgem to build under ruby 1.9.2!
+# TODO: need to work out how to get this gem to build under ruby 1.9.2!
 #gem 'ssdeep'
 
 gem 'tabs_on_rails'

@@ -1,106 +1,106 @@
-<h1>WordPress Analysis</h1>
+<% content_for :title do %>
+	WordPress Analysis
+<% end %>
 
-<script type="text/javascript+protovis">
-	// NOTE: @data is unified so that entries with partial_match true subsume all other entries that differ just on this key (ie. partial_match).
-	// FIXME: tweak the following to ensure data is merged correctly
-	//var raw_data = pv.nest(<%=raw @data.to_json %>).key(function(d) d.remove("partial_match")).rollup(function(v) v.forAll(function(d) d.partial_match == true) ? true : false).map(function(k,v) { k.partial_match = v; return k });
-	var raw_data = <%=raw @data.to_json %>;
-	var raw_full_data = <%=raw @data.select { |d| not d[:partial_match] }.to_json %>;
-	var raw_partial_data = <%=raw @data.select { |d| d[:partial_match] }.to_json %>;
-</script>
+<% content_for :data do %>
+	<script type="text/javascript+protovis">
+		// NOTE: @data is unified so that entries with partial_match true subsume all other entries that differ just on this key (ie. partial_match).
+		// FIXME: tweak the following to ensure data is merged correctly
+		//var raw_data = pv.nest(<%=raw @data.to_json %>).key(function(d) d.remove("partial_match")).rollup(function(v) v.forAll(function(d) d.partial_match == true) ? true : false).map(function(k,v) { k.partial_match = v; return k });
+		var raw_data = <%=raw @data.to_json %>;
+		var raw_full_data = <%=raw @data.select { |d| not d[:partial_match] }.to_json %>;
+		var raw_partial_data = <%=raw @data.select { |d| d[:partial_match] }.to_json %>;
+	</script>
+<% end %>
 
-<h2>Overview</h2>
-
-<p>By examining the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=wordpress,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 2.9.2 for WordPress.</p>
-
-<p><%= github_link "lib/tasks/wordpress.rake", "Downloading" %> (<%= github_link "test/unit/wordpress_test.rb", "verification" %>) version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_wordpress_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
-
-<p>This archive is found to contain the following information within its index:
-<pre>
-<%= Wordpress.all.map { |d| d.to_s }.join("\n") %>
-</pre>
-</p>
-
-<p>URLs that are present in both the ApacheAccess model and version 2.9.2 of the downloaded WordPress archive are as follows:
-	<ul>
-		<li>
-		<% full_matches = @data.select { |d| not d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
-		<%= "No URL matches found" if full_matches.empty? %>
-		<% unless full_matches.empty? %>
-		Full URL matches:
-			<ul>
-			<% full_matches.each do |url| %>
-				<li><i><%= url %></i></li>
-			<% end %>
-			</ul>
-		<% end %>
-		</li>
-		<li>
-		<% partial_matches = @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
-		<%= "No partial (ie. basename) URL matches found" if partial_matches.empty? %>
-		<% unless partial_matches.empty? %>
-		Partial (ie. basename) URL matches:
-			<ul>
-			<% partial_matches.each do |url| %>
-				<li><i><%= url %></i></li>
-			<% end %>
-			</ul>
-		<% end %>
-		</li>
-	</ul>
-</p>
-
-<p>Plotting a bar graph of plugin file name and ApacheAccess URL against the number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
-	<ul>
-		<% @data.select { |d| not d[:partial_match] and d[:request_method] == 'GET' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
-			<li><i><%= filename %></i></li>
-		<% end %>
-	</ul>
-have sizes consistent with the downloaded plugin whenever we have a successful (ie. a HTTP 200 response) GET request. As redirects simply return a header with an empty body (ie. 0 bytes in size), our size inconsistencies with redirect responses (ie. HTTP 304 responses) can be explained. 
-</p>
-<p>
-Whilst the files:
-	<ul>
-		<% @data.select { |d| not d[:partial_match] and d[:request_method] == 'POST' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
-			<li><i><%= filename %></i></li>
-		<% end %>
-	</ul>
-have sizes inconsistent with the downloaded plugin. These inconsistencies can be explained as, within the ApacheAccess model, the above URLs use the HTTP POST method and so the HTTP POST body has no content (ie. it is 0 bytes in size).
-</p>
-
-<p>The following (partially matched) files have sizes inconsistent with the downloaded plugin:
-	<ul>
-		<% @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
-			<li><i><%= filename %></i></li>
-		<% end %>
-	</ul>
-These inconsistencies can be explained by asserting that these files are not present within version 2.9.2 of the downloaded WordPress archive.
-</p>
-
-TODO: add in tests to verify above assertions
-
-<h2>Full Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
-
-<script type="text/javascript+protovis">
-	var labels = raw_full_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status);
-	var data = raw_full_data.map(function(d) [d.archive_size, d.request_size]);
+<% content_for :note do %>
+	<p>By examining the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "wordpress", "/research/by?tagged=wordpress,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 2.9.2 for WordPress.</p>
 	
-	<%= render :partial => '/graph/bar.js' %>
-
-	vis.render();
-</script>
-
-<h2>Partial Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
-
-<script type="text/javascript+protovis">
-	var labels = raw_partial_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status+" =?= "+d.archive_name);
-	var data = raw_partial_data.map(function(d) [d.archive_size, d.request_size]);
+	<p><%= github_link "lib/tasks/wordpress.rake", "Downloading" %> (<%= github_link "test/unit/wordpress_test.rb", "verification" %>) version 2.9.2 of <%= link_to "WordPress", "http://wordpress.org/download/release-archive/" %> then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_wordpress_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
 	
-	<%= render :partial => '/graph/bar.js' %>
-
-	vis.render();
-</script>
-
-<h2>Appendix</h2>
-
-<%= link_to "Data Set (CSV)", "/research/wordpress.csv" %>
+	<p>This archive is found to contain the following information within its index:
+	<pre>
+	<%= Wordpress.all.map { |d| d.to_s }.join("\n") %>
+	</pre>
+	</p>
+	
+	<p>URLs that are present in both the ApacheAccess model and version 2.9.2 of the downloaded WordPress archive are as follows:
+		<ul>
+			<li>
+			<% full_matches = @data.select { |d| not d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+			<%= "No URL matches found" if full_matches.empty? %>
+			<% unless full_matches.empty? %>
+			Full URL matches:
+				<ul>
+				<% full_matches.each do |url| %>
+					<li><i><%= url %></i></li>
+				<% end %>
+				</ul>
+			<% end %>
+			</li>
+			<li>
+			<% partial_matches = @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+			<%= "No partial (ie. basename) URL matches found" if partial_matches.empty? %>
+			<% unless partial_matches.empty? %>
+			Partial (ie. basename) URL matches:
+				<ul>
+				<% partial_matches.each do |url| %>
+					<li><i><%= url %></i></li>
+				<% end %>
+				</ul>
+			<% end %>
+			</li>
+		</ul>
+	</p>
+	
+	<p>Plotting a bar graph of plugin file name and ApacheAccess URL against the number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
+		<ul>
+			<% @data.select { |d| not d[:partial_match] and d[:request_method] == 'GET' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+				<li><i><%= filename %></i></li>
+			<% end %>
+		</ul>
+	have sizes consistent with the downloaded plugin whenever we have a successful (ie. a HTTP 200 response) GET request. As redirects simply return a header with an empty body (ie. 0 bytes in size), our size inconsistencies with redirect responses (ie. HTTP 304 responses) can be explained. 
+	</p>
+	<p>
+	Whilst the files:
+		<ul>
+			<% @data.select { |d| not d[:partial_match] and d[:request_method] == 'POST' }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+				<li><i><%= filename %></i></li>
+			<% end %>
+		</ul>
+	have sizes inconsistent with the downloaded plugin. These inconsistencies can be explained as, within the ApacheAccess model, the above URLs use the HTTP POST method and so the HTTP POST body has no content (ie. it is 0 bytes in size).
+	</p>
+	
+	<p>The following (partially matched) files have sizes inconsistent with the downloaded plugin:
+		<ul>
+			<% @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+				<li><i><%= filename %></i></li>
+			<% end %>
+		</ul>
+	These inconsistencies can be explained by asserting that these files are not present within version 2.9.2 of the downloaded WordPress archive.
+	</p>
+	
+	TODO: add in tests to verify above assertions
+	
+	<h2>Full Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
+	
+	<script type="text/javascript+protovis">
+		var labels = raw_full_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status);
+		var data = raw_full_data.map(function(d) [d.archive_size, d.request_size]);
+		
+		<%= render :partial => '/graph/bar.js' %>
+	
+		vis.render();
+	</script>
+	
+	<h2>Partial Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
+	
+	<script type="text/javascript+protovis">
+		var labels = raw_partial_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status+" =?= "+d.archive_name);
+		var data = raw_partial_data.map(function(d) [d.archive_size, d.request_size]);
+		
+		<%= render :partial => '/graph/bar.js' %>
+	
+		vis.render();
+	</script>
+<% end %>

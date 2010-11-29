@@ -16,10 +16,15 @@
 
 class ResearchController < ApplicationController
   def index
-    set_tab :tree
-    if params[:view]
-      set_tab :sunburst if params[:view] == 'sunburst'
-      set_tab :world if params[:view] == 'world'
+    if params[:ip_address_tab]
+      set_tab :tree if params[:ip_address_tab] == 'tree'
+      set_tab :sunburst if params[:ip_address_tab] == 'sunburst'
+      set_tab :world if params[:ip_address_tab] == 'world'
+    end
+    if params[:appendix_tab]
+      set_tab :data if params[:appendix_tab] == 'data'
+      set_tab :carving if params[:appendix_tab] == 'carving'
+      set_tab :tagging if params[:appendix_tab] == 'tagging'
     end
     
     if params[:chapter] and params[:section]
@@ -90,8 +95,8 @@ class ResearchController < ApplicationController
         @data = map_to_hash ApacheAccess.tagged_with("rss").ip_address(params[:subsection]).all
       end
 
-      render "research/#{params[:chapter]}/#{params[:section]}/#{params[:subsection]}" if params[:subsection]
-      render "research/#{params[:chapter]}/#{params[:section]}" unless params[:subsection]
+      render "research/#{params[:chapter]}/#{params[:section]}/#{params[:subsection]}", :layout => 'research_note' if params[:subsection]
+      render "research/#{params[:chapter]}/#{params[:section]}", :layout => 'research_note' unless params[:subsection]
     elsif params[:chapter]
       # TODO: need to make this code more generic and less tied to Apache logs
       @data = Auth.scoped    
@@ -161,7 +166,7 @@ class ResearchController < ApplicationController
           @data = Sudo.scoped
         end
         
-        render "research/#{params[:chapter]}"
+        render "research/#{params[:chapter]}", :layout => 'research_note'
       end
     else
       render "index"

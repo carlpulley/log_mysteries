@@ -17,6 +17,8 @@
 class ArchiveContent < ActiveRecord::Base
   include ActionView::Helpers::NumberHelper
 
+  acts_as_taggable_on :tags
+  
   has_many :matches
   has_many :apache_accesses, :through => :matches
   

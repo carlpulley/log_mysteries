@@ -1,76 +1,76 @@
-<h1>News Feed Data Analysis</h1>
+<% content_for :title do %>
+	News Feed Data Analysis
+<% end %>
 
+<% content_for :data do %>
 <script>
 	var raw_data = <%=raw @data.to_json %>;
 </script>
+<% end %>
 
-<h2>Overview</h2>
-
-<p>Unit testing demonstrates that news feeds can be uniquely identified using either: the user agent string <i>Apple-PubSub</i>; or the URL <i>/feed/</i>.</p>
-
-<p>This is a private IP address.</p>
+<% content_for :note do %>
+	<p>Unit testing demonstrates that news feeds can be uniquely identified using either: the user agent string <i>Apple-PubSub</i>; or the URL <i>/feed/</i>.</p>
 	
-<h2>Graphs</h2>
-
-<h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
-
-<script type="text/javascript+protovis">	
-	var data = raw_data.map(function(d) { var h = {}; h['x'] = d['position']; h['y'] = d['observed_at']; return h; });
+	<p>This is a private IP address.</p>
+		
+	<h2>Graphs</h2>
 	
-	<%= render :partial => '/graph/area.js' %>
+	<h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
 	
-	ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
-
-	vis.render();
-</script>
-<p>
-	<b>Notes:</b>
-	<ul>
-		<%
-			snip1 = 72
-			snip2 = 170
-			snip3 = 178
-		%>
-		<li>Notice that around indexes <%= snip1 %>, <%= snip2 %> and <%= snip3 %> our perfect straight line is kinked. When we look back at our original data (see below), we discover that:
-			<ul>
-				<li>from <%= ApacheAccess.find(@data[snip1][:id]).observed_at %> until <%= ApacheAccess.find(@data[snip1+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
-				<li>from <%= ApacheAccess.find(@data[snip2][:id]).observed_at %> until <%= ApacheAccess.find(@data[snip2+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
-				<li>from <%= ApacheAccess.find(@data[snip3][:id]).observed_at %> until <%= ApacheAccess.find(@data[snip3+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
-			</ul>
-		</li>
-		<%
-			tdiff1 = @data[snip1][:observed_at] - @data[0][:observed_at]
-			grad1_calc = "#{tdiff1}/(#{snip1}-0+1)"
-			grad1 = eval grad1_calc
-			
-			tdiff2 = @data[snip2][:observed_at] - @data[snip1+1][:observed_at]
-			grad2_calc = "#{tdiff2}/(#{snip2}-#{snip1+1}+1)"
-			grad2 = eval grad2_calc
-			
-			tdiff3 = @data[snip3][:observed_at] - @data[snip2+1][:observed_at]
-			grad3_calc = "#{tdiff3}/(#{snip3}-#{snip2+1}+1)"
-			grad3 = eval grad3_calc
-			
-			tdiff4 = @data.last[:observed_at] - @data[snip3+1][:observed_at]
-			grad4_calc = "#{tdiff4}/(#{@data.length-1}-#{snip3+1}+1)"
-			grad4 = eval grad4_calc
-			
-			mean = mean([grad1, grad2, grad3, grad4])
-			stddev = standard_deviation([grad1, grad2, grad3, grad4])
-		%>
-		<li>By measuring the gradient of our graphs straight lines, we can reliably estimate that, on average, our digital client refreshes their RSS news feed every <%= number_with_precision(mean/60, :precision => 1) %>±<%= number_with_precision(stddev/60, :precision => 1) %> minutes. This conclusion is based on the following calculations:
-			<ul>
-				<li>from indexes 0 to <%= snip1 %> we have a time difference of <%= number_with_precision(tdiff1, :precision => 0) %> seconds and so a gradient of <%= grad1_calc %> = <%= number_with_precision(grad1, :precision => 0) %>.</li>
-				<li>from indexes <%= snip1+1 %> to <%= snip2 %> we have a time difference of <%= number_with_precision(tdiff2, :precision => 0) %> seconds and so a gradient of <%= grad2_calc %> = <%= number_with_precision(grad2, :precision => 0) %>.</li>
-				<li>from indexes <%= snip2+1 %> to <%= snip3 %> we have a time difference of <%= number_with_precision(tdiff3, :precision => 0) %> seconds and so a gradient of <%= grad3_calc %> = <%= number_with_precision(grad3, :precision => 0) %>.</li>
-				<li>from indexes <%= snip3+1 %> to <%= @data.length-1 %> we have a time difference of <%= number_with_precision(tdiff4, :precision => 0) %> seconds and so a gradient of <%= grad4_calc %> = <%= number_with_precision(grad4, :precision => 0) %>.</li>
-				<li>Thus, we get that our gradient has a mean of <%= number_with_precision(mean, :precision => 0) %> and a standard deviation of <%= number_with_precision(stddev, :precision => 0) %>.</li>
-				<li>Whence we have that our RSS feed refresh rate is estimated as being once every <%= number_with_precision(mean, :precision => 0) %>±<%= number_with_precision(stddev, :precision => 0) %> seconds = <%= number_with_precision(mean/60, :precision => 1) %>±<%= number_with_precision(stddev/60, :precision => 1) %> minutes.</li>
-			</ul>
-		</li>
-	</ul>
-</p>
+	<script type="text/javascript+protovis">	
+		var data = raw_data.map(function(d) { var h = {}; h['x'] = d['position']; h['y'] = d['observed_at']; return h; });
+		
+		<%= render :partial => '/graph/area.js' %>
+		
+		ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 	
-<h2>Appendix</h2>
-
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["ip_address=#{params[:subsection]}", "tagged=rss"]).join("&") }" %>
+		vis.render();
+	</script>
+	<p>
+		<b>Notes:</b>
+		<ul>
+			<%
+				snip1 = 72
+				snip2 = 170
+				snip3 = 178
+			%>
+			<li>Notice that around indexes <%= snip1 %>, <%= snip2 %> and <%= snip3 %> our perfect straight line is kinked. When we look back at our original data (see below), we discover that:
+				<ul>
+					<li>from <%= ApacheAccess.find(@data[snip1][:id]).observed_at %> until <%= ApacheAccess.find(@data[snip1+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+					<li>from <%= ApacheAccess.find(@data[snip2][:id]).observed_at %> until <%= ApacheAccess.find(@data[snip2+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+					<li>from <%= ApacheAccess.find(@data[snip3][:id]).observed_at %> until <%= ApacheAccess.find(@data[snip3+1][:id]).observed_at %>, our client performs no automated updates from IP address 10.0.1.2</li>
+				</ul>
+			</li>
+			<%
+				tdiff1 = @data[snip1][:observed_at] - @data[0][:observed_at]
+				grad1_calc = "#{tdiff1}/(#{snip1}-0+1)"
+				grad1 = eval grad1_calc
+				
+				tdiff2 = @data[snip2][:observed_at] - @data[snip1+1][:observed_at]
+				grad2_calc = "#{tdiff2}/(#{snip2}-#{snip1+1}+1)"
+				grad2 = eval grad2_calc
+				
+				tdiff3 = @data[snip3][:observed_at] - @data[snip2+1][:observed_at]
+				grad3_calc = "#{tdiff3}/(#{snip3}-#{snip2+1}+1)"
+				grad3 = eval grad3_calc
+				
+				tdiff4 = @data.last[:observed_at] - @data[snip3+1][:observed_at]
+				grad4_calc = "#{tdiff4}/(#{@data.length-1}-#{snip3+1}+1)"
+				grad4 = eval grad4_calc
+				
+				mean = mean([grad1, grad2, grad3, grad4])
+				stddev = standard_deviation([grad1, grad2, grad3, grad4])
+			%>
+			<li>By measuring the gradient of our graphs straight lines, we can reliably estimate that, on average, our digital client refreshes their RSS news feed every <%= number_with_precision(mean/60, :precision => 1) %>±<%= number_with_precision(stddev/60, :precision => 1) %> minutes. This conclusion is based on the following calculations:
+				<ul>
+					<li>from indexes 0 to <%= snip1 %> we have a time difference of <%= number_with_precision(tdiff1, :precision => 0) %> seconds and so a gradient of <%= grad1_calc %> = <%= number_with_precision(grad1, :precision => 0) %>.</li>
+					<li>from indexes <%= snip1+1 %> to <%= snip2 %> we have a time difference of <%= number_with_precision(tdiff2, :precision => 0) %> seconds and so a gradient of <%= grad2_calc %> = <%= number_with_precision(grad2, :precision => 0) %>.</li>
+					<li>from indexes <%= snip2+1 %> to <%= snip3 %> we have a time difference of <%= number_with_precision(tdiff3, :precision => 0) %> seconds and so a gradient of <%= grad3_calc %> = <%= number_with_precision(grad3, :precision => 0) %>.</li>
+					<li>from indexes <%= snip3+1 %> to <%= @data.length-1 %> we have a time difference of <%= number_with_precision(tdiff4, :precision => 0) %> seconds and so a gradient of <%= grad4_calc %> = <%= number_with_precision(grad4, :precision => 0) %>.</li>
+					<li>Thus, we get that our gradient has a mean of <%= number_with_precision(mean, :precision => 0) %> and a standard deviation of <%= number_with_precision(stddev, :precision => 0) %>.</li>
+					<li>Whence we have that our RSS feed refresh rate is estimated as being once every <%= number_with_precision(mean, :precision => 0) %>±<%= number_with_precision(stddev, :precision => 0) %> seconds = <%= number_with_precision(mean/60, :precision => 1) %>±<%= number_with_precision(stddev/60, :precision => 1) %> minutes.</li>
+				</ul>
+			</li>
+		</ul>
+	</p>
+<% end %>

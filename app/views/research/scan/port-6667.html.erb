@@ -1,19 +1,17 @@
-<h1>Scanning Analysis: Port 6667</h1>
+<% content_for :title do %>
+	Scanning Analysis: Port 6667
+<% end %>
 
-<script>
-	var raw_data = <%=raw @data.to_json %>;
-</script>
+<% content_for :data do %>
+	<script>
+		var raw_data = <%=raw @data.to_json %>;
+	</script>
+<% end %>
 
-<h2>Overview</h2>
-
-<p>According to a <%= link_to "SANS", "http://isc.sans.edu/port.html?port=6667" %> report, port 6667 is used for IRC and is associated with a number of malware instances.</p>
-
-<p>All these scans return 301 redirect responses (the data requested has been assigned a new URI and the change is permanent).</p>
-
-<%= render :partial => 'ip_address', :locals => { :data => @data } %>
-
-<h2>Appendix</h2>
-
-<h3>Log Events tagged with port-6667,scan</h3>
-
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=port-6667,scan"]).join("&") }" %>
+<% content_for :note do %>
+	<p>According to a <%= link_to "SANS", "http://isc.sans.edu/port.html?port=6667" %> report, port 6667 is used for IRC and is associated with a number of malware instances.</p>
+	
+	<p>All these scans return 301 redirect responses (the data requested has been assigned a new URI and the change is permanent).</p>
+	
+	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+<% end %>

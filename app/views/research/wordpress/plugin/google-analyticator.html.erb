@@ -1,87 +1,87 @@
-<h1>WordPress Plugin Analysis: Google Analyticator</h1>
+<% content_for :title do %>
+	WordPress Plugin Analysis: Google Analyticator
+<% end %>
 
-<script>
-	var raw_data = <%=raw @data.to_json %>;
-	var raw_full_data = <%=raw @data.select { |d| not d[:partial_match] }.to_json %>;
-	var raw_partial_data = <%=raw @data.select { |d| d[:partial_match] }.to_json %>;
-</script>
+<% content_for :data do %>
+	<script>
+		var raw_data = <%=raw @data.to_json %>;
+		var raw_full_data = <%=raw @data.select { |d| not d[:partial_match] }.to_json %>;
+		var raw_partial_data = <%=raw @data.select { |d| d[:partial_match] }.to_json %>;
+	</script>
+<% end %>
 
-<h2>Overview</h2>
-
-<p>By examining the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "google-analyticator", "/research/by?tagged=google-analyticator,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 6.0.2 for Google Analyticator.</p>
-
-<p>By Googling with the keywords <%= link_to "wordpress plugin google analyticator", "http://google.co.uk/search?q=wordpress+plugin+google+analyticator" %>, we are able to locate version 6.0.2 of <%= link_to "Google Analyticator", "http://wordpress.org/extend/plugins/google-analyticator/" %>.</p>
-
-<p><%= github_link "lib/tasks/google_analyticator.rake", "Downloading" %> (<%= github_link "test/unit/google_analyticator_test.rb", "verification" %>) version 6.0.2 of Google Analyticator then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_google_analyticator_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
-
-<p>This archive is found to contain the following information within its index:
-<pre>
-<%= GoogleAnalyticator.all.map { |d| d.to_s }.join("\n") %>
-</pre>
-</p>
-
-<p>URLs that are present in both the ApacheAccess model and version 6.0.2 of the downloaded Google Analyticator archive are as follows:
-	<ul>
-		<li>
-		<% full_matches = @data.select { |d| not d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
-		<%= "No URL matches found" if full_matches.empty? %>
-		<% unless full_matches.empty? %>
-		Full URL matches:
-			<ul>
-			<% full_matches.each do |url| %>
-				<li><i><%= url %></i></li>
-			<% end %>
-			</ul>
-		<% end %>
-		</li>
-		<li>
-		<% partial_matches = @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
-		<%= "No partial (ie. basename) URL matches found" if partial_matches.empty? %>
-		<% unless partial_matches.empty? %>
-		Partial (ie. basename) URL matches:
-			<ul>
-			<% partial_matches.each do |url| %>
-				<li><i><%= url %></i></li>
-			<% end %>
-			</ul>
-		<% end %>
-		</li>
-	</ul>
-</p>
-
-<p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
-	<ul>
-		<% @data.map { |d| d[:archive_name] }.uniq.each do |filename| %>
-			<li><i><%= filename %></i></li>
-		<% end %>
-	</ul>
-have sizes consistent with the downloaded plugin whenever we have a successful (ie. a HTTP 200 response) GET request. As redirects simply return a header with an empty body (ie. 0 bytes in size), our size inconsistencies with redirect responses (ie. HTTP 304 responses) can be explained.
-</p>
-
-TODO: add in tests to verify above assertions
-
-<h2>Full Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
-
-<script type="text/javascript+protovis">
-	var labels = raw_full_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status);
-	var data = raw_full_data.map(function(d) [d.archive_size, d.request_size]);
+<% content_for :note do %>
+	<p>By examining the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "google-analyticator", "/research/by?tagged=google-analyticator,version" %>, we are able to <%= link_to "extract", "/research/version" %> the version number 6.0.2 for Google Analyticator.</p>
 	
-	<%= render :partial => '/graph/bar.js' %>
-
-	vis.render();
-</script>
-
-<h2>Partial Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
-
-<script type="text/javascript+protovis">
-	var labels = raw_partial_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status+" =?= "+d.archive_name);
-	var data = raw_partial_data.map(function(d) [d.archive_size, d.request_size]);
+	<p>By Googling with the keywords <%= link_to "wordpress plugin google analyticator", "http://google.co.uk/search?q=wordpress+plugin+google+analyticator" %>, we are able to locate version 6.0.2 of <%= link_to "Google Analyticator", "http://wordpress.org/extend/plugins/google-analyticator/" %>.</p>
 	
-	<%= render :partial => '/graph/bar.js' %>
-
-	vis.render();
-</script>
-
-<h2>Appendix</h2>
-
-<%= link_to "Data Set (CSV)", "/research/wordpress/plugin/google-analyticator.csv" %>
+	<p><%= github_link "lib/tasks/google_analyticator.rake", "Downloading" %> (<%= github_link "test/unit/google_analyticator_test.rb", "verification" %>) version 6.0.2 of Google Analyticator then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_google_analyticator_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
+	
+	<p>This archive is found to contain the following information within its index:
+	<pre>
+	<%= GoogleAnalyticator.all.map { |d| d.to_s }.join("\n") %>
+	</pre>
+	</p>
+	
+	<p>URLs that are present in both the ApacheAccess model and version 6.0.2 of the downloaded Google Analyticator archive are as follows:
+		<ul>
+			<li>
+			<% full_matches = @data.select { |d| not d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+			<%= "No URL matches found" if full_matches.empty? %>
+			<% unless full_matches.empty? %>
+			Full URL matches:
+				<ul>
+				<% full_matches.each do |url| %>
+					<li><i><%= url %></i></li>
+				<% end %>
+				</ul>
+			<% end %>
+			</li>
+			<li>
+			<% partial_matches = @data.select { |d| d[:partial_match] }.map { |d| d[:archive_name] }.uniq %>
+			<%= "No partial (ie. basename) URL matches found" if partial_matches.empty? %>
+			<% unless partial_matches.empty? %>
+			Partial (ie. basename) URL matches:
+				<ul>
+				<% partial_matches.each do |url| %>
+					<li><i><%= url %></i></li>
+				<% end %>
+				</ul>
+			<% end %>
+			</li>
+		</ul>
+	</p>
+	
+	<p>Plotting a bar graph of plugin file and URL file against number of bytes in the respective file (see below), allows a cross-view analysis to be performed. This analysis shows that the files:
+		<ul>
+			<% @data.map { |d| d[:archive_name] }.uniq.each do |filename| %>
+				<li><i><%= filename %></i></li>
+			<% end %>
+		</ul>
+	have sizes consistent with the downloaded plugin whenever we have a successful (ie. a HTTP 200 response) GET request. As redirects simply return a header with an empty body (ie. 0 bytes in size), our size inconsistencies with redirect responses (ie. HTTP 304 responses) can be explained.
+	</p>
+	
+	TODO: add in tests to verify above assertions
+	
+	<h2>Full Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
+	
+	<script type="text/javascript+protovis">
+		var labels = raw_full_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status);
+		var data = raw_full_data.map(function(d) [d.archive_size, d.request_size]);
+		
+		<%= render :partial => '/graph/bar.js' %>
+	
+		vis.render();
+	</script>
+	
+	<h2>Partial Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
+	
+	<script type="text/javascript+protovis">
+		var labels = raw_partial_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status+" =?= "+d.archive_name);
+		var data = raw_partial_data.map(function(d) [d.archive_size, d.request_size]);
+		
+		<%= render :partial => '/graph/bar.js' %>
+	
+		vis.render();
+	</script>
+<% end %>

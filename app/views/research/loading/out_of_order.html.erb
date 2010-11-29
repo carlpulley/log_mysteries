@@ -1,15 +1,15 @@
-<h2>Server Loading Estimate: Out of Order Apache2 Log Events</h2>
+<% content_for :title do %>
+	Server Loading Estimate: Out of Order Apache2 Log Events
+<% end %>
 
-<p>As logging is controlled using Syslog, log events arrive using UDP port 514 and may arrive out of order (ie. some log events may find themselves being logged at a latter time than they were sent at). As these out of order logging events can be indicators of a loaded server or network latency, we here calculate these events as follows:
-	<ul>
-		<% @data.map { |d| d[:log_name] }.uniq.each do |log_name| %>
-			<li><i><%= log_name %></i> delayed log events are:
-				<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "out-of-order"]).all } %>
-			</li>
-		<% end %>
-	</ul>
-</p>
-
-<h3>Appendix</h3>
-
-<%= link_to "Data Set (CSV)", "/research/loading/out_of_order.csv" %>
+<% content_for :note do %>
+	<p>As logging is controlled using Syslog, log events arrive using UDP port 514 and may arrive out of order (ie. some log events may find themselves being logged at a latter time than they were sent at). As these out of order logging events can be indicators of a loaded server or network latency, we here calculate these events as follows:
+		<ul>
+			<% @data.map { |d| d[:log_name] }.uniq.each do |log_name| %>
+				<li><i><%= log_name %></i> delayed log events are:
+					<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "out-of-order"]).all } %>
+				</li>
+			<% end %>
+		</ul>
+	</p>
+<% end %>
