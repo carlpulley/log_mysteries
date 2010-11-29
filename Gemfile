@@ -7,7 +7,7 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'ruby-debug19', :require => 'ruby-debug'
 
 # To use JQuery rather than Prototype
-gem 'jquery-rails'
+# gem 'jquery-rails'
 
 # Following gems are used for screen scraping
 gem 'nokogiri'
