@@ -45,8 +45,25 @@ module ApplicationHelper
   end
   
   def display(testfile)
-    return `cat test/unit/#{testfile}` if testfile =~ /csv\/.+?_test\.rb$/
-    return `cat test/unit/#{testfile}` if testfile =~ /tag\/.+?_test\.rb$/
-    return `cat lib/tasks/#{testfile}` if testfile =~ /tag\/.+?\.rake$/
+    case testfile
+      when /csv\/.+?_test\.rb$/
+        if File.exists?("test/unit/#{testfile}")
+          return `cat test/unit/#{testfile}`
+        else
+          return "No integration test file exists!"
+        end
+      when /tag\/.+?_test\.rb$/
+        if File.exists?("test/unit/#{testfile}")
+          return `cat test/unit/#{testfile}`
+        else
+          return "No integration test file exists"
+        end
+      when /tag\/.+?\.rake$/
+        if File.exists?("lib/tasks/#{testfile}")
+          return `cat lib/tasks/#{testfile}`
+        else
+          return "No data carving rake task exists"
+        end
+    end
   end
 end

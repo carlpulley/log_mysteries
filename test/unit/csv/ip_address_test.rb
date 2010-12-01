@@ -27,7 +27,7 @@ class IpAddressTest < ActionController::IntegrationTest
       should "be a CSV file and have a valid SHA1" do
         get '/research/ip_address.csv'
         assert_equal "text/csv", @response.content_type
-        assert_equal "9a950766fdb246adb5bd8268fbce7c8e7894a9e3", Digest::SHA1.hexdigest(@response.body)
+        assert_equal "4b6912ea7e7beba983ae3eb59292d58a1392a684", Digest::SHA1.hexdigest(@response.body)
       end
     end
   end

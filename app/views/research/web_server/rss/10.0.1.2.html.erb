@@ -8,9 +8,9 @@
 	  data.map_with_index { |d, i| { :position => i, :id => d.id, :observed_at => d.observed_at.to_f, :ip_address => d.ip_address.value, :request_count => d.ip_address.apache_accesses.count + d.ip_address.apache_errors.count, :asn => d.ip_address.asn || "", :cc => d.ip_address.cc || "", :blacklists => d.ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
 	end
 -%>
-<script>
-	var raw_data = <%=raw (map_to_hash @data).to_json %>;
-</script>
+	<script>
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
+	</script>
 <% end %>
 
 <% content_for :note do %>
@@ -20,14 +20,15 @@
 		
 	<h2>Graphs</h2>
 	
-	<h3>plot of event order (array position) vs log event timestamp (seconds)</h3>
+	<h3>plot of log event timestamp (seconds) vs event order (array position)</h3>
 	
 	<script type="text/javascript+protovis">	
-		var data = raw_data.map(function(d) { var h = {}; h['x'] = d['position']; h['y'] = d['observed_at']; return h; });
+		var data = raw_data.map(function(d) { var h = {}; h['y'] = d['position']; h['x'] = d['observed_at']; return h; });
 		
 		<%= render :partial => '/graph/area.js' %>
 		
-		ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+		xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+		//ylabel.text(function(d) (d)+" MB/s");
 	
 		vis.render();
 	</script>

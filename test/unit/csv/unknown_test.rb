@@ -15,11 +15,20 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace :tag do
-  task :ip_address => :environment do 
-    Sudo.command("/usr/bin/svn").all.each do |event|
-      event.tag_list << "subversion"
-      event.save!
+require 'test_helper'
+
+class ReportTest < ActionController::IntegrationTest
+  context "Using development DB" do
+    setup do
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
+    end
+    
+    context "/research/unknown.csv" do
+      should "be a CSV file and have a valid SHA1" do
+        get '/research/unknown.csv'
+        assert_equal "text/csv", @response.content_type
+        assert_equal "0f3273d01a7ae9440205f3164596b1b061371651", Digest::SHA1.hexdigest(@response.body)
+      end
     end
   end
 end

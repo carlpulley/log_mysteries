@@ -27,7 +27,7 @@ class VersionTest < ActionController::IntegrationTest
       should "be a CSV file and have a valid SHA1" do
         get '/research/by.csv?tagged=version'
         assert_equal "text/csv", @response.content_type
-        assert_equal "8a9a30fbb4e18cbf5f629cabc9f2c76674ac8940", Digest::SHA1.hexdigest(@response.body)
+        assert_equal "1fb1bf6454af407ee2c0e0454396ad7aef653a49", Digest::SHA1.hexdigest(@response.body)
       end
     end
   end

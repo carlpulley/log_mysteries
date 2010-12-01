@@ -16,11 +16,11 @@
 <% content_for :note do %>
 	TODO: ??
 	<script type="text/javascript+protovis">	
-		var data = raw_data.map(function(d) { var h = {}; h['x'] = d['position']; h['y'] = d['observed_at']; return h; });
+		var data = raw_data.map(function(d) { var h = {}; h['y'] = d['position']; h['x'] = d['observed_at']; return h; });
 		
 		<%= render :partial => '/graph/area.js' %>
 		
-		ylabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+		xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 	
 		vis.render();
 	</script>

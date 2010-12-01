@@ -17,17 +17,17 @@
 
 require 'test_helper'
 
-class IpAddressTest < ActionController::IntegrationTest
+class ReportTest < ActionController::IntegrationTest
   context "Using development DB" do
     setup do
       ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
     end
     
-    context "ip_address.csv" do
+    context "/research/file_system.csv" do
       should "be a CSV file and have a valid SHA1" do
-        get '/research/by.csv?tagged=ip_address'
+        get '/research/file_system.csv'
         assert_equal "text/csv", @response.content_type
-        assert_equal "9a950766fdb246adb5bd8268fbce7c8e7894a9e3", Digest::SHA1.hexdigest(@response.body)
+        assert_equal "1fb1bf6454af407ee2c0e0454396ad7aef653a49", Digest::SHA1.hexdigest(@response.body)
       end
     end
   end

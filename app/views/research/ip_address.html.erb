@@ -3,7 +3,14 @@
 <% end %>
 
 <% content_for :data do %>
-	FIXME: data is in the ip_address partial!?
+<%
+	def map_to_hash(data)
+	  data.map { |ip_address| { :ip_address => ip_address.value, :request_count => ip_address.apache_accesses.count + ip_address.apache_errors.count, :asn => ip_address.asn || "", :cc => ip_address.cc || "", :blacklists => ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
+	end
+-%>
+	<script>
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
+	</script>
 <% end %>
 
 <% content_for :note do %>
@@ -18,6 +25,7 @@
 	
 	<ul>
 		<li>Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %> has been used to determine country codes and ASN numbers.</li>
+		<li><%= link_to "StopBadware", "http://www.stopbadware.org/reports/asn/" %> has been used to determine the historical malware profile for each ASN.</li>
 		<li>Blacklist queries have been determined using the <%= link_to "whatismyipaddress.com", "http://whatismyipaddress.com/blacklist-check" %> proxy service.</li>
 	</ul>
 <% end %>

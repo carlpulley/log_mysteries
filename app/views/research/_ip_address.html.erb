@@ -1,9 +1,5 @@
 <h3>IP Addresses</h3>
 
-<script>
-	var raw_data = <%=raw data.to_json %>;
-</script>
-
 <div class="tabs">
 < % tabs_tag do |tab| %>
 	< %= tab.tree 'Tree View', "?ip_address_tab=tree" %>
@@ -76,7 +72,7 @@
 <h3>IP Address Blacklisting</h3>
 
 <ul>
-<% data.map { |d| d[:ip_address] }.uniq.sort.each do |ip_address| %>
+<% data.map { |d| d.value }.uniq.sort.each do |ip_address| %>
 	<% unless IpAddress.where(:value => ip_address).first.blacklists.empty? %>
 	<li><%= ip_address %> listed on:
 		<ul>

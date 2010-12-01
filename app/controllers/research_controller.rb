@@ -48,11 +48,11 @@ class ResearchController < ApplicationController
 
       if params[:subsection]
         @label = "#{params[:subsection]}"
-        @url = "#{params[:chapter]}/#{params[:section]}"
+        @path = "#{params[:chapter]}/#{params[:section]}"
         render "research/#{params[:chapter]}/#{params[:section]}/#{params[:subsection]}", :layout => 'research_note'
       else
         @label = "#{params[:section]}"
-        @url = "#{params[:chapter]}"
+        @path = "#{params[:chapter]}"
         render "research/#{params[:chapter]}/#{params[:section]}", :layout => 'research_note'
       end
     elsif params[:chapter]
@@ -67,16 +67,13 @@ class ResearchController < ApplicationController
         @data = @data.referer(params[:referer]) if params[:referer]
         
         @label = ""
-        @url = ""
+        @path = ""
         render "index"
       else
         
         @data = case params[:chapter]
           when "ip_address"
-            def map_to_hash(data)
-              data.map { |ip_address| { :ip_address => ip_address.value, :request_count => ip_address.apache_accesses.count + ip_address.apache_errors.count, :asn => ip_address.asn || "", :cc => ip_address.cc || "", :blacklists => ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
-            end
-            map_to_hash IpAddress.all
+            IpAddress.all
           when "wordpress"  
             Match.type("wordpress").file.all
           when "version"  
@@ -85,6 +82,8 @@ class ResearchController < ApplicationController
             ApacheAccess.tagged_with(["wordpress", "version"]).all
           when "process"  
             ApacheAccess.all
+          when "unknown"  
+            ApacheAccess.all
           when "cron"  
             ApacheAccess.url("/wp-cron.php").all
           when "maintenance"  
@@ -92,12 +91,12 @@ class ResearchController < ApplicationController
         end
       
         @label = "#{params[:chapter]}"
-        @url = ""
+        @path = ""
         render "research/#{params[:chapter]}", :layout => 'research_note'
       end
     else
       @label = ""
-      @url = ""
+      @path = ""
       render "index"
     end
   end
