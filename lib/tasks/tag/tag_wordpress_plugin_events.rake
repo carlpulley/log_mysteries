@@ -1,4 +1,5 @@
-#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Log Mysteries: partial answer for Honeynet challenge
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -17,9 +18,12 @@
 namespace :tag do
   namespace :events do
     namespace :wordpress do
-      task :version => :environment do 
-        ApacheAccess.tagged_with("wordpress").all.each do |event|
-          event.tag_list << "version" if event.http_url =~ /\?v(er(sion)?)?=/
+      task :plugins => :environment do 
+        ApacheAccess.tagged_with("wordpress").url("/wp-content/plugins").all.each do |event|
+          event.tag_list << "plugin"
+          event.tag_list << "contact-form-7" if event.http_url =~ /contact\-form\-7/
+          event.tag_list << "google-syntax-highlighter" if event.http_url =~ /google\-syntax\-highlighter/
+          event.tag_list << "google-analyticator" if event.http_url =~ /google\-analyticator/
           event.save!
         end
       end

@@ -1,4 +1,5 @@
-#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Log Mysteries: partial answer for Honeynet challenge
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -14,22 +15,19 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace :tag do
-  namespace :events do
-    task :wordpress => :environment do 
-      ApacheAccess.url("/wp-content/").all.each do |event|
-        event.tag_list << "wordpress"
-        event.save!
-      end
-      
-      ApacheAccess.url("/wp-includes/").all.each do |event|
-        event.tag_list << "wordpress"
-        event.save!
-      end
-      
-      ApacheAccess.url("/wp-cron").all.each do |event|
-        event.tag_list << "wordpress"
-        event.save!
+require 'test_helper'
+
+class IpAddressTest < ActionController::IntegrationTest
+  context "Using development DB" do
+    setup do
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
+    end
+    
+    context "ip_address.csv" do
+      should "be a CSV file and have a valid SHA1" do
+        get '/research/by.csv?tagged=ip_address'
+        assert_equal "text/csv", @response.content_type
+        assert_equal "9a950766fdb246adb5bd8268fbce7c8e7894a9e3", Digest::SHA1.hexdigest(@response.body)
       end
     end
   end

@@ -1,6 +1,5 @@
 #    Log Mysteries: partial answer for Honeynet challenge
-#    Reference:
-# Reference:  http://honeynet.org/challenges/2010_5_log_mysteries  http://honeynet.org/challenges/2010_5_log_mysteries
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,14 +15,3 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Answer::Application.routes.draw do
-  get "honeynet/index"
-
-  match 'research/by' => "research#index", :chapter => "by"
-  
-  match 'research/web_server/rss/:subsection' => "research#index", :chapter => "web_server", :section => "rss", :subsection => /\d+\.\d+\.\d+\.\d+/
-  
-  match ':controller(/:chapter(/:section(/:subsection)))' => '#index'
-  
-  root :to => "report#index"
-end

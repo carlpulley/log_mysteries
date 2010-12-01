@@ -1,6 +1,5 @@
 #    Log Mysteries: partial answer for Honeynet challenge
-#    Reference:
-# Reference:  http://honeynet.org/challenges/2010_5_log_mysteries  http://honeynet.org/challenges/2010_5_log_mysteries
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,14 +15,20 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Answer::Application.routes.draw do
-  get "honeynet/index"
+require 'test_helper'
 
-  match 'research/by' => "research#index", :chapter => "by"
-  
-  match 'research/web_server/rss/:subsection' => "research#index", :chapter => "web_server", :section => "rss", :subsection => /\d+\.\d+\.\d+\.\d+/
-  
-  match ':controller(/:chapter(/:section(/:subsection)))' => '#index'
-  
-  root :to => "report#index"
+class ReportTest < ActionController::IntegrationTest
+  context "Using development DB" do
+    setup do
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
+    end
+    
+    context "report-wordpress.csv" do
+      should "be a CSV file and have a valid SHA1" do
+        get '/research/version.csv'
+        assert_equal "text/csv", @response.content_type
+        assert_equal "beeb513e60fda81cc475b4ef0ee08cc07cccdb3a", Digest::SHA1.hexdigest(@response.body)
+      end
+    end
+  end
 end

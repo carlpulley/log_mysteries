@@ -1,4 +1,5 @@
-#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Log Mysteries: partial answer for Honeynet challenge
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,19 +17,24 @@
 
 namespace :tag do
   namespace :events do
-    task :python => :environment do 
-      Sudo.all.each do |event|
-        event.tag_list << "python" if event.message[:command] =~ /\.py(\s|$)/
+    task :botnet => :environment do 
+      Sudo.command("psybnc").all.each do |event|
+        event.tag_list << "botnet"
         event.save!
       end
       
-      Sudo.command("python").all.each do |event|
-        event.tag_list << "python"
+      Sudo.pwd("psybnc").all.each do |event|
+        event.tag_list << "botnet"
         event.save!
       end
       
-      Sudo.command("django").all.each do |event|
-        event.tag_list << "python"
+      Sudo.command("eggdrop").all.each do |event|
+        event.tag_list << "botnet"
+        event.save!
+      end
+      
+      Sudo.pwd("eggdrop").all.each do |event|
+        event.tag_list << "botnet"
         event.save!
       end
     end

@@ -29,23 +29,23 @@
 	
 	<ul>
 		<li>
-		<%= link_to "Data Set (CSV)", "/research/wordpress/plugin/contact-form-7.csv" %><br />
+		<%= link_to "Data Set (CSV)", "/research/#{"#{@url}/" unless @url.nil?}#{@label}.csv" %><br />
 		<b>Verification Code:</b>
 		<pre>
-<%= display "contact_form_7_test.rb" %>
+<%= display "csv/#{@label}_test.rb" %>
 		</pre>
 		</li>
 		<li>
 		<b>Carving Code:</b>
 		<pre>
-<%= (display "") || "TODO: rake file holding code for creating new tags" %>
+<%= display "tag/#{@label}.rake" %>
 		</pre>
 		</li>
 		<li>
-		<%= link_to "New Tags (CSV)", "/research/by.csv?tagged=contact-form-7" %><br />
+		<%= link_to "New Tags (CSV)", "/research/by.csv?tagged=#{@label}" %><br />
 		<b>Verification Code:</b>
 		<pre>
-<%= (display "") || "TODO: test/unit file holding SHA1 test code" %>
+<%= display "tag/#{@label}_test.rb" %>
 		</pre>
 		</li>
 	</ul>

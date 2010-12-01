@@ -1,4 +1,5 @@
-#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Log Mysteries: partial answer for Honeynet challenge
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,29 +17,19 @@
 
 namespace :tag do
   namespace :events do
-    task :install => :environment do 
-      Sudo.command("/usr/bin/patch").all.each do |event|
-        event.tag_list << "install"
+    task :python => :environment do 
+      Sudo.all.each do |event|
+        event.tag_list << "python" if event.message[:command] =~ /\.py(\s|$)/
         event.save!
       end
       
-      Sudo.command("/usr/bin/apt-get").all.each do |event|
-        event.tag_list << "install"
+      Sudo.command("python").all.each do |event|
+        event.tag_list << "python"
         event.save!
       end
       
-      Sudo.command("/usr/bin/dpkg").all.each do |event|
-        event.tag_list << "install"
-        event.save!
-      end
-      
-      Sudo.command("/usr/bin/wget").all.each do |event|
-        event.tag_list << "install"
-        event.save!
-      end
-      
-      Sudo.command("/usr/bin/alien").all.each do |event|
-        event.tag_list << "install"
+      Sudo.command("django").all.each do |event|
+        event.tag_list << "python"
         event.save!
       end
     end

@@ -1,4 +1,5 @@
-#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Log Mysteries: partial answer for Honeynet challenge
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,25 +17,14 @@
 
 namespace :tag do
   namespace :events do
-    task :botnet => :environment do 
-      Sudo.command("psybnc").all.each do |event|
-        event.tag_list << "botnet"
-        event.save!
-      end
-      
-      Sudo.pwd("psybnc").all.each do |event|
-        event.tag_list << "botnet"
-        event.save!
-      end
-      
-      Sudo.command("eggdrop").all.each do |event|
-        event.tag_list << "botnet"
-        event.save!
-      end
-      
-      Sudo.pwd("eggdrop").all.each do |event|
-        event.tag_list << "botnet"
-        event.save!
+    namespace :unknown do
+      task :anomalies => :environment do 
+        [394].each do |id|
+          event = ApacheAccess.find(id)
+          event.tag_list << "anomaly"
+          event.tag_list << "unknown"
+          event.save!
+        end
       end
     end
   end

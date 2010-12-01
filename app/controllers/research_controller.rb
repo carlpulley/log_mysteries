@@ -1,4 +1,5 @@
-#    Log Mysteries: partial answer for Honeynet challenge (see http://honeynet.org/challenges/2010_5_log_mysteries)
+#    Log Mysteries: partial answer for Honeynet challenge
+#    Reference:  http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -85,8 +86,15 @@ class ResearchController < ApplicationController
         @data = map_to_hash ApacheAccess.tagged_with("rss").ip_address(params[:subsection]).all
       end
 
-      render "research/#{params[:chapter]}/#{params[:section]}/#{params[:subsection]}", :layout => 'research_note' if params[:subsection]
-      render "research/#{params[:chapter]}/#{params[:section]}", :layout => 'research_note' unless params[:subsection]
+      if params[:subsection]
+        @label = "#{params[:subsection]}"
+        @url = "#{params[:chapter]}/#{params[:section]}"
+        render "research/#{params[:chapter]}/#{params[:section]}/#{params[:subsection]}", :layout => 'research_note'
+      else
+        @label = "#{params[:section]}"
+        @url = "#{params[:chapter]}"
+        render "research/#{params[:chapter]}/#{params[:section]}", :layout => 'research_note'
+      end
     elsif params[:chapter]
       # TODO: need to make this code more generic and less tied to Apache logs
       @data = Auth.scoped    
@@ -106,6 +114,8 @@ class ResearchController < ApplicationController
         @data = @data.referer(params[:referer]) if params[:referer]
         @filename = (filename.empty? ? "" : "-") + filename.join("-")
         
+        @label = ""
+        @url = ""
         render "index"
       else
         
@@ -156,9 +166,13 @@ class ResearchController < ApplicationController
           @data = Sudo.scoped
         end
         
+        @label = "#{params[:chapter]}"
+        @url = ""
         render "research/#{params[:chapter]}", :layout => 'research_note'
       end
     else
+      @label = ""
+      @url = ""
       render "index"
     end
   end

@@ -15,24 +15,33 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'test_helper'
-
-class SanitizedLogTest < ActiveSupport::TestCase
-  context "sanitized_log.zip" do
-    setup do
-      @sanitized_log = "evidence/sanitized_log.zip"
-    end
-    
-    should "be downloaded" do
-      assert FileTest.file?(@sanitized_log)
-    end
-    
-    should "have a valid SHA1" do
-      assert_equal "5d317ecf8147cafc0239166e47139afea3200c5b", Digest::SHA1.hexdigest(open(@sanitized_log, "r").read)
-    end
-    
-    should "have the correct file type" do
-      assert_match "Zip archive data", `file #{@sanitized_log}`
+namespace :tag do
+  namespace :events do
+    task :install => :environment do 
+      Sudo.command("/usr/bin/patch").all.each do |event|
+        event.tag_list << "install"
+        event.save!
+      end
+      
+      Sudo.command("/usr/bin/apt-get").all.each do |event|
+        event.tag_list << "install"
+        event.save!
+      end
+      
+      Sudo.command("/usr/bin/dpkg").all.each do |event|
+        event.tag_list << "install"
+        event.save!
+      end
+      
+      Sudo.command("/usr/bin/wget").all.each do |event|
+        event.tag_list << "install"
+        event.save!
+      end
+      
+      Sudo.command("/usr/bin/alien").all.each do |event|
+        event.tag_list << "install"
+        event.save!
+      end
     end
   end
 end
