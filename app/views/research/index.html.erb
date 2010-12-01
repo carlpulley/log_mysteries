@@ -117,14 +117,9 @@
 
 <%= render :partial => '/graph/timeline', :object => timeline %>
 <% end %>
-<% if params[:chapter] == "by" %>
+<% if params[:chapter] == "by" and params[:tagged] %>
 
 <h3>Log Entries tagged <%= params[:tagged] %></h3>
-	
-<p>
-<%= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.join('&') }" unless @data.empty? %>
-<%= "No log events tagged #{params[:tagged]}" if @data.empty? %>
-</p>
 	
 <% # TODO: add in paging code %>
 <%= render :partial => 'data', :locals => { :data => @data.order(:observed_at).all } %>

@@ -17,17 +17,17 @@
 
 require 'test_helper'
 
-class ReportTest < ActionController::IntegrationTest
+class VersionTest < ActionController::IntegrationTest
   context "Using development DB" do
     setup do
       ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
     end
     
-    context "report-wordpress.csv" do
+    context "/research/version.csv" do
       should "be a CSV file and have a valid SHA1" do
         get '/research/version.csv'
         assert_equal "text/csv", @response.content_type
-        assert_equal "beeb513e60fda81cc475b4ef0ee08cc07cccdb3a", Digest::SHA1.hexdigest(@response.body)
+        assert_equal "8a9a30fbb4e18cbf5f629cabc9f2c76674ac8940", Digest::SHA1.hexdigest(@response.body)
       end
     end
   end

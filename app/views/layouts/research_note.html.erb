@@ -9,7 +9,7 @@
 <body>
 	<h1><%= yield :title %></h1>
 
-	<b>Tags:</b> <%= "TODO: enumerate tags associated with this view" %>
+	<b>Tags:</b> <%=raw (yield :tags).strip.split(",").map { |t| link_to(t, "/research/by?tagged=#{t}") }.join(", ") %>
 	
 	<%= yield :data if content_for?(:data) %>
 	
@@ -42,7 +42,7 @@
 		</pre>
 		</li>
 		<li>
-		<%= link_to "New Tags (CSV)", "/research/by.csv?tagged=#{@label}" %><br />
+		<%= link_to "New Tags (CSV)", "/research/by.csv?tagged=#{(yield :tags).strip}" %><br />
 		<b>Verification Code:</b>
 		<pre>
 <%= display "tag/#{@label}_test.rb" %>

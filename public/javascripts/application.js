@@ -1,6 +1,5 @@
 //    Log Mysteries: partial answer for Honeynet challenge
-#    Reference:
-# Reference:  http://honeynet.org/challenges/2010_5_log_mysteries  http://honeynet.org/challenges/2010_5_log_mysteries
+//    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 //    Copyright (C) 2010  Dr. Carl J. Pulley
 //
 //    This program is free software: you can redistribute it and/or modify

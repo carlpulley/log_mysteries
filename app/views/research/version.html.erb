@@ -2,6 +2,10 @@
 	Proportion of Wordpress Events with a version Parameter
 <% end %>
 
+<% content_for :tags do %>
+	version
+<% end %>
+
 <% content_for :data do %>
 <%  
 	def map_to_hash(data)
