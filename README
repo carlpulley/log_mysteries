@@ -29,7 +29,7 @@ This is a Rails3 application that has been built within an Ubuntu 10.04 operatin
 3. Build your SQLite3 database with:
         <tt>rake db:migrate</tt>
 
-4. Ensure the testing database uses the same DB shcema with:
+4. Ensure the testing database uses the same DB schema with:
         <tt>rake db:test:load</tt>
 
 5. Build the SQLite3 database tables and relationships with:
@@ -40,7 +40,7 @@ This is a Rails3 application that has been built within an Ubuntu 10.04 operatin
 
 Finally, you may now run this Rails3 application using:
         <tt>rails server</tt> or <tt>rails s</tt>
-and navigating to the URL http://localhost:3000/.
+and by navigating to the URL http://localhost:3000/ with your favourite browser.
 
 == Description of (Significant) Contents
 
@@ -48,21 +48,28 @@ The significant directory structure for this Rails3 application is as follows:
 
   |-- app
   |   |-- controllers
+  |   |   |-- research_controller.rb
+  |   |   `-- honeynet_controller.rb
   |   |-- models
   |   `-- views
-  |       `-- layouts
+  |       |-- graph
+  |       |-- layouts
+  |       |-- research
+  |       `-- honeynet
   |-- lib
   |   `-- tasks
   `-- test
       `-- unit
+          `-- csv
 
 app
   Holds all the code that's specific to this particular application.
 
 app/controllers
-  Holds controllers that should be named like report_controller.rb for
-  automated URL mapping. All controllers should descend from
+  Holds all controllers. All controllers should descend from
   ApplicationController which itself descends from ActionController::Base.
+  The research controller is used to build the research notes views (these
+  are used to document specific investigations into our data set).
 
 app/models
   Holds models that should be named like apache_access.rb. Models descend from

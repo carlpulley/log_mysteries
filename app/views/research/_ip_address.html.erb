@@ -5,14 +5,15 @@
 </script>
 
 <div class="tabs">
-<% tabs_tag do |tab| %>
-	<%= tab.tree 'Tree View', "?ip_address_tab=tree" %>
-	<%= tab.sunburst 'Sunburst View', "?ip_address_tab=sunburst" %>
-	<%= tab.world 'World View', "?ip_address_tab=world" %>
-<% end %>
+< % tabs_tag do |tab| %>
+	< %= tab.tree 'Tree View', "?ip_address_tab=tree" %>
+	< %= tab.sunburst 'Sunburst View', "?ip_address_tab=sunburst" %>
+	< %= tab.world 'World View', "?ip_address_tab=world" %>
+< % end %>
 </div>
 
-<% if current_tab.to_s == 'tree' %>
+<ul>
+<li><%= link_to "Tree View", "" %>
 <p>Using our www-access.log and www-media.log events and grouping the data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
 <center>
 <% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
@@ -34,7 +35,8 @@
 </script>
 </center>
 </p>
-<% elsif current_tab.to_s == 'sunburst' %>
+</li>
+<li><%= link_to "Sunburst View", "" %>
 <p>
 <center>
 <script type="text/javascript+protovis">
@@ -51,7 +53,8 @@
 </script>
 </center>
 </p>
-<% elsif current_tab.to_s == 'world' %>
+</li>
+<li><%= link_to "World View", "" %>
 <p>The following map (hovering the mouse over a country displays information about the data point) shows the geographical distribution for our Apache server's visitors (country colour encodes the frequency of requests via a logarithmic heat scale):
 <center>
 <script type="text/javascript+protovis">
@@ -67,7 +70,8 @@
 </script>
 </center>
 </p>
-<% end %>
+</li>
+</ul>
 
 <h3>IP Address Blacklisting</h3>
 

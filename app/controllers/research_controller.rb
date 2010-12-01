@@ -16,16 +16,6 @@
 
 class ResearchController < ApplicationController
   def index
-    if params[:ip_address_tab]
-      set_tab :tree if params[:ip_address_tab] == 'tree'
-      set_tab :sunburst if params[:ip_address_tab] == 'sunburst'
-      set_tab :world if params[:ip_address_tab] == 'world'
-    end
-    if params[:appendix_tab]
-      set_tab :data if params[:appendix_tab] == 'data'
-      set_tab :carving if params[:appendix_tab] == 'carving'
-      set_tab :tagging if params[:appendix_tab] == 'tagging'
-    end
     
     if params[:chapter] and params[:section]
       

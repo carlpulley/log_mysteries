@@ -11,7 +11,7 @@
 
 	<b>Tags:</b> <%= "TODO: enumerate tags associated with this view" %>
 	
-	<%= yield :data if content_for?(:note) %>
+	<%= yield :data if content_for?(:data) %>
 	
 	<h2>Description</h2>
 	
@@ -20,30 +20,34 @@
 	<h2>Appendix</h2>
 	
 	<div class="tabs">
-	<% tabs_tag do |tab| %>
-		<%= tab.data 'Data Set (CSV)', "?appendix_tab=data" %>
-		<%= tab.carving 'Carving Code', "?appendix_tab=carving" %>
-		<%= tab.tagging 'New Tags (CSV)', "?appendix_tab=tagging" %>
-	<% end %>
+	< % tabs_tag do |tab| %>
+		< %= tab.data 'Data Set (CSV)', "?appendix_tab=data" %>
+		< %= tab.carving 'Carving Code', "?appendix_tab=carving" %>
+		< %= tab.tagging 'New Tags (CSV)', "?appendix_tab=tagging" %>
+	< % end %>
 	</div>
 	
-	<% if current_tab.to_s == 'data' %>
+	<ul>
+		<li>
 		<%= link_to "Data Set (CSV)", "/research/wordpress/plugin/contact-form-7.csv" %><br />
 		<b>Verification Code:</b>
 		<pre>
 <%= display "contact_form_7_test.rb" %>
 		</pre>
-	<% elsif current_tab.to_s == 'carving' %>
+		</li>
+		<li>
 		<b>Carving Code:</b>
 		<pre>
 <%= (display "") || "TODO: rake file holding code for creating new tags" %>
 		</pre>
-	<% elsif current_tab.to_s == 'tagging' %>
+		</li>
+		<li>
 		<%= link_to "New Tags (CSV)", "/research/by.csv?tagged=contact-form-7" %><br />
 		<b>Verification Code:</b>
 		<pre>
 <%= (display "") || "TODO: test/unit file holding SHA1 test code" %>
 		</pre>
-	<% end %>
+		</li>
+	</ul>
 </body>
 </html>
