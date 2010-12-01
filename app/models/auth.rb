@@ -15,6 +15,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Auth < ActiveRecord::Base
+  serialize :message
+  
   acts_as_taggable_on :tags
   #acts_as_nested_set
   
