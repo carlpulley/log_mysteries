@@ -3,8 +3,13 @@
 <% end %>
 
 <% content_for :data do %>
+<% 
+	def map_to_hash(data)
+	  data.map { |d| { :id => d.id, :observed_at => d.observed_at.to_f, :observed_at_str => d.observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %z"), :transfer_speed => d.transfer_speed/(10**6) } }
+	end
+-%>
 	<script>
-		var raw_data = <%=raw @data.to_json %>;
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
 	</script>
 <% end %>
 

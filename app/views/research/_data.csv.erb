@@ -1,4 +1,4 @@
-<%= data.first.keys.map { |d| d.to_s.titleize }.join(",") %>
+<%= data.first.class.columns.map { |c| c.name.titleize }.join(",") %>
 <% data.each do |d| -%>
-<%=raw d.values.map { |d| d.to_json }.join(",") %>
+<%=raw d.class.columns.map { |c| d.send(c.name).to_json }.join(",") %>
 <% end -%>

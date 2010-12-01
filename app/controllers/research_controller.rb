@@ -20,70 +20,21 @@ class ResearchController < ApplicationController
     
     if params[:chapter] and params[:section]
       
-      if params[:chapter] == "scan"
-        def map_to_hash(data)
-          data.map { |d| { :ip_address => d.ip_address.value, :processing_time => d.processing_time, :request_count => d.ip_address.apache_accesses.count + d.ip_address.apache_errors.count, :asn => d.ip_address.asn || "", :cc => d.ip_address.cc || "", :blacklists => d.ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
+      @data = case params[:chapter]
+        when "scan" then ApacheAccess.tagged_with(["scan", params[:section]]).order(:observed_at).all
+        when "bot" then ApacheAccess.tagged_with("bot").user_agent(params[:section]).order(:observed_at).all
+        when "loading" then case params[:section]
+          when "requests" then ApacheAccess.where(:result => 200).group(:observed_at).order(:observed_at).count
+          when "rss" then ApacheAccess.tagged_with("rss").order(:observed_at).all
+          when "static" then ApacheAccess.tagged_with("static").group(:observed_at).select('apache_accesses.id', :observed_at, 'sum(cast(bytes*1000000 as float))/sum(cast(processing_time as float)) as transfer_speed').order(:observed_at).all
+          when "out_of_order" then ApacheAccess.where(:name => "www-access.log").select(:id, :observed_at, :name).all + ApacheAccess.where(:name => "www-media.log").select(:id, :observed_at, :name).all + ApacheError.select(:id, :observed_at, '"www-error.log" as name').all
         end
-        @data = map_to_hash ApacheAccess.tagged_with(["scan", params[:section]]).order(:observed_at).all
-      end
-      
-      if params[:chapter] == "bot"
-        def map_to_hash(data)
-          data.map { |d| { :ip_address => d.ip_address.value, :request_count => d.ip_address.apache_accesses.count + d.ip_address.apache_errors.count, :asn => d.ip_address.asn || "", :cc => d.ip_address.cc || "", :blacklists => d.ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
-        end
-        @data = map_to_hash ApacheAccess.tagged_with("bot").user_agent(params[:section]).order(:observed_at).all
-      end
-      
-      if params[:chapter] == "loading" and params[:section] == "requests"
-        def map_to_hash(data)
-          data.map { |t, c| { :observed_at => t, :num_requests => c } }
-        end
-        @data = map_to_hash ApacheAccess.where(:result => 200).group(:observed_at).order(:observed_at).count
-      end
-      
-      if params[:chapter] == "loading" and params[:section] == "rss"
-        def map_to_hash(data)
-          data.map { |d| { :id => d.id, :observed_at => d.observed_at.to_f, :observed_at_str => d.observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %z"), :response_size => d.bytes, :processing_time => d.processing_time } }
-        end
-        @data = map_to_hash ApacheAccess.tagged_with("rss").order(:observed_at).all
-      end
-      
-      if params[:chapter] == "loading" and params[:section] == "static"
-        def map_to_hash(data)
-          data.map { |d| { :id => d.id, :observed_at => d.observed_at.to_f, :observed_at_str => d.observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %z"), :transfer_speed => d.transfer_speed/(10**6) } }
-        end
-        @data = map_to_hash ApacheAccess.tagged_with("static").group(:observed_at).select('apache_accesses.id', :observed_at, 'sum(cast(bytes*1000000 as float))/sum(cast(processing_time as float)) as transfer_speed').order(:observed_at).all
-      end
-      
-      if params[:chapter] == "loading" and params[:section] == "out_of_order"
-        def map_to_hash(data)
-          result = []
-          last_entry = nil
-					data.each do |entry|
-						unless last_entry.nil?
-							if last_entry.observed_at > entry.observed_at
-							  result << entry
-							end
-						end
-						last_entry = entry
-					end
-					result.map_with_index { |d, i| { :log_name => d.name, :observed_at => d.observed_at, :id => d.id, :position => i } }
-        end
-        @data = map_to_hash(ApacheAccess.where(:name => "www-access.log").select(:id, :observed_at, :name).all) + map_to_hash(ApacheAccess.where(:name => "www-media.log").select(:id, :observed_at, :name).all) + map_to_hash(ApacheError.select(:id, :observed_at, '"www-error.log" as name').all) 
-      end
-      
-      if params[:chapter] == "wordpress" and params[:section] == "plugin"
-        def map_to_hash(data)
-          data.map { |m| { :request_method => m.apache_access.http_method, :request_name => m.apache_access.http_url, :request_size => m.apache_access.bytes, :request_status => m.apache_access.result, :archive_name => m.archive_content.name, :archive_size => m.archive_content.size, :partial_match => m.tag_list.member?("basename") } }
-        end
-        @data = map_to_hash Match.type(params[:subsection]).file.all
-      end
-      
-      if params[:chapter] == "web_server" and params[:section] == "rss"
-        def map_to_hash(data)
-          data.map_with_index { |d, i| { :position => i, :id => d.id, :observed_at => d.observed_at.to_f, :ip_address => d.ip_address.value, :request_count => d.ip_address.apache_accesses.count + d.ip_address.apache_errors.count, :asn => d.ip_address.asn || "", :cc => d.ip_address.cc || "", :blacklists => d.ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
-        end
-        @data = map_to_hash ApacheAccess.tagged_with("rss").ip_address(params[:subsection]).all
+        when "wordpress" then case params[:section]
+            when "plugin" then Match.type(params[:subsection]).file.all
+          end
+        when "web_server" then case params[:section]
+            when "rss" then ApacheAccess.tagged_with("rss").ip_address(params[:subsection]).all
+          end 
       end
 
       if params[:subsection]
@@ -126,46 +77,15 @@ class ResearchController < ApplicationController
           @data = map_to_hash IpAddress.all
         end
         
-        if params[:chapter] == "wordpress"
-          def map_to_hash(data)
-            data.map { |m| { :request_method => m.apache_access.http_method, :request_name => m.apache_access.http_url, :request_size => m.apache_access.bytes, :request_status => m.apache_access.result, :archive_name => m.archive_content.name, :archive_size => m.archive_content.size, :partial_match => m.tag_list.member?("basename") } }
-          end
-          @data = map_to_hash Match.type("wordpress").file.all
+        @data = case params[:chapter]
+          when "wordpress" then Match.type("wordpress").file.all
+          when "version" then ApacheAccess.tagged_with(["wordpress", "version"]).all
+          when "file_system" then ApacheAccess.tagged_with(["wordpress", "version"]).all
+          when "process" then ApacheAccess.all
+          when "cron" then ApacheAccess.url("/wp-cron.php").all
+          when "maintenance" then Sudo.scoped
         end
-        
-        # TODO: add in tagging data to help in version accountability/auditing?
-        if params[:chapter] == "version"
-          def map_to_hash(data)
-            data.map { |d| { :http_method => d.http_method, :http_url => $1, :http_status => d.result, :version => $2 } if d.http_url =~ /^(.*?)\?ver=([^&^\s]+$)/ } 
-          end
-          @data = map_to_hash ApacheAccess.tagged_with(["wordpress", "version"]).all
-        end
-        
-        if params[:chapter] == "file_system"
-          def map_to_hash(data)
-            data.map { |d| { :http_method => d.http_method, :http_url => $1, :http_status => d.result, :version => $2 } if d.http_url =~ /^(.*?)\?ver=([^&^\s]+$)/ } 
-          end
-          @data = map_to_hash ApacheAccess.tagged_with(["wordpress", "version"]).all
-        end
-        
-        if params[:chapter] == "process"
-          def map_to_hash(data)
-            data.map { |d| { :pid => d.pid, :observed_at => d.observed_at.to_f, :thread_index => (d.thread_index || 0), :counter => d.counter } }
-          end
-          @data = map_to_hash ApacheAccess.all
-        end
-        
-        if params[:chapter] == "cron"
-          def map_to_hash(data)
-            data.map_with_index { |d, i| { :position => i, :observed_at => d.observed_at.to_f, :pid => d.pid, :thread_index => d.thread_index, :counter => d.counter, :bytes => d.bytes, :processing_time => d.processing_time } } 
-          end
-          @data = map_to_hash ApacheAccess.url("/wp-cron.php").all
-        end
-        
-        if params[:chapter] == "maintenance"
-          @data = Sudo.scoped
-        end
-        
+      
         @label = "#{params[:chapter]}"
         @url = ""
         render "research/#{params[:chapter]}", :layout => 'research_note'

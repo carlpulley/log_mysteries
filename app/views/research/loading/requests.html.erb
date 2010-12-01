@@ -3,8 +3,13 @@
 <% end %>
 
 <% content_for :data do %>
+<%
+	def map_to_hash(data)
+	  data.map { |t, c| { :observed_at => t, :num_requests => c } }
+	end
+-%>
 	<script>
-		var raw_data = <%=raw @data.map { |d| { :observed_at => d[:observed_at].to_f, :num_requests => d[:num_requests] } }.to_json %>;
+		var raw_data = <%=raw (map_to_hash @data).map { |d| { :observed_at => d[:observed_at].to_f, :num_requests => d[:num_requests] } }.to_json %>;
 	</script>
 <% end %>
 	

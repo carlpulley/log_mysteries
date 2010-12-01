@@ -3,9 +3,14 @@
 <% end %>
 
 <% content_for :data do %>
-<script>
-	var raw_data = <%=raw @data.to_json %>;
-</script>
+<%
+	def map_to_hash(data)
+	  data.map { |d| { :ip_address => d.ip_address.value, :processing_time => d.processing_time, :request_count => d.ip_address.apache_accesses.count + d.ip_address.apache_errors.count, :asn => d.ip_address.asn || "", :cc => d.ip_address.cc || "", :blacklists => d.ip_address.blacklists.map { |b| { :site => b.site, :status => b.status } } } }
+	end
+-%>
+	<script>
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
+	</script>
 <% end %>
 
 <% content_for :note do %>

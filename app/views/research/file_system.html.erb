@@ -3,8 +3,13 @@
 <% end %>
 
 <% content_for :data do %>
+<%
+	def map_to_hash(data)
+	  data.map { |d| { :http_method => d.http_method, :http_url => $1, :http_status => d.result, :version => $2 } if d.http_url =~ /^(.*?)\?ver=([^&^\s]+$)/ } 
+	end
+-%>
 	<script>
-		var raw_data = <%=raw @data.to_json %>;
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
 	</script>
 <% end %>
 
