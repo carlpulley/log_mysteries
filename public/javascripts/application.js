@@ -29,10 +29,6 @@ document.observe("dom:loaded", function() {
   });
 });
 
-function average(values) {
-  return values.inject(0, function(t,n) { return t+n; }) / values.length;
-}
-
 function mean(values) {
   return values.inject(0, function(t,n) { return t+n; }) / values.length;
 }

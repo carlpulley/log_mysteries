@@ -23,7 +23,7 @@
 			<li>the non-standard username <code>dhg</code> - all other usernames match the pattern <code>user\d+</code> (see <%= link_to "odd user events", "/research/by?tagged=odd,user" %>);</li>
 			<li>the fact that <code>auth.log</code> records the user <code>dhg</code> configuring the UFW firewall (and then IP Tables directly), at a time that is during a period when the server is estimated to have no ongoing maintenance (examination of the <%= link_to "install/build events", "/research/by?tagged=install" %> shows that from this time index onwards, no such events are associated with estimates of known administrator activity).</li>
 		</ul>
-		By examining our installation events (see <%= link_to "install events", "/research/by?tagged=install" %>), we have that our system was possibly compromised before 23:02:37 on the 19th April 2010 PDT (since root installed the Debian package <code>build-essential</code> at this time and this event occurs 23 minutes before botnet related activity).<br />
+		By examining our installation events (see <%= link_to "install events", "/research/by?tagged=install" %>), we additionally have that our system was probably compromised before 23:02:37 on the 19th April 2010 PDT (since root installed the Debian package <code>build-essential</code> at this time and this event occurs 23 minutes before botnet related activity).<br />
 		As a result of the above, we estimate that the system was compromised by 23:02:37 on the 19th April 2010 PDT.
 <% timeline1 = ApplicationHelper::Timeline.new %>
 
@@ -81,8 +81,8 @@
 		<div class="event"><%= event.to_s %></div>
 		<% end %>
 	</div>
-	As our comparison test is here based upon time, we assume that the timestamp and time-related counter value have out-of-sync source clocks (its that or the entry was forged!).<br />
-	<%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2"%> accesses our server (via an RSS newsfeed) at regular intervals. These access intervals are so regular that, by trusting 10.0.1.2's system clock, we can estimate the accuracy of our server's clock. TODO: use 10.0.1.2 rss time to measure consistency of time in apache log files.
+	As our comparison test is here based upon time, we hypothesis that the timestamp and time-related counter value have out-of-sync source clocks (it's that or the entry was forged!).<br />
+	<%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2"%> accesses our server (via an RSS newsfeed) at regular intervals. These access intervals are so regular that, by trusting 10.0.1.2's system clock (10.0.1.2 is on the same subnet as our server at 10.0.1.14), we can estimate the accuracy of our server's clock. TODO: use 10.0.1.2 rss time to measure consistency of time in apache log files.
 <% timeline3 = ApplicationHelper::Timeline.new %>
            
 <% timeline3.add_event("10.0.1.14: POST /wp-cron.php?doing_wp_cron", ApacheAccess.ip_address("10.0.1.14").tagged_with("wordpress")) %>
@@ -142,7 +142,7 @@
 	<li><i>Was an automatic tool used to perform the attack? If yes which one?</i><br />
 		?</li>
 	<li><i>What can you say about the attacker's goals and methods?</i><br />
-		The presence of <code>eggdrop</code> and <code>psybnc</code> suggest that the attacker(s) plan to use this system as part of a botnet.</li>
+		The presence of <code>eggdrop</code> and <code>psybnc</code> suggest that the attacker(s) plan to use this system as part of an IRC botnet.</li>
 </ol>
 
 <p><b>Bonus:</b> <i>What would you have done to avoid this attack?</i><br />

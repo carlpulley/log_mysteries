@@ -19,9 +19,8 @@
 	<script>
 		var _mean = mean(raw_data.map(function(d) { return d.transfer_speed; }));
 		var stddev = standard_deviation(raw_data.map(function(d) { return d.transfer_speed; }));
-		var averg = average(raw_data.map(function(d) { return d.transfer_speed; }));
 		var max_load = raw_data.map(function(d) { return d.transfer_speed; }).inject(0, function(m, n) { return Math.max(m, n); });
-		var upper_time_bound = Math.max(_mean+stddev, averg+stddev);
+		var upper_time_bound = _mean+2*stddev;
 		var upper_bound_color = "#FF2D26";
 		document.observe("dom:loaded", function() {
 			$$(".upper_bound_color").each(function(e) { e.setStyle({color:upper_bound_color}); });
@@ -45,7 +44,7 @@
 	<p>
 		<b>Notes:</b>
 		<ul>
-			<li>Here our mean transfer speed is <script>document.write(_mean.toFixed(1));</script> MB/s (standard deviation is <script>document.write(stddev.toFixed(1));</script> MB/s) and our average is <script>document.write(averg.toFixed(1));</script> MB/s.</li>
+			<li>Here our mean transfer speed is <script>document.write(_mean.toFixed(1));</script> MB/s (standard deviation is <script>document.write(stddev.toFixed(1));</script> MB/s).</li>
 			<li>Thus, any transfer speeds that are greater than <script>document.write(upper_time_bound.toFixed(1));</script> MB/s indicates when the server is being loaded. This cut off point has been plotted as a <font class="upper_bound_color">red</font> line on the above graph.</li>
 			<li>The following features of this graph are worth noting (as they are indicators that are further consistent with server loading):
 				<ul>

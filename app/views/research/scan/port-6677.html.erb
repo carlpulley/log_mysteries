@@ -17,24 +17,22 @@
 	<script>
 		var _mean = mean(raw_data.map(function(d) { return d.processing_time; }))/Math.pow(10, 6);
 		var stddev = standard_deviation(raw_data.map(function(d) { return d.processing_time; }))/Math.pow(10, 6);
-		var averg = average(raw_data.map(function(d) { return d.processing_time; }))/Math.pow(10, 6);
 		
 		var data400 = <%=raw ApacheAccess.where(:result => 400).all.map { |d| d.processing_time }.to_json %>;
 		var mean400 = mean(data400)/Math.pow(10, 6);
 		var stddev400 = standard_deviation(data400)/Math.pow(10, 6);
-		var averg400 = average(data400)/Math.pow(10, 6);
 	</script>
 	
 	<p>According to a <%= link_to "Microsoft Report", "http://support.microsoft.com/kb/891760" %> article, port 6677 is used synchronise UNIX-based passwords with Windows passwords.</p>
 	
 	<p>All scans that use a GET method return 400 error responses (the request had bad syntax or was inherently impossible to be satisfied) ie. these scans failed. Unusually, these log events have an empty <i>unknown</i> LogEvent attribute value. Looking at the processing time for these events we have that:
 		<ul>
-			<li>average value is <script>document.write(averg.toFixed(3));</script> seconds, with a mean of <script>document.write(_mean.toFixed(3));</script> seconds and a standard deviation of <script>document.write(stddev.toFixed(3));</script></li>
+			<li>mean value is <script>document.write(_mean.toFixed(3));</script> seconds and the standard deviation is <script>document.write(stddev.toFixed(3));</script></li>
 			<li>Thus, processing time is <script>document.write(_mean.toFixed(3));</script>±<script>document.write(stddev.toFixed(3));</script> seconds</li>
 		</ul>
 		When we consider processing time for <b>all</b> requests that result in a 400 error response, we have that:
 		<ul>
-			<li>average processing time is <script>document.write(averg400.toFixed(3));</script> seconds, with a mean of <script>document.write(mean400.toFixed(3));</script> seconds and a standard deviation of <script>document.write(stddev400.toFixed(3));</script></li>
+			<li>mean value is <script>document.write(mean400.toFixed(3));</script> seconds and the standard deviation is <script>document.write(stddev400.toFixed(3));</script></li>
 		</ul>
 		This leads us to conclude that 400 error responses have a processing time of <script>document.write(mean400.toFixed(3));</script>±<script>document.write(stddev400.toFixed(3));</script> seconds and so the above value is to be expected.
 	</p>
