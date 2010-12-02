@@ -32,9 +32,9 @@ class ResearchController < ApplicationController
             when "rss" 
               ApacheAccess.tagged_with("rss").order(:observed_at).all
             when "static" 
-              ApacheAccess.tagged_with("static").group(:observed_at).select('apache_accesses.id', :observed_at, 'sum(cast(bytes*1000000 as float))/sum(cast(processing_time as float)) as transfer_speed').order(:observed_at).all
+              ApacheAccess.tagged_with("static").group(:observed_at).select(['apache_accesses.id', :observed_at, 'sum(cast(bytes*1000000 as float))/sum(cast(processing_time as float)) as transfer_speed']).order(:observed_at).all
             when "out_of_order" 
-              ApacheAccess.where(:name => "www-access.log").select(:id, :observed_at, :name).all + ApacheAccess.where(:name => "www-media.log").select(:id, :observed_at, :name).all + ApacheError.select(:id, :observed_at, '"www-error.log" as name').all
+              ApacheAccess.where(:name => "www-access.log").select([:id, :observed_at, :name]).all + ApacheAccess.where(:name => "www-media.log").select([:id, :observed_at, :name]).all + ApacheError.select([:id, :observed_at, '"www-error.log" as name']).all
           end
         when "wordpress" 
           case params[:section]

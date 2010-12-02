@@ -24,5 +24,5 @@
 	
 	<p>Using the requested URL, we have that the web site <%= link_to "Proxyfire", "http://www.proxyfire.net" %> appears to be a forum listing various proxies and discussing proxy related issues.</p>
 	
-	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+	<%= render :partial => 'ip_address', :locals => { :data => @data.map { |d| d.ip_address } } %>
 <% end %>

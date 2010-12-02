@@ -16,7 +16,7 @@
 <% content_for :note do %>
 	<p>All these scan attempts result in 404 error responses from the web server (the server has not found anything matching the URI given) - ie. these scans failed.</p>
 	
-	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+	<%= render :partial => 'ip_address', :locals => { :data => @data.map { |d| d.ip_address } } %>
 	
 	<h3>User Agent</h3>
 	

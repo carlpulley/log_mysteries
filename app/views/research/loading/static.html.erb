@@ -16,14 +16,17 @@
 <% content_for :note do %>	
 	<h3>plot of event creation time (seconds from epoch) vs transfer speed (MB per second)</h3>
 	
-	<%
-		mean = mean(@data.map { |d| d[:transfer_speed] })
-		stddev = standard_deviation(@data.map { |d| d[:transfer_speed] })
-		averg = average(@data.map { |d| d[:transfer_speed] })
-		max_load = @data.map { |d| d[:transfer_speed] }.max
-		upper_time_bound = [mean+stddev, averg+stddev].max
-		upper_bound_color = "#FF2D26"
-	%>
+	<script>
+		var _mean = mean(raw_data.map(function(d) { return d.transfer_speed; }));
+		var stddev = standard_deviation(raw_data.map(function(d) { return d.transfer_speed; }));
+		var averg = average(raw_data.map(function(d) { return d.transfer_speed; }));
+		var max_load = raw_data.map(function(d) { return d.transfer_speed; }).inject(0, function(m, n) { return Math.max(m, n); });
+		var upper_time_bound = Math.max(_mean+stddev, averg+stddev);
+		var upper_bound_color = "#FF2D26";
+		document.observe("dom:loaded", function() {
+			$$(".upper_bound_color").each(function(e) { e.setStyle({color:upper_bound_color}); });
+		});
+	</script>
 	
 	<script type="text/javascript+protovis">	
 		var data = raw_data.map(function(d) { var h = {}; h['x'] = d['observed_at']; h['y'] = d['transfer_speed']; return h; });
@@ -31,8 +34,8 @@
 		<%= render :partial => '/graph/area.js' %>
 	
 		vis.add(pv.Rule)
-			.bottom(y(<%= upper_time_bound %>))
-			.strokeStyle(<%=raw upper_bound_color.to_json %>);
+			.bottom(y(upper_time_bound))
+			.strokeStyle(upper_bound_color);
 	
 		xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
 		ylabel.text(function(d) (d)+" MB/s");
@@ -42,11 +45,11 @@
 	<p>
 		<b>Notes:</b>
 		<ul>
-			<li>Here our mean transfer speed is <%= number_with_precision mean, :precision => 1 %> MB/s (standard deviation is <%= number_with_precision stddev, :precision => 1 %> MB/s) and our average is <%= number_with_precision averg, :precision => 1 %> MB/s.</li>
-			<li>Thus, any transfer speeds that are greater than <%= number_with_precision(upper_time_bound, :precision => 1) %> MB/s indicates when the server is being loaded. This cut off point has been plotted as a <font color="<%= upper_bound_color %>">red</font> line on the above graph.</li>
+			<li>Here our mean transfer speed is <script>document.write(_mean.toFixed(1));</script> MB/s (standard deviation is <script>document.write(stddev.toFixed(1));</script> MB/s) and our average is <script>document.write(averg.toFixed(1));</script> MB/s.</li>
+			<li>Thus, any transfer speeds that are greater than <script>document.write(upper_time_bound.toFixed(1));</script> MB/s indicates when the server is being loaded. This cut off point has been plotted as a <font class="upper_bound_color">red</font> line on the above graph.</li>
 			<li>The following features of this graph are worth noting (as they are indicators that are further consistent with server loading):
 				<ul>
-					<li>the largest peak is <%= number_with_precision(max_load/upper_time_bound, :precision => 1) %> times larger than our expected upper time bound (ie. the <font color="<%= upper_bound_color %>">red</font> line)</li>
+					<li>the largest peak is <script>document.write((max_load/upper_time_bound).toFixed(1));</script> times larger than our expected upper time bound (ie. the <font class="upper_bound_color">red</font> line)</li>
 					<li>the following log events indicate when the server appears to be experiencing higher than expected loading:
 						<%= render :partial => 'data', :locals => { :data => ApacheAccess.tagged_with(["loading", "files"]).all } %>
 					</li>

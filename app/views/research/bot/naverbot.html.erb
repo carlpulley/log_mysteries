@@ -20,9 +20,5 @@
 	
 	<p><%= link_to "user-agent-string.info", "http://user-agent-string.info/list-of-ua/bot-detail?bot=NaverBot" %> reaffirms that NaverBot is a Korean web crawler and, moreover, confirms that the IP addresses logged below are consistent with NaverBot.</p>
 	
-	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+	<%= render :partial => 'ip_address', :locals => { :data => @data.map { |d| d.ip_address } } %>
 <% end %>
-
-<!-- h2>Appendix</h2 -->
-
-<!-- %= link_to "Data Set (CSV)", "/research/by.csv?#{params.keys.select { |k| ["ip_address", "user_agent", "tagged"].member? k }.map { |k| [k, params[k]].join("=") }.concat(["tagged=bot", "user_agent=naverbot"]).join("&") }" % -->

@@ -18,5 +18,5 @@
 	
 	<p>All these scans return 301 redirect responses (the data requested has been assigned a new URI and the change is permanent).</p>
 	
-	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+	<%= render :partial => 'ip_address', :locals => { :data => @data.map { |d| d.ip_address } } %>
 <% end %>

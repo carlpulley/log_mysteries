@@ -29,6 +29,18 @@ document.observe("dom:loaded", function() {
   });
 });
 
+function average(values) {
+  return values.inject(0, function(t,n) { return t+n; }) / values.length;
+}
+
+function mean(values) {
+  return values.inject(0, function(t,n) { return t+n; }) / values.length;
+}
+
+function standard_deviation(values) {
+  return Math.sqrt(values.inject(0, function(sum, e) { return sum + Math.pow(e - mean(values), 2); }) / values.length);
+}
+
 function sparkbar(data) {
   var w = 24*5,
       h = 12;
