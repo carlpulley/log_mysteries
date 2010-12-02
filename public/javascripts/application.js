@@ -15,6 +15,20 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+document.observe("dom:loaded", function() {
+  $$("ul.tabs li.tab div.content").each(function(e) { e.hide(); });
+  $$("ul.tabs li.tab.current div.content").each(function(e) { e.show(); });
+  $$("ul.tabs li.tab a").each(function(e) { 
+      e.observe("click", function(a) {
+          a.element().parentElement.parentElement.select("li.tab.current div.content").each(function(e) { e.hide(); });
+          a.element().parentElement.parentElement.select("li.tab.current").each(function(e) { e.toggleClassName("current"); });
+          a.element().parentElement.toggleClassName("current");
+          a.element().parentElement.select("div.content").each(function(e) { e.show(); });
+          a.stop();
+      }); 
+  });
+});
+
 function sparkbar(data) {
   var w = 24*5,
       h = 12;
@@ -64,3 +78,4 @@ function sparkcolour(data) {
 	
   return vis;
 }
+

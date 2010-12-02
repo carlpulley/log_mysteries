@@ -1,5 +1,3 @@
-/*    Log Mysteries: partial answer for Honeynet challenge
-#    Reference:
 /*    Log Mysteries: partial answer for Honeynet challenge                     */
 /*    Reference: http://honeynet.org/challenges/2010_5_log_mysteries           */
 /*    Copyright (C) 2010  Dr. Carl J. Pulley                                   */
@@ -16,6 +14,46 @@
 /*                                                                             */
 /*    You should have received a copy of the GNU General Public License        */
 /*    along with this program.  If not, see <http://www.gnu.org/licenses/>.    */
+
+ul.tabs {
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+
+ul.tabs li.tab {
+    display:inline;
+    margin:0 2px 0 0;
+    padding:0;
+}
+
+li.tab a.tab {
+    /*float:left;*/
+    margin:0 2px 0 0;
+    padding:0 0 1px 3px;
+    text-decoration:none;
+    color: black;
+}
+
+li.tab a.tab div.content {
+    float:left;
+    display:block;
+    padding:4px 9px 2px 6px;
+}
+
+li.tab a.tab:hover { 
+    background-color: #626D63; 
+}
+
+li.tab.current a.tab { 
+    background-color: #ADB6AD; 
+}
+
+div.content {
+    clear: both;
+    border:2px solid #ADB6AD;
+    padding-top:2px;
+}
 
 .events {
     font-family: "Courier New";

@@ -1,16 +1,9 @@
 <h3>IP Addresses</h3>
 
-<div class="tabs">
-< % tabs_tag do |tab| %>
-	< %= tab.tree 'Tree View', "?ip_address_tab=tree" %>
-	< %= tab.sunburst 'Sunburst View', "?ip_address_tab=sunburst" %>
-	< %= tab.world 'World View', "?ip_address_tab=world" %>
-< % end %>
-</div>
-
-<ul>
-<li><%= link_to "Tree View", "" %>
-<p>Using our www-access.log and www-media.log events and grouping the data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
+<ul class="tabs">
+<li class="tab current"><a class="tab">Tree View</a>
+<div class="content">
+	Using our www-access.log and www-media.log events and grouping the data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
 <center>
 <% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
 <script type="text/javascript+protovis">
@@ -30,10 +23,10 @@
 	vis.render();
 </script>
 </center>
-</p>
+</div>
 </li>
-<li><%= link_to "Sunburst View", "" %>
-<p>
+<li class="tab"><a class="tab">Sunburst View</a>
+<div class="content">
 <center>
 <script type="text/javascript+protovis">
 	var root = "";
@@ -48,10 +41,11 @@
 	vis.render();
 </script>
 </center>
-</p>
+</div>
 </li>
-<li><%= link_to "World View", "" %>
-<p>The following map (hovering the mouse over a country displays information about the data point) shows the geographical distribution for our Apache server's visitors (country colour encodes the frequency of requests via a logarithmic heat scale):
+<li class="tab"><a class="tab">World View</a>
+<div class="content">
+	The following map (hovering the mouse over a country displays information about the data point) shows the geographical distribution for our Apache server's visitors (country colour encodes the frequency of requests via a logarithmic heat scale):
 <center>
 <script type="text/javascript+protovis">
 	var data = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.request_count).reduce(function(t,c) t+c));
@@ -65,7 +59,7 @@
 	vis.render();
 </script>
 </center>
-</p>
+</div>
 </li>
 </ul>
 

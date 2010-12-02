@@ -24,35 +24,33 @@
 	
 	<h2>Appendix</h2>
 	
-	<div class="tabs">
-	< % tabs_tag do |tab| %>
-		< %= tab.data 'Data Set (CSV)', "?appendix_tab=data" %>
-		< %= tab.carving 'Carving Code', "?appendix_tab=carving" %>
-		< %= tab.tagging 'New Tags (CSV)', "?appendix_tab=tagging" %>
-	< % end %>
-	</div>
-	
-	<ul>
-		<li>
-		<%= link_to "Data Set (CSV)", "/research/#{@path.blank? ? "" : "#{@path}/"}#{@label}.csv" %><br />
-		<b>Verification Code:</b>
-		<pre>
+	<ul class="tabs">
+		<li class="tab current"><a class="tab">Input Data Set</a>
+			<div class="content">
+				<%= link_to "Data Set (CSV)", "/research/#{@path.blank? ? "" : "#{@path}/"}#{@label}.csv" %><br />
+				<b>Verification Code:</b>
+				<pre>
 <%= display "csv/#{@label}_test.rb" %>
-		</pre>
+				</pre>
+			</div>
 		</li>
 		<% unless not content_for?(:tags) or tags.empty? %>
-		<li>
-		<b>Carving Code:</b>
-		<pre>
+		<li class="tab"><a class="tab">Carving Code</a>
+			<div class="content">
+		   		<b>Carving Code:</b>
+		   		<pre>
 <%= display "tag/#{@label}.rake" %>
-		</pre>
+		   		</pre>
+			</div>
 		</li>
-		<li>
-		<%= link_to "New Tags (CSV)", "/research/by.csv?tagged=#{(yield :tags).strip}" %><br />
-		<b>Verification Code:</b>
-		<pre>
+		<li class="tab"><a class="tab">Tagged Data</a>
+			<div class="content">
+				<%= link_to "New Tags (CSV)", "/research/by.csv?tagged=#{(yield :tags).strip}" %><br />
+				<b>Verification Code:</b>
+				<pre>
 <%= display "tag/#{@label}_test.rb" %>
-		</pre>
+				</pre>
+			</div>
 		</li>
 		<% end %>
 	</ul>
