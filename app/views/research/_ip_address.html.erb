@@ -1,4 +1,8 @@
+<% unless content_given? :caption %>
 <h3>IP Addresses</h3>
+<% else %>
+<%= yield :caption %>
+<% end %>
 
 <div class="tabs">
 	<ul class="menu">
@@ -10,6 +14,9 @@
 		</li>
 		<li id="world" class="tab">
 			<a class="tab">World View</a>
+		</li>
+		<li id="blacklist" class="tab">
+			<a class="tab">Blacklisting</a>
 		</li>
 	</ul>
 
@@ -69,20 +76,26 @@
 			</script>
 		</center>
 	</div>
-</div>
-
-<h3>IP Address Blacklisting</h3>
-
-<ul>
-<% data.map { |d| d.value }.uniq.sort.each do |ip_address| %>
-	<% unless IpAddress.where(:value => ip_address).first.blacklists.empty? %>
-	<li><%= ip_address %> listed on:
+	
+	<div id="blacklist" class="content">
+		<% blacklisting = false %>
 		<ul>
-			<% IpAddress.where(:value => ip_address).first.blacklists.each do |blacklist| %>
-			<li><%= link_to blacklist.site, blacklist.reference %></li>
-			<% end %>
+		<% data.map { |d| d.value }.uniq.sort.each do |ip_address| %>
+			<% unless IpAddress.where(:value => ip_address).first.blacklists.empty? %>
+			<% blacklisting = true %>
+			<li>
+				<%= ip_address %> listed on:
+				<ul>
+					<% IpAddress.where(:value => ip_address).first.blacklists.each do |blacklist| %>
+					<li><%= link_to blacklist.site, blacklist.reference %></li>
+					<% end %>
+				</ul>
+			</li>
+			<% end %>	
+		<% end %>
 		</ul>
-	</li>
-	<% end %>
-<% end %>
-</ul>
+		<% unless blacklisting %>
+		No IP addresses are blacklisted.
+		<% end %>
+	</div>
+</div>

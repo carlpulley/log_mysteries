@@ -18,16 +18,16 @@
 document.observe("dom:loaded", function() {
   $$("div.tabs div.content").each(function(e) { e.hide(); });
   $$("div.tabs ul.menu li.tab.current").each(function(e) {
-      e.parentElement.parentElement.select("div.content#"+e.readAttribute("id")).each(function(e) { e.show(); });
+      e.up("div.tabs").select("div.content#"+e.readAttribute("id")).each(function(e) { e.show(); });
   });
   $$("div.tabs ul.menu li.tab a").each(function(e) { 
       e.observe("click", function(a) {
-          var tabs = a.element().parentElement.parentElement.parentElement;
+          var tabs = a.element().up("div.tabs");
           tabs.select("div.content").each(function(e) { e.hide(); });
           tabs.select("li.tab.current").each(function(e) { e.toggleClassName("current"); });
-          a.element().parentElement.toggleClassName("current");
-          var display = a.element().parentElement.readAttribute("id");
-          tabs.select("div.content#"+a.element().parentElement.readAttribute("id")).each(function(e) { e.show(); });
+          a.element().up("li.tab").toggleClassName("current");
+          var display = a.element().up("li.tab").readAttribute("id");
+          tabs.select("div.content#"+a.element().up("li.tab").readAttribute("id")).each(function(e) { e.show(); });
           a.stop();
       }); 
   });

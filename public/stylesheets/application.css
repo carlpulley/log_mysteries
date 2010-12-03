@@ -28,7 +28,7 @@ div.tabs ul.menu li.tab {
     float: left;
 }
 
-li.tab a.tab {
+div.tabs ul.menu li.tab a.tab {
     margin:0 2px 0 0;
     padding:0 0 1px 3px;
     padding-right: 3px;
@@ -51,15 +51,21 @@ div.tabs div.content {
     padding: 4px 9px 2px 6px;
 }
 
-div.tabs a.tab:hover { 
-    background-color: #626D63; 
+div.tabs ul.menu li.tab a.tab:hover { 
+    background-color: #626D63;
+    color: white;
 }
 
-li.tab.current a.tab { 
+div.tabs ul.menu li.tab.current a.tab { 
     background-color: #ADB6AD; 
 }
 
-div.content {
+div.tabs ul.menu li.tab.current a.tab:hover { 
+    background-color: #ADB6AD; 
+    color: black;
+}
+
+div.tabs div.content {
     clear: both;
     border-top: 1px solid #ADB6AD;
     border-bottom: 1px solid #ADB6AD;
