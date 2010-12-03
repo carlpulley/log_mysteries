@@ -16,14 +16,18 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 document.observe("dom:loaded", function() {
-  $$("ul.tabs li.tab div.content").each(function(e) { e.hide(); });
-  $$("ul.tabs li.tab.current div.content").each(function(e) { e.show(); });
-  $$("ul.tabs li.tab a").each(function(e) { 
+  $$("div.tabs div.content").each(function(e) { e.hide(); });
+  $$("div.tabs ul.menu li.tab.current").each(function(e) {
+      e.parentElement.parentElement.select("div.content#"+e.readAttribute("id")).each(function(e) { e.show(); });
+  });
+  $$("div.tabs ul.menu li.tab a").each(function(e) { 
       e.observe("click", function(a) {
-          a.element().parentElement.parentElement.select("li.tab.current div.content").each(function(e) { e.hide(); });
-          a.element().parentElement.parentElement.select("li.tab.current").each(function(e) { e.toggleClassName("current"); });
+          var tabs = a.element().parentElement.parentElement.parentElement;
+          tabs.select("div.content").each(function(e) { e.hide(); });
+          tabs.select("li.tab.current").each(function(e) { e.toggleClassName("current"); });
           a.element().parentElement.toggleClassName("current");
-          a.element().parentElement.select("div.content").each(function(e) { e.show(); });
+          var display = a.element().parentElement.readAttribute("id");
+          tabs.select("div.content#"+a.element().parentElement.readAttribute("id")).each(function(e) { e.show(); });
           a.stop();
       }); 
   });

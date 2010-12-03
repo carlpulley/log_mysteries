@@ -1,67 +1,75 @@
 <h3>IP Addresses</h3>
 
-<ul class="tabs">
-<li class="tab current"><a class="tab">Tree View</a>
-<div class="content">
-	Using our www-access.log and www-media.log events and grouping the data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
-<center>
-<% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
-<script type="text/javascript+protovis">
-	var root = "";
-	var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
+<div class="tabs">
+	<ul class="menu">
+		<li id="tree" class="tab current">
+			<a class="tab">Tree View</a>
+		</li>
+		<li id="sunburst" class="tab">
+			<a class="tab">Sunburst View</a>
+		</li>
+		<li id="world" class="tab">
+			<a class="tab">World View</a>
+		</li>
+	</ul>
 
-	<%= render :partial => '/graph/dendrogram.js' %>
+	<div id="tree" class="content">
+		Using our www-access.log and www-media.log events and grouping the data using country codes, ASN numbers and IP address subnets provides us with the following structured network diagram (leaf node colour encodes the frequency of requests via a logarithmic heat scale):
+		<center>
+			<% # TODO: add in some events so that label clicks map to /research/by?ip_address=#{label} -%>
+			<script type="text/javascript+protovis">
+				var root = "";
+				var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
+			
+				<%= render :partial => '/graph/dendrogram.js' %>
+			
+				vis.height(500).width(1000).bottom(100).top(20);
+			
+				layout.orient("top");
+			
+				dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= @data.map{ |d| d[:request_count] }.min %>, <%= @data.map{ |d| d[:request_count] }.max %>).range('blue', 'red')(n.nodeValue));
+				
+				label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
+				
+				vis.render();
+			</script>
+		</center>
+	</div>
 
-	vis.height(500).width(1000).bottom(100).top(20);
+	<div id="sunburst" class="content">
+		<center>
+			<script type="text/javascript+protovis">
+				var root = "";
+				var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
+			
+				<%= render :partial => '/graph/sunburst.js' %>
+			
+				vis.bottom(0).top(10);
+				
+				label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+Math.round(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
+				
+				vis.render();
+			</script>
+		</center>
+	</div>
 
-	layout.orient("top");
-
-	dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= @data.map{ |d| d[:request_count] }.min %>, <%= @data.map{ |d| d[:request_count] }.max %>).range('blue', 'red')(n.nodeValue));
-	
-	label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
-	
-	vis.render();
-</script>
-</center>
+	<div id="world" class="content">
+		The following map (hovering the mouse over a country displays information about the data point) shows the geographical distribution for our Apache server's visitors (country colour encodes the frequency of requests via a logarithmic heat scale):
+		<center>
+			<script type="text/javascript+protovis">
+				var data = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.request_count).reduce(function(t,c) t+c));
+				var fill = pv.Scale.log(Object.values(data).min(), Object.values(data).max()).range('blue', 'red');
+				var ip_address = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.ip_address).join("\n  "));
+				
+				<%= render :partial => '/graph/globe.js' %>
+				
+				countryline.title(function(d, b, c) c.name+" ("+data[c.code]+" events):\n  "+ip_address[c.code]);
+			
+				vis.render();
+			</script>
+		</center>
+	</div>
 </div>
-</li>
-<li class="tab"><a class="tab">Sunburst View</a>
-<div class="content">
-<center>
-<script type="text/javascript+protovis">
-	var root = "";
-	var data = pv.nest(raw_data).key(function(d) d.cc).key(function(d) d.asn).key(function(d) d.ip_address.split(".")[0]).key(function(d) d.ip_address.split(".")[1]).key(function(d) d.ip_address.split(".")[2]).key(function(d) d.ip_address.split(".")[3]).key(function(d) d.ip_address).sortKeys().rollup(function(v) v.first().request_count);
-
-	<%= render :partial => '/graph/sunburst.js' %>
-
-	vis.bottom(0).top(10);
-	
-	label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+Math.round(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
-	
-	vis.render();
-</script>
-</center>
-</div>
-</li>
-<li class="tab"><a class="tab">World View</a>
-<div class="content">
-	The following map (hovering the mouse over a country displays information about the data point) shows the geographical distribution for our Apache server's visitors (country colour encodes the frequency of requests via a logarithmic heat scale):
-<center>
-<script type="text/javascript+protovis">
-	var data = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.request_count).reduce(function(t,c) t+c));
-	var fill = pv.Scale.log(Object.values(data).min(), Object.values(data).max()).range('blue', 'red');
-	var ip_address = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.ip_address).join("\n  "));
-	
-	<%= render :partial => '/graph/globe.js' %>
-	
-	countryline.title(function(d, b, c) c.name+" ("+data[c.code]+" events):\n  "+ip_address[c.code]);
-
-	vis.render();
-</script>
-</center>
-</div>
-</li>
-</ul>
 
 <h3>IP Address Blacklisting</h3>
 
