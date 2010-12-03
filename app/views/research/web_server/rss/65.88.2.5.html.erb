@@ -16,7 +16,7 @@
 <% content_for :note do %>
 	<p>Unit testing demonstrates that news feeds can be uniquely identified using either: the user agent string <i>Apple-PubSub</i>; or the URL <i>/feed/</i>.</p>
 		
-	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+	<%= render :partial => 'ip_address', :locals => { :data => @data.map { |d| d.ip_address } } %>
 	
 	<p>The double fetches here are consistent with the server not setting the character encoding in the Content-Type HTTP response header and the client using Firefox 3.x to access this RSS feed.</p>
 	

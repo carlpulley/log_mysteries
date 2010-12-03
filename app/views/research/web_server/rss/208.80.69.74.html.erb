@@ -16,7 +16,7 @@
 <% content_for :note do %>
 	<p>Unit testing demonstrates that news feeds can be uniquely identified using either: the user agent string <i>Apple-PubSub</i>; or the URL <i>/feed/</i>.</p>
 	
-	<%= render :partial => 'ip_address', :locals => { :data => @data } %>
+	<%= render :partial => 'ip_address', :locals => { :data => @data.map { |d| d.ip_address } } %>
 		
 	<h2>Graphs</h2>
 	
@@ -41,10 +41,11 @@
 				grad4 = @data[8][:observed_at] - @data[7][:observed_at]
 				grad5 = @data[10][:observed_at] - @data[9][:observed_at]
 				grad6 = @data[12][:observed_at] - @data[11][:observed_at]
-				
-				mean = mean([grad1, grad2, grad3, grad4, grad5, grad6])
-				stddev = standard_deviation([grad1, grad2, grad3, grad4, grad5, grad6])
 			%>
+			<script>
+				var _mean = mean(<%=raw [grad1, grad2, grad3, grad4, grad5, grad6].to_json %>);
+				var stddev = standard_deviation(<%=raw [grad1, grad2, grad3, grad4, grad5, grad6].to_json %>);
+			</script>
 			<li>From the graph we can visually see a number of clear patterns: every news feed access/refresh occurs twice (see <%= link_to "RSS Analysis: 65.88.2.5", "/research/web_server/rss/65.88.2.5" %> for more information on this behaviour); the accesses occur with a regular periodicity.</li>
 			<li>By examining our graph data we are able to calculate:
 				<ul>
@@ -54,8 +55,8 @@
 					<li>between event indexes 7 and 8 we have a gradient of <%= grad4 %></li>
 					<li>between event indexes 9 and 10 we have a gradient of <%= grad5 %></li>
 					<li>between event indexes 11 and 12 we have a gradient of <%= grad6 %></li>
-					<li>Thus, we get mean gradient of <%= mean %> and a standard deviation of <%= number_with_precision stddev, :precision => 2 %></li>
-					<li>Whence we have that our RSS feed refresh rate is estimated as being once every <%= number_with_precision(mean/60, :precision => 2) %>±<%= number_with_precision(stddev/60, :precision => 2) %> minutes.</li>
+					<li>Thus, we get mean gradient of <script>document.write(_mean.toFixed(2));</script> and a standard deviation of <script>document.write(stddev.toFixed(2));</script></li>
+					<li>Whence we have that our RSS feed refresh rate is estimated as being once every <script>document.write((_mean/60).toFixed(2));</script>±<script>document.write((stddev/60).toFixed(2));</script> minutes.</li>
 				</ul>
 			</li>
 		</ul>

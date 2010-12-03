@@ -27,7 +27,7 @@
 			
 				layout.orient("top");
 			
-				dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : pv.Scale.log(<%= @data.map{ |d| d[:request_count] }.min %>, <%= @data.map{ |d| d[:request_count] }.max %>).range('blue', 'red')(n.nodeValue));
+				dot.fillStyle(function(n) n.firstChild ? "#aec7e8" : (raw_data.map(function(d) d.ip_address).uniq().length == 1 ? "red" : pv.Scale.log(raw_data.map(function(d) d.request_count).min(), raw_data.map(function(d) d.request_count).max()).range('blue', 'red')(n.nodeValue)));
 				
 				label.text(function(n) n.firstChild ? (n.depth*7 >= 3 ? "/"+(8*(n.depth*7-2)) : (n.nodeName != "" && n.depth*7 >= 2 ? "ASN: "+n.nodeName : n.nodeName)) : n.nodeName);
 				
@@ -58,8 +58,8 @@
 		<center>
 			<script type="text/javascript+protovis">
 				var data = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.request_count).reduce(function(t,c) t+c));
-				var fill = pv.Scale.log(Object.values(data).min(), Object.values(data).max()).range('blue', 'red');
-				var ip_address = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.ip_address).join("\n  "));
+				var fill = Object.values(data).length == 1 ? function(n) { return "red"; } : pv.Scale.log(Object.values(data).min(), Object.values(data).max()).range('blue', 'red');
+				var ip_address = pv.nest(raw_data).key(function(d) d.cc).rollup(function(v) v.map(function(d) d.ip_address).uniq().join("\n  "));
 				
 				<%= render :partial => '/graph/globe.js' %>
 				
