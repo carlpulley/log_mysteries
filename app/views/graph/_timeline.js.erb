@@ -10,7 +10,6 @@ var timezone = -7*60*60; // -7 hours
 var begin = function(ds) { return ds.timeline.map(function (d) { return d.begin; }).min(); }
 var end = function(ds) { return ds.timeline.map(function (d) { return d.end; }).max(); }
 // TODO: modify scale so that area under cursor is magnified
-// TODO: add in click functionality - each click: fixes cursor line, detaches mouse and presents magnified cursor view; and vica versa (reattaching should move/snap mouse to cursor!)
 // TODO: link magnification view cursor to a red highlighting of displayed log events we are currently over
 var start = data.map(function(ds) { return begin(ds); }).min();
 var finish = data.map(function(ds) { return end(ds); }).max();
@@ -20,17 +19,27 @@ var vis = new pv.Panel()
     .def("i", 0)
     .def("log", events_id)
     .def("evnts", events)
+    .def("sticky_bit", true)
     .width(width)
     .height(height)
     .margin(20)
     .left(50)
     .right(400)
     .events("all")
+    .event("click", function() { 
+        var state = this.sticky_bit();
+        if (!state) {
+            this.i(this.mouse().x);
+        }
+        return this.sticky_bit(!state);
+    })
     .event("mousemove", function() {
-        var current_date = dates.invert(this.mouse().x);
-        var point = (this.evnts().select(function(d) { return d.observed_at <= current_date; }).last() || this.evnts().select(function(d) { return current_date < d.observed_at; }).first());
-        $(this.log()).fire("timeline:position", { 'observed_at': current_date, 'event_type': point.type, 'event_id': point.id });
-        return this.i(this.mouse().x);
+        if (this.sticky_bit()) {
+            var current_date = dates.invert(this.mouse().x);
+            var point = (this.evnts().select(function(d) { return d.observed_at <= current_date; }).last() || this.evnts().select(function(d) { return current_date < d.observed_at; }).first());
+            $(this.log()).fire("timeline:position", { 'observed_at': current_date, 'event_type': point.type, 'event_id': point.id });
+            return this.i(this.mouse().x);
+        }
     });
 
 vis.add(pv.Rule)
@@ -72,8 +81,7 @@ data.forEach(function(ds) {
 vis.add(pv.Rule)
     .left(function() this.parent.i())
     .strokeStyle("red")
-    // FIXME: label should follow mouse?
-    .anchor('mouse').add(pv.Label)
+    .anchor('xx').add(pv.Label)
         .textAlign("center")
         .textStyle("red")
         .text(function() pv.Format.date("%d/%b/%y %H:%M:%S")(new Date((dates.invert(this.parent.i()) + timezone)*1000)));
