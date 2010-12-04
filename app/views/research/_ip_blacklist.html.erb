@@ -1,0 +1,29 @@
+<% unless ip_blacklist =~ /^10\./ or (ip_blacklist =~ /^172\.(\d+)\./ and $1.to_i >> 4 == 1) or ip_blacklist =~ /^192\.168\./ %>
+<li>
+<% if not IpAddress.where(:value => ip_blacklist).exists? %>
+	No IpAddress records for <%= ip_blacklist %>
+<% elsif IpAddress.find_by_value(ip_blacklist).blacklists.empty? %>
+	<%= link_to "Lookup", "/research/blacklist_lookup?ip_address=#{ip_blacklist}", :remote => true, :class => "ip_blacklist" %> blacklisting data for <%= ip_blacklist %>
+<% else %>
+	<% blacklisting = IpAddress.where(:value => ip_blacklist).first.blacklists.select { |d| d.status == "Listed" } %>
+	<% timeouts = IpAddress.where(:value => ip_blacklist).first.blacklists.select { |d| d.status == "Timeout Error" } %>
+	<% offline = IpAddress.where(:value => ip_blacklist).first.blacklists.select { |d| d.status == "Offline" } %>
+	<% if blacklisting.empty? %>
+		No blacklisting for <%= ip_blacklist %>
+	<% else %>
+		<%= ip_blacklist %> blacklisted by:
+		<ul>
+			<% blacklisting.each do |blacklist| %>
+				<li><a href="<%= blacklist.reference %>"><%= blacklist.site %></a></li>
+			<% end %>
+		</ul>
+	<% end %>
+	<% unless timeouts.empty? %>
+		<%=raw "<br />" if blacklisting.empty? %><%= timeouts.count %> blacklists (ie. <%=raw timeouts.map { |d| link_to(d.site, d.reference) }.join("; ") %>) timed out
+	<% end %>
+	<% unless offline.empty? %>
+		<%=raw "<br />" if blacklisting.empty? or not timeouts.empty? %><%= offline.count %> blacklists (ie. <%=raw offline.map { |d| link_to(d.site, d.reference) }.join("; ") %>) were offline
+	<% end %>
+<% end %>	
+</li>
+<% end %>

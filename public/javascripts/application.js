@@ -16,6 +16,15 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 document.observe("dom:loaded", function() {
+  $$("a.ip_blacklist", "a.asn_blacklist").each(function(e) {
+      e.observe("ajax:before", function(event) {
+          event.element().hide();
+          event.element().insert({ after: "<img class='loading' src='/images/ajax-loader.gif' alt='Loading...' /> Loading" }); 
+      });
+      e.observe("ajax:success", function(event) {
+          event.element().up("li").replace(event.memo.responseText);
+      });
+  });
   $$("div.tabs div.content").each(function(e) { e.hide(); });
   $$("div.tabs ul.menu li.tab.current").each(function(e) {
       e.up("div.tabs").select("div.content#"+e.readAttribute("id")).each(function(e) { e.show(); });

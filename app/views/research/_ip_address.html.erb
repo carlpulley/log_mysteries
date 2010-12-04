@@ -1,4 +1,4 @@
-<% unless content_given? :caption %>
+<% unless content_for? :caption %>
 <h3>IP Addresses</h3>
 <% else %>
 <%= yield :caption %>
@@ -15,8 +15,11 @@
 		<li id="world" class="tab">
 			<a class="tab">World View</a>
 		</li>
-		<li id="blacklist" class="tab">
-			<a class="tab">Blacklisting</a>
+		<li id="asn-blacklist" class="tab">
+			<a class="tab">ASN Blacklisting</a>
+		</li>
+		<li id="ip-blacklist" class="tab">
+			<a class="tab">IP Blacklisting</a>
 		</li>
 	</ul>
 
@@ -77,25 +80,15 @@
 		</center>
 	</div>
 	
-	<div id="blacklist" class="content">
-		<% blacklisting = false %>
+	<div id="asn-blacklist" class="content">
 		<ul>
-		<% data.map { |d| d.value }.uniq.sort.each do |ip_address| %>
-			<% unless IpAddress.where(:value => ip_address).first.blacklists.empty? %>
-			<% blacklisting = true %>
-			<li>
-				<%= ip_address %> listed on:
-				<ul>
-					<% IpAddress.where(:value => ip_address).first.blacklists.each do |blacklist| %>
-					<li><%= link_to blacklist.site, blacklist.reference %></li>
-					<% end %>
-				</ul>
-			</li>
-			<% end %>	
-		<% end %>
+			<%= render :partial => 'asn_blacklist', :collection => data.map { |d| d.asn }.compact.uniq.sort %>
 		</ul>
-		<% unless blacklisting %>
-		No IP addresses are blacklisted.
-		<% end %>
+	</div>
+	
+	<div id="ip-blacklist" class="content">		
+		<ul>
+			<%= render :partial => 'ip_blacklist', :collection => data.map { |d| d.value }.uniq.sort %>
+		</ul>
 	</div>
 </div>

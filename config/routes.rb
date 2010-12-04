@@ -18,6 +18,8 @@
 
 Answer::Application.routes.draw do
   get "honeynet/index"
+  get "research/stop_badware_lookup" => "research#stop_badware_lookup"
+  get "research/blacklist_lookup" => "research#blacklist_lookup"
 
   match 'research/by' => "research#index", :chapter => "by"
   
