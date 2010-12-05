@@ -82,7 +82,20 @@
 	
 	<div id="asn-blacklist" class="content">
 		<ul>
-			<%= render :partial => 'asn_blacklist', :collection => data.map { |d| d.asn }.compact.uniq.sort %>
+			<% data.map { |d| d.asn }.compact.uniq.sort.each do |asn| %>
+				<li>
+					<%= link_to "Lookup", "/research/stop_badware_lookup?asn=#{asn}", :remote => true, :class => "asn_blacklist" %> blacklisting data for ASN <%= asn %>
+					<div class="asn_blacklist">
+						<script type="text/javascript+protovis">
+							var data = raw_data;
+							
+							<%= render :partial => '/graph/area.js' %>
+
+							vis.render();
+						</script>
+					</div>
+				</li>
+			<% end %>
 		</ul>
 	</div>
 	

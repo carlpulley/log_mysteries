@@ -16,6 +16,23 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 document.observe("dom:loaded", function() {
+  $$("div.asn_blacklist").each(function(e) {
+      e.hide();
+  });
+  $$("a.asn_blacklist").each(function(e) {
+      e.observe("ajax:failure", function(event) {
+          console.error(event.memo.responseText);
+          var asn = event.element().readAttribute("href").slice("/research/stop_badware_lookup?asn=".length);
+          event.element().up("li").replace("<li><font color='red'><b>ERROR:</b></font> ASN "+ asn +" blacklist lookup failed!</li>");
+      });
+  });
+  $$("a.ip_blacklist").each(function(e) {
+      e.observe("ajax:failure", function(event) {
+          console.error(event.memo.responseText);
+          var ip_address = event.element().readAttribute("href").slice("/research/blacklist_lookup?ip_address=".length);
+          event.element().up("li").replace("<li><font color='red'><b>ERROR:</b></font> "+ ip_address +" blacklist lookup failed!</li>");
+      });
+  });
   $$("a.ip_blacklist", "a.asn_blacklist").each(function(e) {
       e.observe("ajax:before", function(event) {
           event.element().hide();

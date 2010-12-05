@@ -104,21 +104,11 @@ class ResearchController < ApplicationController
   end
   
   def stop_badware_lookup
-    # TODO: place contents of http://www.stopbadware.org/reports/asn/#{self.asn}.csv into DB
-    ip_address = IpAddress.find_by_value(params[:asn])
-    unless ip_address.nil?
-      url = "http://www.stopbadware.org/reports/asn/#{ip_address.asn}.csv"
+    unless IpAddress.where(:asn => params[:asn]).empty?
+      url = "http://www.stopbadware.org/reports/asn/#{params[:asn]}.csv"
       page = open(url).read
-      if page =~ /^Date,Partner Reports,Community Reports\n/
-        webpage = WebPage.find_or_create_by_url("GET #{url}", :page => page)
-        unless webpage.new_record?
-          webpage.page.split("\n").each do |line|
-            
-          end
-        end
-      end
+      render :json => { :asn => params[:asn], :data => page.split("\n")[1..-1].map { |l| d = l.split(","); h = {}; h[:date] = DateTime.strptime(d[0], "%Y-%m-%d").to_f; h[:partner] = d[1].to_i; h[:community] = d[2].to_i; h } }.to_json
     end
-    render :partial => 'asn_blacklist', :object => ip_address.asn
   end
   
   def blacklist_lookup
