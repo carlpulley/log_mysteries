@@ -107,7 +107,7 @@ class ResearchController < ApplicationController
     unless IpAddress.where(:asn => params[:asn]).empty?
       url = "http://www.stopbadware.org/reports/asn/#{params[:asn]}.csv"
       page = open(url).read
-      render :json => { :asn => params[:asn], :data => page.split("\n")[1..-1].map { |l| d = l.split(","); h = {}; h[:date] = DateTime.strptime(d[0], "%Y-%m-%d").to_f; h[:partner] = d[1].to_i; h[:community] = d[2].to_i; h } }.to_json
+      render :json => page.split("\n")[1..-1].map { |l| d = l.split(","); h = {}; h[:date] = DateTime.strptime(d[0], "%Y-%m-%d").to_f; h[:partner] = d[1].to_i; h[:community] = d[2].to_i; h }.to_json
     end
   end
   

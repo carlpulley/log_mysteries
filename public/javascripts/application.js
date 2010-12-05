@@ -20,6 +20,19 @@ document.observe("dom:loaded", function() {
       e.hide();
   });
   $$("a.asn_blacklist").each(function(e) {
+      e.observe("ajax:before", function(event) {
+          event.element().hide();
+          event.element().insert({ after: "<img class='loading' src='/images/ajax-loader.gif' alt='Loading...' /> Loading" }); 
+      });
+      e.observe("ajax:success", function(event) {
+          var asn = event.element().readAttribute("href").slice("/research/stop_badware_lookup?asn=".length);
+          event.element().up("li").select("div.asn_blacklist").each(function(e) {
+             e.show(); 
+          });
+          var vis = "vis_"+asn;
+          eval(vis+".data("+event.memo.responseText+".map(function(e) { var h = {}; h['x'] = e.date; h['y'] = e.partner; return h; }))");
+          eval(vis+".render()");
+      });
       e.observe("ajax:failure", function(event) {
           console.error(event.memo.responseText);
           var asn = event.element().readAttribute("href").slice("/research/stop_badware_lookup?asn=".length);
@@ -27,19 +40,17 @@ document.observe("dom:loaded", function() {
       });
   });
   $$("a.ip_blacklist").each(function(e) {
-      e.observe("ajax:failure", function(event) {
-          console.error(event.memo.responseText);
-          var ip_address = event.element().readAttribute("href").slice("/research/blacklist_lookup?ip_address=".length);
-          event.element().up("li").replace("<li><font color='red'><b>ERROR:</b></font> "+ ip_address +" blacklist lookup failed!</li>");
-      });
-  });
-  $$("a.ip_blacklist", "a.asn_blacklist").each(function(e) {
       e.observe("ajax:before", function(event) {
           event.element().hide();
           event.element().insert({ after: "<img class='loading' src='/images/ajax-loader.gif' alt='Loading...' /> Loading" }); 
       });
       e.observe("ajax:success", function(event) {
           event.element().up("li").replace(event.memo.responseText);
+      });
+      e.observe("ajax:failure", function(event) {
+          console.error(event.memo.responseText);
+          var ip_address = event.element().readAttribute("href").slice("/research/blacklist_lookup?ip_address=".length);
+          event.element().up("li").replace("<li><font color='red'><b>ERROR:</b></font> "+ ip_address +" blacklist lookup failed!</li>");
       });
   });
   $$("div.tabs div.content").each(function(e) { e.hide(); });

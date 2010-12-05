@@ -21,6 +21,9 @@
 		<li id="ip-blacklist" class="tab">
 			<a class="tab">IP Blacklisting</a>
 		</li>
+		<li id="references" class="tab">
+			<a class="tab">References</a>
+		</li>
 	</ul>
 
 	<div id="tree" class="content">
@@ -87,11 +90,12 @@
 					<%= link_to "Lookup", "/research/stop_badware_lookup?asn=#{asn}", :remote => true, :class => "asn_blacklist" %> blacklisting data for ASN <%= asn %>
 					<div class="asn_blacklist">
 						<script type="text/javascript+protovis">
-							var data = raw_data;
+							var data = [];
 							
 							<%= render :partial => '/graph/area.js' %>
-
-							vis.render();
+							
+							var vis_<%= asn %> = vis;
+							vis_<%= asn %>.render();
 						</script>
 					</div>
 				</li>
@@ -102,6 +106,14 @@
 	<div id="ip-blacklist" class="content">		
 		<ul>
 			<%= render :partial => 'ip_blacklist', :collection => data.map { |d| d.value }.uniq.sort %>
+		</ul>
+	</div>
+	
+	<div id="references" class="content">
+		<ul>
+			<li>Team CYMRU's <%= link_to "DNS service", "http://www.team-cymru.org/Services/ip-to-asn.html#dns" %> has been used to determine country codes and ASN numbers.</li>
+			<li><%= link_to "StopBadware", "http://www.stopbadware.org/reports/asn/" %> has been used to determine the historical malware profile for each ASN.</li>
+			<li>Blacklist queries have been determined using the <%= link_to "whatismyipaddress.com", "http://whatismyipaddress.com/blacklist-check" %> blacklist check service.</li>
 		</ul>
 	</div>
 </div>
