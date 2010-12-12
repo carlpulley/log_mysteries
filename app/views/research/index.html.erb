@@ -3,6 +3,11 @@
 <ul>
 	<li><%= link_to "URL Version Parameters", "/research/version" %></li>
 	<li><%= link_to "IP Addresses", "/research/ip_address" %></li>
+	<li>Clocks:
+		<ul>
+			<li><%= link_to "10.0.1.2", "/research/clocks/10.0.1.2" %></li>
+		</ul>
+	</li>
 	<li>Wordpress Analysis:
 		<ul>
 			<li><%= link_to "Blog", "/research/wordpress" %>
@@ -119,6 +124,13 @@
 <% if params[:chapter] == "by" and params[:tagged] %>
 
 <h3>Log Entries tagged <%= params[:tagged] %></h3>
+	
+<% # TODO: add in paging code %>
+<%= render :partial => 'data', :locals => { :data => @data.order(:observed_at).all } %>
+
+<% elsif params[:chapter] == "by" and params[:ip_address] %>
+
+<h3>Log Entries with IP Address <%= params[:ip_address] %></h3>
 	
 <% # TODO: add in paging code %>
 <%= render :partial => 'data', :locals => { :data => @data.order(:observed_at).all } %>
