@@ -148,7 +148,7 @@
 		
 		vis.render();
 	</script>
-	<% # TODO: add in CSV link for downloading graph data for use in R -%>
+	<%= link_to "10.0.1.2", "/research/clocks/10.0.1.2.csv" %> clock description FIXME: need this link to point to data in graph above!
 	<p>
 		From <%= link_to "An Improved Clock Model for Translating Timestamps", "http://www.infosec.jmu.edu/reports/jmu-infosec-tr-2007-001.php" %> (by Florian Bucholz), we have that clock skews are generally linear. As a result, we use a least squares approximation to build a linear model describing 10.0.1.14's clock. Before we may export this graph data into the R framework, we normalise our RSS refresh gaps as follows:
 		<ul>

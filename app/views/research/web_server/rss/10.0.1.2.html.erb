@@ -77,19 +77,5 @@
 				</ul>
 			</li>
 		</ul>
-	</p>
-	
-	<h3>plot of log event timestamp (seconds) vs event order (array position)</h3>
-	
-	<script type="text/javascript+protovis">	
-		var data = raw_data.map(function(d) [d.observed_at]).slice(1).zip(raw_data.slice(0,-1).map(function(d) [d.observed_at])).map(function(pr) [pr.first() - pr.last()]);
-		var labels = raw_data.map(function(d) (d.position-1)+","+d.position);
-		
-		<%= render :partial => '/graph/bar.js' %>
-		
-		val_label.text(function(d) d+"");
-			
-		vis.render();
-	</script>
-	
+	</p>	
 <% end %>
