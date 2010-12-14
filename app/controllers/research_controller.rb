@@ -46,6 +46,10 @@ class ResearchController < ApplicationController
           case params[:section]
             when "rss" then ApacheAccess.tagged_with("rss").ip_address(params[:subsection]).all
           end 
+        when "clocks"
+          case params[:section]
+            when "10.0.1.2" then ApacheAccess.tagged_with("rss").ip_address(params[:section]).all
+          end
       end
 
       if params[:subsection]
