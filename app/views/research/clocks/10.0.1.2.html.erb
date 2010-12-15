@@ -64,10 +64,10 @@
 		By default on OS X (these conclusions have been determined by inspecting vanilla copies of Mail.app, Firefox and Safari - the most common RSS clients within OS X):
 		<ul>
 			<li>Firefox fetches live bookmarks (ie. RSS newsfeeds) ever 60 minutes</li>
-			<li>Mail.app defaults to updating every 30 minutes</li>
+			<li>Mail.app (a common RSS client on OS X) defaults to updating every 30 minutes</li>
 			<li>and Safari defaults to every 30 minutes.</li>
 		</ul>
-		Given that our RSS requests are estimated as being generated every 27.5±1.3 minutes, then RSS newsfeed clients are probably scheduled to be update every 30 minutes.
+		Given that our RSS requests are estimated as being generated every 27.5±1.3 minutes, then RSS newsfeed clients are probably scheduled to be updated every 30 minutes.
 	</p>
 	<p>
 		Regardless of RSS client, newsfeed HTTP requests are here generated using Apple's PubSub agent. This agent is ran regularly via launchd (a cron-like replacement). Thus, by performing additional experiments on 10.0.1.2 (see below), we may then generate an estimate for the accuracy of using launchd as a model of clock ticks.
@@ -148,23 +148,24 @@
 		
 		vis.render();
 	</script>
+	
 	<%= link_to "10.0.1.2", "/research/clocks/10.0.1.2.csv" %> clock description FIXME: need this link to point to data in graph above!
 	<p>
 		From <%= link_to "An Improved Clock Model for Translating Timestamps", "http://www.infosec.jmu.edu/reports/jmu-infosec-tr-2007-001.php" %> (by Florian Bucholz), we have that clock skews are generally linear. As a result, we use a least squares approximation to build a linear model describing 10.0.1.14's clock. Before we may export this graph data into the R framework, we normalise our RSS refresh gaps as follows:
 		<ul>
 			<li>??</li>
 		</ul>
-		Using this normalised data within the R framework we are able to estimate 10.0.1.14's clock skew (ie. the graphs gradient) to be -0.04651 (with a y-axis intersect of 59140000).
+		Using this normalised data within the R framework we are able to estimate 10.0.1.14's clock skew (ie. the graphs gradient) to be -0.04651.
 	</p>
 	<p>
 		The result of this analysis has been drawn in <font color="#ff2d26">red</font> on the graph above.
 	</p>
 	<p>
-		Based upon this linear regression model, we can now estimate 10.0.1.14's clock skew as being ?? and offer to explain 10.0.1.2's refresh gaps as follows:
+		Based upon this linear regression model, we can now estimate 10.0.1.14's clock skew as being -0.04651 and offer to explain 10.0.1.2's refresh gaps as follows:
 		<ul>
 			<li>from 02:36:16 to 19:34:16 (21/Apr/2010 UTC), 10.0.1.2 was probably offline and 10.0.1.14 had no discernible time modifications applied</li>
-			<li>from 20:04:16 to 21:32:19 (23/Apr/2010 UTC), 10.0.1.14 had a <%= number_with_precision (@data[$slice[1]+1].observed_at.to_f - (tick_count($slice[1]+1)*$delta+$base))/(60*60), :precision => 1 %> hour time modification applied</li>
-			<li>from 01:02:19 to 02:53:57 (24/Apr/2010 UTC), 10.0.1.14 had a <%= number_with_precision (@data[$slice[2]+1].observed_at.to_f - (tick_count($slice[2]+1)*$delta+$base))/(60*60), :precision => 1 %> hour time modification applied.</li>
+			<li>from 20:04:16 to 21:32:19 (23/Apr/2010 UTC), 10.0.1.14 had a <%= number_with_precision (((map_to_hash @data)[$slice[1]+1][:t_host]-(map_to_hash @data)[$slice[1]+1][:t_ref])-((map_to_hash @data)[$slice[1]][:t_host]-(map_to_hash @data)[$slice[1]][:t_ref]))/60, :precision => 1 %> minute time modification applied</li>
+			<li>from 01:02:19 to 02:53:57 (24/Apr/2010 UTC), 10.0.1.14 had a <%= number_with_precision (((map_to_hash @data)[$slice[2]+1][:t_host]-(map_to_hash @data)[$slice[2]+1][:t_ref])-((map_to_hash @data)[$slice[2]][:t_host]-(map_to_hash @data)[$slice[2]][:t_ref]))/60, :precision => 1 %> minute time modification applied.</li>
 		</ul>
 	</p>
 	<% # TODO: tag events that fall within time modification windows -%>

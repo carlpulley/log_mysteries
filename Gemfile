@@ -35,3 +35,6 @@ gem 'nested_set'
 #  Need to manually patch ruby-ssdeep.c to deal with ruby 1.9.2
 # TODO: need to work out how to get this gem to build under ruby 1.9.2!
 #gem 'ssdeep'
+
+# Following gem allows access to the R statistical framework
+gem 'rsruby'

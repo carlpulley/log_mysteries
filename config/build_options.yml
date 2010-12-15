@@ -1,2 +1,6 @@
 ssdeep:
   ssdeep-dir: /usr/local/bin/ssdeep
+
+rsruby:
+  R-dir: /Library/Frameworks/R.framework/Resources
+  
