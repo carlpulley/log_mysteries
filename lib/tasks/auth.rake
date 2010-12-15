@@ -17,11 +17,11 @@
 
 namespace :process do
   task :auth => :environment do
-    archive = "evidence/sanitized_log/auth.log"
+    archive = "sanitized_log/auth.log"
     
-    puts `unzip evidence/sanitized_log.zip #{archive}` unless FileTest.file?(archive)
+    puts `unzip -d evidence evidence/sanitized_log.zip #{archive}` unless FileTest.file?("evidence/#{archive}")
   
-    open(archive, "r").each do |line|
+    open("evidence/#{archive}", "r").each do |line|
       unless Auth.create(Auth.parse_log_line(line))
         puts "Skipping line: #{line}"
       end
