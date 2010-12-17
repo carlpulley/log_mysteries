@@ -80,7 +80,6 @@ GEM
     rspec-rails (2.2.0)
       rails (~> 3.0.0)
       rspec (~> 2.2)
-    rsruby (0.5.1.1)
     ruby-debug-base19 (0.11.24)
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
@@ -108,7 +107,6 @@ DEPENDENCIES
   nokogiri
   rails
   rspec-rails
-  rsruby
   ruby-debug19
   shoulda
   sqlite3-ruby

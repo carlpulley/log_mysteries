@@ -12,28 +12,26 @@
 	$delta = 30*60
 	$base = @data[0].observed_at.to_f
     
-	def tick_count(position)		
-		def num_ticks(n, p)
-			case n
-			when 0 
-				return p
-			else
-				i = n-1
-				return num_ticks(i, $slice[i]) + (@data[$slice[i]+1].observed_at.to_f-@data[$slice[i]].observed_at.to_f)/$delta + p-($slice[i]+1)+1
-			end
-		end
-    
-		if position <= $slice[0]
-			num_ticks = num_ticks(0, position)
-		elsif (position > $slice[0] and position <= $slice[1]) 
-			num_ticks = num_ticks(1, position)
-		elsif (position > $slice[1] and position <= $slice[2]) 
-			num_ticks = num_ticks(2, position)
-		elsif position > $slice[2] 
-			num_ticks = num_ticks(3, position)
+	def num_clock_ticks(i)
+		(@data[$slice[i-1]+1].observed_at.to_f-@data[$slice[i-1]].observed_at.to_f)/$delta
+	end
+
+	def tick_count(p)				
+		if p <= $slice[0]
+			n = 0
+		elsif (p > $slice[0] and p <= $slice[1]) 
+			n = 1
+		elsif (p > $slice[1] and p <= $slice[2]) 
+			n = 2
+		elsif p > $slice[2] 
+			n = 3
 		end
 		
-		return num_ticks
+		if p == 0
+			0
+		else
+			tick_count(p-1) + ((n > 0 and p == $slice[n-1]+1) ? num_clock_ticks(n) : 1)
+		end	
 	end
 
 	def map_to_hash(data)
@@ -82,7 +80,7 @@
 	</p>
 	<div class="note">
 		<h3>Experimental Note:</h3>
-		In order to estimate the accuracy of launchd as a timing mechanism, we set up a launchd job (within a vanilla install of OS X 10.6) to regularly (ie. once every 5 minutes) issue a HTTP request (via <code>curl -I</code>) to a web server on a local network (this web server has its time synced every minute using NTP). By measuring the time difference between the Date HTTP header in each response (over a 7 day period), we can now estimate launchd's timing accuracy. In performing this experiment, we estimate that launchd maintains time to an accuracy of ±0.31 seconds and so here can be considered as a suitably accurate timing reference.
+		In order to estimate the accuracy of launchd as a timing mechanism, we set up a launchd job (within a vanilla install of OS X 10.6) to regularly (ie. once every 5 minutes) issue a HTTP request (via <code>curl -I</code>) to a web server on a local network. By measuring the time difference between the Date HTTP header in each response (over a 7 day period), we can now estimate launchd's timing accuracy. In performing this experiment, we estimate that launchd maintains time to an accuracy of ±0.04 second and so can be considered as a suitably accurate timing reference.
 	</div>
 	<p>
 		For each RSS request (say request number n &ge; 0), let t<sub>ref</sub>(n) be the time determined using 10.0.1.2's clock. Due to the periodicity of 10.0.1.2's newsfeed requests we can represent this time via the equation:
