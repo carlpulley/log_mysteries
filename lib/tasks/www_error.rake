@@ -17,11 +17,11 @@
 
 namespace :process do
   task :www_error => :environment do
-    archive = "evidence/sanitized_log/apache2/www-error.log"
+    archive = "sanitized_log/apache2/www-error.log"
     
-    puts `unzip evidence/sanitized_log.zip #{archive}` unless FileTest.file?(archive)
+    puts `unzip -d evidence evidence/sanitized_log.zip #{archive}` unless FileTest.file?("evidence/#{archive}")
     
-    open(archive, "r").each do |line|
+    open("evidence/#{archive}", "r").each do |line|
       unless ApacheError.create(ApacheError.parse_log_line(line))
         puts "Skipping line: #{line}"
       end

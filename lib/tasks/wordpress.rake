@@ -22,7 +22,7 @@ namespace :process do
     puts `curl http://wordpress.org/wordpress-2.9.2.tar.gz -o #{archive}` unless FileTest.file?(archive)
   
     `tar -ztvf #{archive}`.split("\n").map do |d| 
-      Wordpress.create!({ :archive => archive, :name => $4, :observed_at => DateTime.strptime($3, "%d %b %Y"), :size => $2.to_i, :directory => ($1 == 'd') }) if d =~ /^([d\-]).*?www\-data\s+(\d+)\s+(.*?)\s+wordpress(.*)$/
+      Wordpress.create!({ :archive => archive, :name => $4, :observed_at => DateTime.strptime($3, "%Y-%m-%d %H:%M"), :size => $2.to_i, :directory => ($1 == 'd') }) if d =~ /^([d\-]).*?www\-data\s+(\d+)\s+(.*?)\s+wordpress(.*)$/
     end
     
     `tar -zxvf #{archive} -C evidence wordpress/wp-includes/js/jquery/jquery.js`
