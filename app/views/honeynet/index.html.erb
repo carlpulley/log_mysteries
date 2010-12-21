@@ -15,6 +15,8 @@
 	
 <h3>Challenge Answers</h3>
 
+<b>Note:</b> unless otherwise stated, all times here are stated using UTC.
+
 <ol>
 	<li><i>Was the system compromised and when? How do you know that for sure?</i> <br />
 		We believe that the system was initially compromised before 23:21:08 on the 19th April 2010 PDT. This assertion is based on: 
@@ -82,7 +84,7 @@
 		<% end %>
 	</div>
 	As our comparison test is here based upon time, we hypothesis that the timestamp and time-related counter value have out-of-sync source clocks (it's that or the entry was forged!).<br />
-	<%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2"%> accesses our server (via an RSS newsfeed) at regular intervals. These access intervals are so regular that, by trusting 10.0.1.2's system clock (10.0.1.2 is on the same subnet as our server at 10.0.1.14), we can estimate the accuracy of our server's clock. TODO: use 10.0.1.2 rss time to measure consistency of time in apache log files.
+	<%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2"%> regularly accesses (via an RSS newsfeed) our server at 10.0.1.14. These access intervals are so regular that, by trusting 10.0.1.2's system clock, we can build a clock description for 10.0.1.14 in terms of 10.0.1.2's trusted clock (for the current analysis, see <%= link_to "A Categorization of Computer Clocks", "http://www.infosec.jmu.edu/reports/jmu-infosec-tr-2009-001.php" %> by Glenn Henderson - our clock description only lacks the NTP time synchronisation behaviours here).
 <% timeline3 = ApplicationHelper::Timeline.new %>
            
 <% timeline3.add_event("10.0.1.14: POST /wp-cron.php?doing_wp_cron", ApacheAccess.ip_address("10.0.1.14").tagged_with("wordpress")) %>

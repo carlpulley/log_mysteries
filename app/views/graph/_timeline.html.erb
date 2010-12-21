@@ -7,6 +7,7 @@
 	<%= render :partial => '/graph/timeline.js' %>
 	<%= yield %>
 	vis.render();
+	var vis_<%= eid %> = vis;
 </script>
 <div id='events_<%= eid %>' class='events timeline'>
 <% timeline.events.each do |line| -%>
@@ -34,4 +35,11 @@
 			}
 		});
 	});
+	<% timeline.events.each do |line| -%>
+	$("events_<%= eid %>").down("#<%= line[:type] %><%= line[:id] %>").observe('dblclick', function(event) {
+		vis_<%= eid %>.i(dates(<%= line[:observed_at] %>));
+		$("events_<%= eid %>").fire("timeline:position", { 'observed_at': <%= line[:observed_at] %>, 'event_type': "<%= line[:type] %>", 'event_id': <%= line[:id] %> });
+        vis_<%= eid %>.render();
+	});
+	<% end -%>
 </script>
