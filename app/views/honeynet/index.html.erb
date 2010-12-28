@@ -15,10 +15,12 @@
 	
 <h3>Challenge Answers</h3>
 
-<b>Note:</b> unless otherwise stated, all times here are stated using UTC.
-
 <ol>
-	<li><i>Was the system compromised and when? How do you know that for sure?</i> <br />
+	<li><i>Was the system compromised and when? How do you know that for sure?</i> 
+		<div class="note">
+		<h3>Notes:</h3>
+		<ul><li>Prior to answering this question, we have tagged our Auth model entries.</li><li>Unless otherwise mentioned, all times here refer to the log event timestamps.</li></ul>
+		</div>
 		We believe that the system was initially compromised before 23:21:08 on the 19th April 2010 PDT. This assertion is based on: 
 		<ul>
 			<li>the presence of the <code>psybnc</code> and <code>eggdrop</code> sudo entries in <code>auth.log</code> - both of these tools are known IRC bot components (see <%= link_to "botnet events", "/research/by?tagged=botnet" %>);</li>
@@ -26,7 +28,7 @@
 			<li>the fact that <code>auth.log</code> records the user <code>dhg</code> configuring the UFW firewall (and then IP Tables directly), at a time that is during a period when the server is estimated to have no ongoing maintenance (examination of the <%= link_to "install/build events", "/research/by?tagged=install" %> shows that from this time index onwards, no such events are associated with estimates of known administrator activity).</li>
 		</ul>
 		By examining our installation events (see <%= link_to "install events", "/research/by?tagged=install" %>), we additionally have that our system was probably compromised before 23:02:37 on the 19th April 2010 PDT (since root installed the Debian package <code>build-essential</code> at this time and this event occurs 23 minutes before botnet related activity).<br />
-		As a result of the above, we estimate that the system was compromised by 23:02:37 on the 19th April 2010 PDT.
+		As a result of the above, and using our <%= link_to "clock description", "/research/clocks/10.0.1.2" %> model, we estimate that (relative to our 10.0.1.2 reference clock) the system was compromised by 06:02:37 on the 20th April 2010 UTC [±0.1%].
 <% timeline1 = ApplicationHelper::Timeline.new %>
 
 <% timeline1.add_event("subversion events", Sudo.tagged_with("subversion")) %>
@@ -46,8 +48,9 @@
 	<li><i>What happened after the brute force attack?</i><br />
 		?</li>
 	<li><i>Locate the authentication logs, was a bruteforce attack performed? If yes how many?</i><br />
+		?<br />
 	If we take the view that a sustained brute force attack might result in notable resource consumption (and so observable server loading), then we may use a timeline plot of our various server loading estimates (see our <%= link_to "research notes", "/research" %>) to estimate when we think that any brute force attacks might have occurred.<br />
-	As we have already estimated that the system was compromised prior to 23:02:37 on the 19th April 2010 PDT, we analyse server loading estimates prior to this time index only.<br />
+	As we have already estimated that the system was compromised prior to 06:02:37 on the 20th April 2010 UTC [±0.1%], we analyse server loading estimates prior to this time index only.<br />
 	Of the remaining events, we choose to filter out those loading estimates that occur at times consistent with Apache restarts. Thus, we rule out any loading estimates that occur in the time period 12:05:36 - 14:47:43 on the 19th April 2010 PDT.<br />
 	This results in the following estimates for potential brute force attacks (all times occur on the 19th April 2010 PDT):
 	<ul>
@@ -76,68 +79,10 @@
 
 <%= render :partial => '/graph/timeline', :object => timeline2 %>
 	</li>
-	<li><i>What is the timeline of significant events? How certain are you of the timing?</i><br />
-	Apache2 logging has here been configured to use mod unique ID. This means that each Apache2 log line may have its timestamp <%= link_to "verified", "/research/unknown" %> to some degree. Only one Apache2 log event is to be found with an inaccurate (ie. by more than ±1 second) mod unique ID field:
-	<div class="events">
-		<% ApacheAccess.tagged_with(["anomaly", "unknown"]).all.each do |event| %>
-		<div class="event"><%= event.to_s %></div>
-		<% end %>
-	</div>
-	As our comparison test is here based upon time, we hypothesis that the timestamp and time-related counter value have out-of-sync source clocks (it's that or the entry was forged!).<br />
-	<%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2"%> regularly accesses (via an RSS newsfeed) our server at 10.0.1.14. These access intervals are so regular that, by trusting 10.0.1.2's system clock, we can build a clock description for 10.0.1.14 in terms of 10.0.1.2's trusted clock (for the current analysis, see <%= link_to "A Categorization of Computer Clocks", "http://www.infosec.jmu.edu/reports/jmu-infosec-tr-2009-001.php" %> by Glenn Henderson - our clock description only lacks the NTP time synchronisation behaviours here).
-<% timeline3 = ApplicationHelper::Timeline.new %>
-           
-<% timeline3.add_event("10.0.1.14: POST /wp-cron.php?doing_wp_cron", ApacheAccess.ip_address("10.0.1.14").tagged_with("wordpress")) %>
-           
-<% timeline3.add_event("10.0.1.2: Apple-PubSub", ApacheAccess.ip_address("10.0.1.2").tagged_with("rss")) %>
-<% timeline3.add_event("10.0.1.2: OSX 10.6; Firefox 3.6.3", ApacheAccess.ip_address("10.0.1.2").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3")) %>
-<% timeline3.add_event("10.0.1.2: OSX 10.6; Safari 4.0.5", ApacheAccess.ip_address("10.0.1.2").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2; en-us) AppleWebKit/531.22.7 (KHTML, like Gecko) Version/4.0.5 Safari/531.22.7")) %>
-           
-<% timeline3.add_event("65.88.2.5: Apple-PubSub", ApacheAccess.ip_address("65.88.2.5").tagged_with("rss")) %>
-<% timeline3.add_event("65.88.2.5: OSX 10.6; Firefox 3.6.3", ApacheAccess.ip_address("65.88.2.5").user_agent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3")) %>
-           
-<% timeline3.add_event("208.80.69.74: Apple-PubSub", ApacheAccess.ip_address("208.80.69.74").tagged_with("rss")) %>
-<% timeline3.add_event("208.80.69.69: OSX 10.6; Safari 4.0.4", ApacheAccess.ip_address("208.80.69.69")) %>
-           
-<% timeline3.add_event("76.191.195.140: Apple-PubSub", ApacheAccess.ip_address("76.191.195.140").tagged_with("rss")) %>
-           
-<% timeline3.add_event("123.4.59.174: Windows XP; IE 6.0", ApacheAccess.ip_address("123.4.59.174")) %>
-<% timeline3.add_event("125.45.106.180: Windows XP; IE 6.0", ApacheAccess.ip_address("125.45.106.180")) %>
-<% timeline3.add_event("123.4.59.21: Windows XP; IE 6.0", ApacheAccess.ip_address("123.4.59.21")) %>
-<% timeline3.add_event("125.45.106.168: Windows XP; IE 6.0", ApacheAccess.ip_address("125.45.106.168")) %>
-<% timeline3.add_event("123.4.42.80: Windows XP; IE 6.0", ApacheAccess.ip_address("123.4.42.80")) %>
-<% timeline3.add_event("123.11.240.130: Windows XP; IE 6.0", ApacheAccess.ip_address("123.11.240.130")) %>
-<% timeline3.add_event("123.4.51.181: Windows XP; IE 6.0", ApacheAccess.ip_address("123.4.51.181")) %>
-           
-<% timeline3.add_event("190.167.70.87: Windows XP; Chrome 4.1.249.1045", ApacheAccess.ip_address("190.167.70.87")) %>
-<% timeline3.add_event("190.166.87.164: Windows XP; Chrome 4.1.249.1059", ApacheAccess.ip_address("190.166.87.164")) %>
-           
-<% timeline3.add_event("201.229.176.217: Windows XP; Firefox 3.0.19", ApacheAccess.ip_address("201.229.176.217")) %>
-           
-<% timeline3.add_event("Naverbot", ApacheAccess.tagged_with("bot")) %>
-<% timeline3.add_event("World of Warcraft Scanning", ApacheAccess.tagged_with("world-of-warcraft,scan")) %>
-<% timeline3.add_event("Proxy Scanning", ApacheAccess.tagged_with("proxy,scan")) %>
-<% timeline3.add_event("Port 6677 Scanning", ApacheAccess.tagged_with("port-6677,scan")) %>
-<% timeline3.add_event("Port 6667 Scanning", ApacheAccess.tagged_with("port-6667,scan")) %>
-           
-<% timeline3.add_event("server loading: transfer speed", ApacheAccess.tagged_with(["loading", "speed"])) %>
-<% timeline3.add_event("server loading: static files", ApacheAccess.tagged_with(["loading", "files"])) %>
-<% timeline3.add_event("server loading: newsfeed access", ApacheAccess.tagged_with(["loading", "rss"])) %>
-<% timeline3.add_event("server loading: out of order events", ApacheAccess.tagged_with(["loading", "out-of-order"])) %>
-<% timeline3.add_event("mod unique ID anomaly", ApacheAccess.tagged_with(["anomaly", "unknown"])) %>
-<% timeline3.add_event("apache restart estimates", ApacheAccess.tagged_with(["process", "restart"])) %>
-<% timeline3.add_event("apache2 errors", ApacheError.scoped) %>
-           
-<% timeline3.add_event("subversion events", Sudo.tagged_with("subversion")) %>
-<% timeline3.add_event("maintenance events", Sudo.tagged_with("maintenance")) %>
-<% timeline3.add_event("install/build events", Sudo.tagged_with("install")) %>
-<% timeline3.add_event("python events", Sudo.tagged_with("python")) %>
-<% timeline3.add_event("apache2 events", Sudo.tagged_with("apache")) %>
-<% timeline3.add_event("firewall events", Sudo.tagged_with("firewall")) %>
-<% timeline3.add_event("botnet events", Sudo.tagged_with("botnet")) %>
-<% timeline3.add_event("suspicious user events", Sudo.tagged_with(["odd", "user"])) %>
-           
-<%= render :partial => '/graph/timeline', :object => timeline3 %>
+	<li><i>What is the timeline of significant events?</i><br />
+	?<br />
+	<i>How certain are you of the timing?</i><br />
+	<%= link_to "10.0.1.2", "/research/web_server/rss/10.0.1.2"%> regularly accesses (via an RSS newsfeed) our web server at 10.0.1.14. These access intervals are so regular that, by trusting 10.0.1.2's system clock, we can build a <%= link_to "clock description", "/research/clocks/10.0.1.2" %> for 10.0.1.14 in terms of 10.0.1.2's trusted clock (for the current analysis, see <%= link_to "A Categorization of Computer Clocks", "http://www.infosec.jmu.edu/reports/jmu-infosec-tr-2009-001.php" %> by Glenn Henderson - our clock description only lacks the NTP time synchronisation behaviours here) with an accuracy of ±0.1%.
 	</li>
 	<li><i>Anything else that looks suspicious in the logs? Any misconfigurations? Other issues?</i><br />
 		?</li>

@@ -19,4 +19,41 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
   protected
+  
+  # FIXME: 
+  #   need to manually patch $RVM/gems/rsruby-0.5.1.1/ext/rsruby.c (see http://rubyforge.org/forum/forum.php?thread_id=46998&forum_id=7794) as follows:
+  #   
+  # --- rsruby.c	2010-12-23 17:45:03.000000000 +0000
+  # +++ /tmp/rsruby.c	2010-12-23 17:44:46.000000000 +0000
+  # @@ -30,6 +30,18 @@
+  #  */
+  # 
+  #  #include "rsruby.h"
+  # +#include <sys/time.h>
+  # +#include <sys/resource.h>
+  # +#define STACK_MULTIPLIER 16
+  # +
+  # +void increase_stack_size(void)
+  # +{
+  # +struct rlimit rlim;
+  # +
+  # +getrlimit(RLIMIT_STACK, &rlim);
+  # +rlim.rlim_cur = rlim.rlim_cur * STACK_MULTIPLIER;
+  # +setrlimit(RLIMIT_STACK, &rlim);
+  # +}
+  # 
+  #  /* Global list to protect R objects from garbage collection */
+  #  /* This is inspired in $R_SRC/src/main/memory.c */
+  # @@ -130,6 +142,7 @@
+  # 
+  #    SEXP R_References;
+  # 
+  # +  increase_stack_size();
+  #    init_R(0,NULL);
+  #    // Initialize the list of protected objects
+  #    R_References = R_NilValue;
+  
+  #def initialize
+  #  @r = RSRuby.instance
+  #end
 end

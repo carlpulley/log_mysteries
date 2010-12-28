@@ -54,7 +54,7 @@
 		We have from the analysis of our <%= link_to "ip addresses", "/research/ip_address" %> that 10.0.1.2 and 10.0.1.14 (the IP address of our web server) are on the same subnet. The network proximity of these two IP addresses suggests that they are under the same administrative jurisdiction and so, should the need arise, we can perform additional information gathering from 10.0.1.2.
 	</p>
 	<p>
-		From 10.0.1.2's <%= link_to "RSS accesses", "/research/web_server/rss/10.0.1.2" %>, we have that 10.0.1.2 regularly (ie. once every 27.5±1.3 minutes) sends newsfeed requests to 10.0.1.14. The regularity of these events offers us the hope that we should be able to use them to build up a clock description for 10.0.1.2. By relating that clock description to the clock source on 10.0.1.14, we should then be able to calculate a trusted reference time model for 10.0.1.14's log events.
+		From 10.0.1.2's <%= link_to "RSS accesses", "/research/web_server/rss/10.0.1.2" %>, we have that 10.0.1.2 regularly (ie. once every 27.5 minutes [±5%]) sends newsfeed requests to 10.0.1.14. The regularity of these events offers us the hope that we should be able to use them to build up a clock description for 10.0.1.2. By relating that clock description to the clock source on 10.0.1.14, we should then be able to calculate a trusted reference time model for 10.0.1.14's log events.
 	</p>
 	<p>
 		We have from 10.0.1.2's <%= link_to "user agent string", "/research/by?ip_address=10.0.1.2" %> (we have here used <%= link_to "user-agent-string.info", "http://user-agent-string.info" %> to interpret browser agent strings) that 10.0.1.2 is running OS X 10.6.2 along with the following browsers:
@@ -68,7 +68,7 @@
 			<li>Mail.app (a common RSS client on OS X) defaults to updating every 30 minutes</li>
 			<li>and Safari defaults to every 30 minutes.</li>
 		</ul>
-		Given that our RSS requests are estimated as being generated every 27.5±1.3 minutes, then RSS newsfeed clients are probably scheduled to be updated every 30 minutes.
+		Given that our RSS requests are estimated as being generated every 27.5 minutes [±5%], then RSS newsfeed clients are probably scheduled to be updated every 30 minutes.
 	</p>
 	<p>
 		Regardless of RSS client, newsfeed HTTP requests are here generated using Apple's PubSub agent. This agent is ran regularly via launchd (a cron-like replacement). Thus, by performing additional experiments on 10.0.1.2 (see below), we may then generate an estimate for the accuracy of using launchd as a model of clock ticks.
@@ -82,8 +82,8 @@
 		The network proximity of 10.0.1.2 and 10.0.1.14 suggests that network latency should essentially be a constant. Thus, our timestamp accuracy should boil down to the timing accuracy of launchd.
 	</p>
 	<div class="note">
-		<h3>Experimental Note:</h3>
-		In order to estimate the accuracy of launchd as a timing mechanism, we set up a launchd job (within a vanilla install of OS X 10.6) to regularly (ie. once every 5 minutes) issue a HTTP request (via <code>curl -I</code>) to a web server on a local network. By measuring the time difference between the Date HTTP header in each response (over a 7 day period), we can now estimate launchd's timing accuracy. In performing this experiment, we estimate that launchd maintains time to an accuracy of ±0.04 second and so can be considered as a suitably accurate timing reference.
+		<h3>launchd Experimental Note:</h3>
+		In order to estimate the accuracy of launchd as a timing mechanism, we set up a launchd job (within a vanilla install of OS X 10.6) to regularly (ie. once every 5 minutes) issue a HTTP request (via <code>curl -I</code>) to a web server on a local network. By measuring the time difference between the Date HTTP header in each response (over a 7 day period), we can now estimate launchd's timing accuracy. In performing this experiment, we estimate that launchd maintains time to an accuracy of ±0.1% and so can be considered as a suitably accurate timing reference.
 	</div>
 	<p>
 		For each RSS request (say request number n &ge; 0), let t<sub>ref</sub>(n) be the time determined using 10.0.1.2's clock. Due to the periodicity of 10.0.1.2's newsfeed requests we can represent this time via the equation:
@@ -101,7 +101,7 @@
 		As a result of these considerations, we may now implement a function that calculates how many 10.0.1.2 clock ticks have occurred since t<sub>host</sub>(0). Using this function, we can now plot the following graph:
 	</p>
 	
-	<h3>Clock Skew: t<sub>ref</sub> vs t<sub>host</sub></h3>
+	<h3>Clock Description: t<sub>ref</sub> vs t<sub>host</sub></h3>
     
 	<script type="text/javascript+protovis">
 		var data = raw_data.map(function(d) { h = {}; h['position'] = d.position; h['t_host'] = d.t_host; h['x'] = d.t_ref; h['y'] = d.t_host; return h; });
@@ -131,7 +131,7 @@
 		Looking at the graph above, we can also see that every day, 10.0.1.2's clock drifts from our reference model (ie. t<sub>ref</sub>) by approximately 1 hour. Thus we see that, for the data we are examining, clock skew is significant!
 	</p>
 	
-	<h3>Clock Description: t<sub>ref</sub> vs (t<sub>host</sub>-t<sub>ref</sub>)</h3>
+	<h3>Clock Skew: t<sub>ref</sub> vs (t<sub>host</sub>-t<sub>ref</sub>)</h3>
     
 	<script type="text/javascript+protovis">
 		var data = raw_data.map(function(d) { h = {}; h['position'] = d.position; h['t_host'] = d.t_host; h['x'] = d.t_ref; h['y'] = d.t_host-d.t_ref; return h; });
@@ -159,6 +159,6 @@
 		In order to estimate a clock description for 10.0.1.2 we need to first perform a linear transformation on the x-coordinates of our data to ensure that our RSS refresh gaps are eliminated. Once this has been done, we may then build a linear model via least squares approximation (here we use <%= link_to "R", "http://www.r-project.org/" %> to perform this step). By applying a reverse linear transformation to our data x-coordinates, we obtain the graph description (in <font color="#ff2d26">red</font>) given above.
 	</div>
 	<p>
-		Based upon this linear regression model, we can now estimate 10.0.1.14's clock skew as being -0.04230±0.00015. We additionally offer to explain 10.0.1.2's RSS refresh gaps as being due to downtime.
+		Based upon this linear regression model, we can now estimate 10.0.1.14's clock skew as being -0.04230 [±0.3%]. We additionally offer to explain 10.0.1.2's RSS refresh gaps as being due to downtime.
 	</p>
 <% end %>

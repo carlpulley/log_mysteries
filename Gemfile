@@ -6,9 +6,6 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 # To use debugger
 gem 'ruby-debug19', :require => 'ruby-debug'
 
-# To use JQuery rather than Prototype
-# gem 'jquery-rails'
-
 # Following gems are used for screen scraping
 gem 'nokogiri'
 # We only want to use the following gem if the web site demands some form of full scale web browser to perform screen scraping!
@@ -37,6 +34,9 @@ gem 'nested_set'
 
 # Following gem allows access to the R statistical framework
 # NOTES:
-#  bundle config build.rsruby --with-R-dir=/usr/lib/R/ --with-R-include=/usr/include/R/
-#  also need to ensure environment variable R_HOME = /usr/lib/R/
-#gem 'rsruby'
+#  [linux] bundle config build.rsruby --with-R-dir=/usr/lib/R/ --with-R-include=/usr/include/R/
+#  [OS X] bundle config build.rsruby --with-R-dir=/Library/Frameworks/R.framework/Resources
+#  also need to ensure environment variables are set as follows:
+#    export R_HOME=/usr/lib/R/
+#    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
+gem 'rsruby'
