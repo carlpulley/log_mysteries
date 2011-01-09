@@ -62,15 +62,16 @@ class ResearchController < ApplicationController
         render "research/#{params[:chapter]}/#{params[:section]}", :layout => 'research_note'
       end
     elsif params[:chapter]
-      # TODO: need to make this code more generic and less tied to Apache logs
       if params[:chapter] == "by"
-        @data = ApacheAccess.scoped    
+        @data = eval "#{params[:scope]}.scoped" if params[:scope]
         
         @data = @data.tagged_with(params[:tagged]) if params[:tagged]
-        @data = @data.url(params[:url]) if params[:url]
-        @data = @data.user_agent(params[:user_agent]) if params[:user_agent]
-        @data = @data.ip_address(params[:ip_address]) if params[:ip_address]
-        @data = @data.referer(params[:referer]) if params[:referer]
+        if params[:scope] == "ApacheAccess"
+          @data = @data.url(params[:url]) if params[:url]
+          @data = @data.user_agent(params[:user_agent]) if params[:user_agent]
+          @data = @data.ip_address(params[:ip_address]) if params[:ip_address]
+          @data = @data.referer(params[:referer]) if params[:referer]
+        end
         
         @label = ""
         @path = ""
