@@ -64,9 +64,10 @@ class ResearchController < ApplicationController
     elsif params[:chapter]
       if params[:chapter] == "by"
         @data = eval "#{params[:scope]}.scoped" if params[:scope]
+        @data = ApacheAccess.scoped unless params[:scope]
         
         @data = @data.tagged_with(params[:tagged]) if params[:tagged]
-        if params[:scope] == "ApacheAccess"
+        if params[:scope].nil? or params[:scope] == "ApacheAccess"
           @data = @data.url(params[:url]) if params[:url]
           @data = @data.user_agent(params[:user_agent]) if params[:user_agent]
           @data = @data.ip_address(params[:ip_address]) if params[:ip_address]
