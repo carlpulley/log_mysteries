@@ -8,7 +8,7 @@
 	  data.map { |m| { :request_method => m.apache_access.http_method, :request_name => m.apache_access.http_url, :request_size => m.apache_access.bytes, :request_status => m.apache_access.result, :archive_name => m.archive_content.name, :archive_size => m.archive_content.size, :partial_match => m.tag_list.member?("basename") } }
 	end
 -%>
-	<script type="text/javascript+protovis">
+	<script>
 		// NOTE: @data is unified so that entries with partial_match true subsume all other entries that differ just on this key (ie. partial_match).
 		// FIXME: tweak the following to ensure data is merged correctly
 		//var raw_data = pv.nest(<%=raw @data.to_json %>).key(function(d) d.remove("partial_match")).rollup(function(v) v.forAll(function(d) d.partial_match == true) ? true : false).map(function(k,v) { k.partial_match = v; return k });
