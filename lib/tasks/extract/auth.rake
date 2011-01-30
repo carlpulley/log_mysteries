@@ -20,8 +20,9 @@ namespace :extract do
     archive = "sanitized_log/auth.log"
     
     puts `unzip -d evidence evidence/sanitized_log.zip #{archive}` unless FileTest.file?("evidence/#{archive}")
+    puts `grep sudo "evidence/#{archive}" >evidence/#{archive}.sudo` unless FileTest.file?("evidence/#{archive}.sudo")
   
-    open("evidence/#{archive}", "r").each do |line|
+    open("evidence/#{archive}.sudo", "r").each do |line|
       unless Auth.create(Auth.parse_log_line(line))
         puts "Skipping line: #{line}"
       end
