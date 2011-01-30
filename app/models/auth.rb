@@ -18,7 +18,7 @@
 class Auth < ActiveRecord::Base
   serialize :message
   
-  acts_as_taggable_on :tags
+  acts_as_taggable_on :tags, :debtags, :packages, :commands
   #acts_as_nested_set
   
   def self.parse_log_line(log_line)

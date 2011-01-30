@@ -51,7 +51,7 @@ class ResearchController < ApplicationController
             when "10.0.1.2" then ApacheAccess.tagged_with("rss").ip_address(params[:section]).all
           end
       end
-
+      
       if params[:subsection]
         @label = "#{params[:subsection]}"
         @path = "#{params[:chapter]}/#{params[:section]}"
@@ -80,6 +80,8 @@ class ResearchController < ApplicationController
       else
         
         @data = case params[:chapter]
+          when "debtags"
+            Sudo.command("")
           when "ip_address"
             IpAddress.all
           when "wordpress"  

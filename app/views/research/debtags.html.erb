@@ -1,0 +1,35 @@
+<% content_for :title do %>
+	Debian Tagging Analysis
+<% end %>
+
+<% content_for :data do %>
+<%
+	def extract_command(event)
+		$1 if event.message[:command] =~ /^([^ ]+) /
+	end
+	
+	def tag_frequency(data, tag, precision=1)
+	  	number_to_percentage(data.tag_counts_on(:debtags).find_by_name(tag).count.to_f/data.count, :precision => precision)
+	end
+
+	def map_to_hash(data)
+	  data.map { |m| { :command => extract_command(e), :full_command => e.message[:command], :packages => m.packages, :debtags => m.debtags } }
+	end
+-%>
+	<script>
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
+	</script>
+<% end %>
+
+<% content_for :note do %>
+	<h2>Debian Tagging and Command Frequency</h2>
+	
+	<script type="text/javascript+protovis">
+		var labels = raw_data.map(function(d) d.command);
+		var data = raw_data.map(function(d) [d.packages, d.debtags]);
+		
+		<%= render :partial => '/graph/bar.js' %>
+	
+		vis.render();
+	</script>
+<% end %>

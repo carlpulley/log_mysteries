@@ -64,3 +64,7 @@ Rake::Task["build:file_objects"].invoke
 
 Rake::Task["add:names:url"].invoke
 Rake::Task["add:names:url:basename"].invoke
+
+# Tag Sudo commands using debtags
+
+Rake::Task["tag:with:debtags"].invoke

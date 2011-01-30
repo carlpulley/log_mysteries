@@ -66,4 +66,56 @@ class Sudo < Auth
       result
     end
   end
+  
+  def debian_tags
+    tagging = {}
+    if message.member? :command
+      command = $1 if message[:command] =~ /^([^ ]+)/
+      package_lists = package_lookup(command)
+      package_lists.each { |pkgs| pkgs.each { |p| tagging[p] = debtags_lookup(p) } } unless package_lists.empty?
+    end
+    tagging
+  end
+  
+  private
+  
+  def package_lookup(command, timeout=1)
+    url = "http://packages.debian.org/search?searchon=contents&keywords=#{command}&mode=&suite=unstable&arch=i386"
+    tries = 0
+    begin
+      page = Nokogiri::HTML(open(url).read)
+    rescue
+      return if tries > 10
+      tries = tries+1
+      sleep(timeout)
+      retry
+    end
+    rows = []
+    cells = page.css("td")
+    while not cells.empty?
+      rows << cells[0..1]
+      cells = cells[2..-1]
+    end
+    rows.select { |r| r.first.text.strip == command }.map { |r| r.last.text.split(',').map { |p| p.strip } }
+  end
+  
+  def debtags_lookup(package, timeout=1)
+    # FIXME: not all tagging data is present in unstable (need to really use http://debtags.alioth.debian.org/edit.html?pkg=#{params[:package]} - but JS issues make this harder)!
+    url = "http://packages.debian.org/unstable/#{package}"
+    tries = 0
+    begin
+      page = Nokogiri::HTML(open(url).read)
+    rescue
+      return if tries > 10
+      tries = tries+1
+      sleep(timeout)
+      retry
+    end
+    tags = []
+    page.css("#ptags a").each do |tag|
+      tags << $1 if tag['href'] =~ /^\/about\/debtags#(.*)$/
+    end
+    tags
+  end
+  
 end
