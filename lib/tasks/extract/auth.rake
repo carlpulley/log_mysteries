@@ -15,6 +15,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class ApplicationController < ActionController::Base
-  protect_from_forgery
+namespace :extract do
+  task :auth => :environment do
+    archive = "sanitized_log/auth.log"
+    
+    puts `unzip -d evidence evidence/sanitized_log.zip #{archive}` unless FileTest.file?("evidence/#{archive}")
+  
+    open("evidence/#{archive}", "r").each do |line|
+      unless Auth.create(Auth.parse_log_line(line))
+        puts "Skipping line: #{line}"
+      end
+    end
+  end
 end
