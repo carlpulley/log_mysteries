@@ -1,6 +1,5 @@
 evidence
 .bundle
-db/GeoLiteCity.dat
 db/*.sqlite3
 db/*.sqlite3-journal
 log/*.log
