@@ -16,25 +16,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Sudo < Auth
-  #include ActiveRecord::Transitions
-  
   serialize :message, Hash
   
   scope :command, lambda { |cmd| where(["message like ?", "%\n:command: %#{cmd}%"]) }
   scope :tty, lambda { |tty| where(["message like ?", "%\n:tty: %#{tty}\n%"]) }
   scope :pwd, lambda { |pwd| where(["message like ?", "%\n:pwd: %#{pwd}%"]) }
-  
-  #state_machine :apache2 do
-  #  state :stopped # initial state
-  #  state :running
-  #
-  #  event :start do
-  #    transitions :to => :running, :from => [:stopped], :guard => lambda { |d| d.message[:command] =~ /\/etc\/init.d\/apache2 start/ }
-  #  end
-  #  event :stop do
-  #    transitions :to => :stopped, :from => [:running], :guard => lambda { |d| d.message[:command] =~ /\/etc\/init.d\/apache2 stop/ or d.message[:command] =~ /\/usr\/bin\/killall -9 apache2/ }, :on_transition => :pair_with_start_event
-  #  end
-  #end
   
   # sudo:   user1 : user NOT in sudoers ; TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/su -
   # sudo: pam_unix(sudo:session): session opened for user root by user1(uid=0)
@@ -72,7 +58,7 @@ class Sudo < Auth
     if message.member? :command
       command = $1 if message[:command] =~ /^([^ ]+)/
       package_lists = package_lookup(command)
-      package_lists.each { |pkgs| pkgs.each { |p| tagging[p] = debtags_lookup(p) } } unless package_lists.empty?
+      package_lists.each { |pkgs| pkgs.each { |p| tagging[p] = debtags_lookup(p) } } unless package_lists.nil?
     end
     tagging
   end

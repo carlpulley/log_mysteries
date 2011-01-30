@@ -49,19 +49,16 @@ The significant directory structure for this Rails3 application is as follows:
 
   |-- app
   |   |-- controllers
-  |   |   |-- research_controller.rb
   |   |   `-- honeynet_controller.rb
   |   |-- models
   |   `-- views
   |       |-- graph
   |       |-- layouts
-  |       |-- research
   |       `-- honeynet
   |-- lib
   |   `-- tasks
   `-- test
       `-- unit
-          `-- csv
 
 app
   Holds all the code that's specific to this particular application.

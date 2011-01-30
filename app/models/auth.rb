@@ -18,8 +18,7 @@
 class Auth < ActiveRecord::Base
   serialize :message
   
-  acts_as_taggable_on :tags, :debtags, :packages, :commands
-  #acts_as_nested_set
+  acts_as_taggable_on :debtags, :packages, :commands
   
   def self.parse_log_line(log_line)
     if log_line =~ /^([\w]{3}\s+\d+\s+[\d:]+)\s+([\d\w\-]+)\s+([\d\w]+)(\[(\d+)\])?:\s+(.*)$/

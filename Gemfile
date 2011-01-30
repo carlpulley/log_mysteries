@@ -14,29 +14,7 @@ gem 'nokogiri'
 
 # Following gems help with testing
 gem "shoulda"
-gem "rspec-rails"
+# gem "rspec-rails"
 
 # Following gem allows data to be tagged
 gem 'acts-as-taggable-on'
-
-# Following gem provides state machine modeling
-gem "transitions", :require => ["transitions", "active_record/transitions"]
-
-# Following gem allows hierarchical data to be defined
-gem 'nested_set'
-
-# Add in SSDeep bindings for fuzzy hashing
-# NOTES:
-#  bundle config build.ssdeep --with-ssdeep-include=/usr/local/include/ --with-ssdeep-lib=/usr/local/lib/
-#  Need to manually patch ruby-ssdeep.c to deal with ruby 1.9.2
-# TODO: need to work out how to get this gem to build under ruby 1.9.2!
-# gem 'ssdeep'
-
-# Following gem allows access to the R statistical framework
-# NOTES:
-#  [linux] bundle config build.rsruby --with-R-dir=/usr/lib/R/ --with-R-include=/usr/include/R/
-#  [OS X] bundle config build.rsruby --with-R-dir=/Library/Frameworks/R.framework/Resources
-#  also need to ensure environment variables are set as follows:
-#    export R_HOME=/usr/lib/R/
-#    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
-# gem 'rsruby'

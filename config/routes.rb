@@ -17,16 +17,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Answer::Application.routes.draw do
-  get "honeynet/index"
-  get "research/stop_badware_lookup" => "research#stop_badware_lookup"
-  get "research/blacklist_lookup" => "research#blacklist_lookup"
-
-  match 'research/by' => "research#index", :chapter => "by"
   
-  match 'research/web_server/rss/:subsection' => "research#index", :chapter => "web_server", :section => "rss", :subsection => /\d+\.\d+\.\d+\.\d+/
-  match 'research/clocks/:section' => "research#index", :chapter => "clocks", :section => /\d+\.\d+\.\d+\.\d+/
-  
-  match ':controller(/:chapter(/:section(/:subsection)))' => '#index'
-  
-  root :to => "report#index"
 end
