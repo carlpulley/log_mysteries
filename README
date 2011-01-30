@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 == Getting Started
 
-This is a Rails3 application that has been built within an Ubuntu 10.04 operating system using RVM to manage the Rails environment.
+This is a Rails3 application that has been built within the OS X 10.6 operating system using RVM to manage the Rails environment.
 
 1. Clone this Github project via:
         <tt>git clone http://github.com/carlpulley/log_mysteries</tt>
