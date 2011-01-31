@@ -1,6 +1,5 @@
 #    Log Mysteries: partial answer for Honeynet challenge
-#    Reference:
-# Reference:  http://honeynet.org/challenges/2010_5_log_mysteries  http://honeynet.org/challenges/2010_5_log_mysteries
+#    Reference: http://honeynet.org/challenges/2010_5_log_mysteries
 #    Copyright (C) 2010  Dr. Carl J. Pulley
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,8 +15,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Answer::Application.routes.draw do  
-  get "honeynet/index"
-  match "honeynet" => "honeynet#index"
-  root :to => "honeynet#index"
+class HoneynetController < ApplicationController
+  def index
+    @data = Sudo.command("")
+  end
 end

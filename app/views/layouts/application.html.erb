@@ -3,12 +3,19 @@
 <head>
   <title>Answer</title>
   <%= stylesheet_link_tag :all %>
-  <%= javascript_include_tag :defaults, "protovis-d3.2.js", "countries.js" %>
+  <%= javascript_include_tag :defaults, "protovis-d3.2.js" %>
   <%= csrf_meta_tag %>
 </head>
 <body>
 
-<%= yield %>
+	<%= yield :title %>
 
+	<%= yield :data if content_for?(:date) %>
+	
+	<% if content_for?(:note) %>
+	<h2>Description</h2>
+	
+	<%= yield :note %>
+	<% end %>
 </body>
 </html>
