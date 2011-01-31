@@ -18,5 +18,6 @@
 class HoneynetController < ApplicationController
   def index
     @data = Sudo.scoped
+    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
   end
 end
