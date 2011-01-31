@@ -6,21 +6,61 @@
 <% content_for :data do %>
 <%
 	def map_to_hash(data)
-		data.map_with_index { |d, i| { :position => i, :observed_at => d.observed_at.to_f } }
+		data.map_with_index { |d, i| { :label => d.name, :frequency => [number_with_precision(100*d.count.to_f/@data.count, :precision => 1)] } }
 	end
 -%>
 	<script>
-		var raw_data = <%=raw (map_to_hash @data.all).to_json %>;
+		var debtag_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:debtags).order(:name)).to_json %>;
+		var command_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:commands).order(:name)).to_json %>;
+		var package_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:packages).order(:name)).to_json %>;
 	</script>
 <% end %>
 
 <% content_for :note do %>
-	??
+	<h3>debtag % frequency counts vs debtag name</h3>
 	
 	<script type="text/javascript+protovis">
-		var data = raw_data.map(function(d) { ... });
+		var labels = debtag_raw_data.map(function(d) d.label);
+		var data = debtag_raw_data.map(function(d) d.frequency);
+	    var c = pv.Scale.linear(debtag_raw_data.map(function(d) d.frequency.min()).min(), debtag_raw_data.map(function(d) d.frequency.max()).max()).range("blue", "red");
 		
 		<%= render :partial => "/graph/bar.js" %>
+		
+		bar.fillStyle(function(d) c(d));
+		vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
+		vis.anchor("left").add(pv.Label).left(-150).textAngle(-Math.PI/2).text("debtag names");
+
+		vis.render();
+	</script>
+	
+	<h3>command % frequency counts vs command name</h3>
+	
+	<script type="text/javascript+protovis">
+		var labels = command_raw_data.map(function(d) d.label);
+		var data = command_raw_data.map(function(d) d.frequency);
+	    var c = pv.Scale.linear(command_raw_data.map(function(d) d.frequency.min()).min(), debtag_raw_data.map(function(d) d.frequency.max()).max()).range("blue", "red");
+		
+		<%= render :partial => "/graph/bar.js" %>
+		
+		bar.fillStyle(function(d) c(d));
+		vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
+		vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("commands");
+		
+		vis.render();
+	</script>
+	
+	<h3>package % frequency counts vs package name</h3>
+	
+	<script type="text/javascript+protovis">
+		var labels = package_raw_data.map(function(d) d.label);
+		var data = package_raw_data.map(function(d) d.frequency);
+		var c = pv.Scale.linear(package_raw_data.map(function(d) d.frequency.min()).min(), debtag_raw_data.map(function(d) d.frequency.max()).max()).range("blue", "red");
+	    
+		<%= render :partial => "/graph/bar.js" %>
+		
+		bar.fillStyle(function(d) c(d));
+		vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
+		vis.anchor("left").add(pv.Label).left(-80).textAngle(-Math.PI/2).text("package names");
 		
 		vis.render();
 	</script>

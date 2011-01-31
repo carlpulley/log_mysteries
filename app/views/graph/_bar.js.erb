@@ -6,7 +6,7 @@ var n = data.length, m = data[0].length;
 /* Sizing and scales. */
 var w = [data.length, 200].max()*5,
     h = data.length*25,
-    x = pv.Scale.linear(0, data.map(function(d){ return d.max(); }).max()).range(0, w),
+    x = pv.Scale.linear(0, 100).range(0, w),
     y = pv.Scale.ordinal(pv.range(n)).splitBanded(0, h, 4/5),
     label_width = labels.map(function(d){ return d.length; }).max();
 
@@ -14,7 +14,7 @@ var w = [data.length, 200].max()*5,
 var vis = new pv.Panel()
     .width(w)
     .height(h)
-    .bottom(20)
+    .bottom(25)
     .left(label_width*6)
     .right(10)
     .top(5);
@@ -29,13 +29,13 @@ var bar = vis.add(pv.Panel)
     .top(function() this.index * y.range().band / m)
     .height(y.range().band / m)
     .left(0)
-    .width(x)
-    .fillStyle(pv.Colors.category10().by(pv.index));
+    .width(x);
 
 /* The value label. */
-var val_label = bar.anchor("right").add(pv.Label)
-    .textStyle("white")
-    .text(function(d) d.toFixed(0) + " B");
+var val_label = bar.anchor("center").add(pv.Label)
+    .textStyle("black")
+    .left(function(d) x(d)+15)
+    .text(function(d) d+"%");
 
 /* The variable label. */
 var var_label = bar.parent.anchor("left").add(pv.Label)
@@ -47,10 +47,13 @@ var var_label = bar.parent.anchor("left").add(pv.Label)
 var xlabel = vis.add(pv.Rule)
     .data(x.ticks(5))
     .left(x)
-    .strokeStyle(function(d) d ? "rgba(255,255,255,.3)" : "#000")
+    .strokeStyle(function(d) d ? "#929292" : "#000")
   .add(pv.Rule)
     .bottom(0)
     .height(5)
     .strokeStyle("#000")
   .anchor("bottom").add(pv.Label)
     .text(x.tickFormat);
+    
+/* Y-axis. */
+vis.add(pv.Rule).bottom(5);

@@ -17,6 +17,6 @@
 
 class HoneynetController < ApplicationController
   def index
-    @data = Sudo.command("")
+    @data = Sudo.scoped
   end
 end
