@@ -8,14 +8,12 @@
 </head>
 <body>
 
-	<%= yield :title %>
+	<%= yield :title if content_for?(:title) %>
 
 	<%= yield :data if content_for?(:data) %>
 	
 	<% if content_for?(:note) %>
-	<h2>Description</h2>
-	
-	<%= yield :note %>
+		<%= yield :note %>
 	<% end %>
 </body>
 </html>

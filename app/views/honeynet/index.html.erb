@@ -1,67 +1,96 @@
-<% content_for :title do %>
-	<h1>Honeynet Challenge: <%= link_to "Log Mysteries", "http://honeynet.org/challenges/2010_5_log_mysteries" %></h1>
-	<h3>by Dr. Carl Pulley</h3>
-<% end %>
-
 <% content_for :data do %>
 <%
 	def map_to_hash(data)
-		data.map_with_index { |d, i| { :label => d.name, :frequency => [number_with_precision(100*d.count.to_f/@data.count, :precision => 1)] } }
+		data.map_with_index { |d, i| { :label => d.name, :frequency => number_with_precision(100*d.count.to_f/@data.count, :precision => 1).to_f } }
 	end
 -%>
 	<script>
 		var debtag_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:debtags).order(:name)).to_json %>;
 		var command_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:commands).order(:name)).to_json %>;
 		var package_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:packages).order(:name)).to_json %>;
+		var blue = "#897EFF"; 
+		var red = "#FF5254";
 	</script>
 <% end %>
 
 <% content_for :note do %>
-	<h3>debtag % frequency counts vs debtag name</h3>
-	
-	<script type="text/javascript+protovis">
-		var labels = debtag_raw_data.map(function(d) d.label);
-		var data = debtag_raw_data.map(function(d) d.frequency);
-	    var c = pv.Scale.linear(debtag_raw_data.map(function(d) d.frequency.min()).min(), debtag_raw_data.map(function(d) d.frequency.max()).max()).range("blue", "red");
+	<div class="tabs">
+		<ul class="menu">
+			<li id="command" class="tab current"><a class="tab">Commands</a></li>
+			<li id="package" class="tab"><a class="tab">Packages</a></li>
+			<li id="debtags" class="tab"><a class="tab">Debtags</a></li>
+		</ul>
 		
-		<%= render :partial => "/graph/bar.js" %>
+		<div id="command" class="content">
+			<h3>command frequency counts (%) vs command name</h3>
+			
+			<% if @data.empty? %>
+				<p>Plot data is empty!</p>
+			<% else %>
+				<script type="text/javascript+protovis">
+					var labels = command_raw_data.map(function(d) { return d.label; });
+					var data = command_raw_data.map(function(d) { return [d.frequency]; });
+					var min_freq = command_raw_data.map(function(d) { return d.frequency; }).min();
+					var max_freq = command_raw_data.map(function(d) { return d.frequency; }).max();
+				    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+					
+					<%= render :partial => "/graph/bar.js" %>
+					
+					bar.fillStyle(function(d) c(d));
+					vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
+					vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("commands");
+					
+					vis.render();
+				</script>
+			<% end %>
+		</div>
 		
-		bar.fillStyle(function(d) c(d));
-		vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
-		vis.anchor("left").add(pv.Label).left(-150).textAngle(-Math.PI/2).text("debtag names");
+		<div id="package" class="content">
+			<h3>package frequency counts (%) vs package name</h3>
+			
+			<% if @data.empty? %>
+				<p>Plot data is empty!</p>
+			<% else %>
+				<script type="text/javascript+protovis">
+					var labels = package_raw_data.map(function(d) { return d.label; });
+					var data = package_raw_data.map(function(d) { return [d.frequency]; });
+					var min_freq = package_raw_data.map(function(d) { return d.frequency; }).min();
+					var max_freq = package_raw_data.map(function(d) { return d.frequency; }).max();
+				    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+				    
+					<%= render :partial => "/graph/bar.js" %>
+					
+					bar.fillStyle(function(d) c(d));
+					vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
+					vis.anchor("left").add(pv.Label).left(-80).textAngle(-Math.PI/2).text("package names");
+					
+					vis.render();
+				</script>
+			<% end %>
+		</div>
 
-		vis.render();
-	</script>
-	
-	<h3>command % frequency counts vs command name</h3>
-	
-	<script type="text/javascript+protovis">
-		var labels = command_raw_data.map(function(d) d.label);
-		var data = command_raw_data.map(function(d) d.frequency);
-	    var c = pv.Scale.linear(command_raw_data.map(function(d) d.frequency.min()).min(), debtag_raw_data.map(function(d) d.frequency.max()).max()).range("blue", "red");
-		
-		<%= render :partial => "/graph/bar.js" %>
-		
-		bar.fillStyle(function(d) c(d));
-		vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
-		vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("commands");
-		
-		vis.render();
-	</script>
-	
-	<h3>package % frequency counts vs package name</h3>
-	
-	<script type="text/javascript+protovis">
-		var labels = package_raw_data.map(function(d) d.label);
-		var data = package_raw_data.map(function(d) d.frequency);
-		var c = pv.Scale.linear(package_raw_data.map(function(d) d.frequency.min()).min(), debtag_raw_data.map(function(d) d.frequency.max()).max()).range("blue", "red");
-	    
-		<%= render :partial => "/graph/bar.js" %>
-		
-		bar.fillStyle(function(d) c(d));
-		vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
-		vis.anchor("left").add(pv.Label).left(-80).textAngle(-Math.PI/2).text("package names");
-		
-		vis.render();
-	</script>
+		<div id="debtags" class="content">
+			<h3>debtag frequency counts (%) vs debtag name</h3>
+			
+			<% if @data.empty? %>
+				<p>Plot data is empty!</p>
+			<% else %>
+				<script type="text/javascript+protovis">
+					var labels = debtag_raw_data.map(function(d) { return d.label; });
+					var data = debtag_raw_data.map(function(d) { return [d.frequency]; });
+					var min_freq = debtag_raw_data.map(function(d) { return d.frequency; }).min();
+					var max_freq = debtag_raw_data.map(function(d) { return d.frequency; }).max();
+				    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+					
+					<%= render :partial => "/graph/bar.js" %>
+					
+					bar.fillStyle(function(d) c(d));
+					vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
+					vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("debtag names");
+    			
+					vis.render();
+				</script>
+			<% end %>
+		</div>
+	</div>
 <% end %>
