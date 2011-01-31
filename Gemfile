@@ -18,3 +18,6 @@ gem "shoulda"
 
 # Following gem allows data to be tagged
 gem 'acts-as-taggable-on'
+
+# Following gem is used so the user can avoid unnecessary SQL coding in ActiveRecord queries
+gem 'meta_where'
