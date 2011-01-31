@@ -10,7 +10,7 @@
 
 	<%= yield :title %>
 
-	<%= yield :data if content_for?(:date) %>
+	<%= yield :data if content_for?(:data) %>
 	
 	<% if content_for?(:note) %>
 	<h2>Description</h2>
