@@ -20,13 +20,15 @@ namespace :tag do
     task :debtags => :environment do 
       Sudo.select { |s| s.message.keys.member? :command }.each do |event|
         command = event.message[:command]
-        event.command_list << $1 if command =~ /^([^ ]+) /
+        if command =~ /^([^ ]+)/
+          event.command_list << $1 
+        end
         debian_tags = event.debian_tags
         if debian_tags != {}
           event.debtag_list << debian_tags.keys.inject(debian_tags.first.last) { |ts, k1| ts.select { |k2| debian_tags[k1].member? k2 } } # encodes: event has debtags common to *all* packages
           event.package_list << debian_tags.keys # encodes: event belongs to *some* debian_tags package
-          event.save!
         end
+        event.save!
       end
     end
   end
