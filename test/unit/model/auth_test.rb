@@ -24,15 +24,15 @@ class AuthModelTest < ActiveSupport::TestCase
       @events = Auth.scoped
     end
     
-    should "have contents matching auth.log" do
-      archive = "evidence/sanitized_log/auth.log"
+    should "have contents matching auth.log.sudo" do
+      archive = "evidence/sanitized_log/auth.log.sudo"
 
       table_contents = []
       @events.find_each do |data|
         table_contents << data.to_s
       end
       table_contents << ""
-      assert_equal "d08e509107f3e578ca22fb5c9358e75228ab869c", Digest::SHA1.hexdigest(table_contents.join("\n"))
+      assert_equal "238b80fbfcca5feffd4df46bf4f544d493b8f07e", Digest::SHA1.hexdigest(table_contents.join("\n"))
     end
     
     should "have observed_at timestamps increasing with their position within auth.log" do
