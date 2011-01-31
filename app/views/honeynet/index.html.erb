@@ -24,16 +24,16 @@
 		<div id="command" class="content">
 			<h3>command frequency counts (%) vs command name</h3>
 			
-			<% if @data.empty? %>
-				<p>Plot data is empty!</p>
-			<% else %>
-				<script type="text/javascript+protovis">
-					var labels = command_raw_data.map(function(d) { return d.label; });
-					var data = command_raw_data.map(function(d) { return [d.frequency]; });
-					var min_freq = command_raw_data.map(function(d) { return d.frequency; }).min();
-					var max_freq = command_raw_data.map(function(d) { return d.frequency; }).max();
-				    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
-					
+			<script type="text/javascript+protovis">
+				var labels = command_raw_data.map(function(d) { return d.label; });
+				var data = command_raw_data.map(function(d) { return [d.frequency]; });
+				var min_freq = command_raw_data.map(function(d) { return d.frequency; }).min();
+				var max_freq = command_raw_data.map(function(d) { return d.frequency; }).max();
+			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+				
+				if (data.length == 0) {
+					$$("div#command.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
+				} else {
 					<%= render :partial => "/graph/bar.js" %>
 					
 					bar.fillStyle(function(d) c(d));
@@ -41,23 +41,23 @@
 					vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("commands");
 					
 					vis.render();
-				</script>
-			<% end %>
+				}
+			</script>
 		</div>
 		
 		<div id="package" class="content">
 			<h3>package frequency counts (%) vs package name</h3>
 			
-			<% if @data.empty? %>
-				<p>Plot data is empty!</p>
-			<% else %>
-				<script type="text/javascript+protovis">
-					var labels = package_raw_data.map(function(d) { return d.label; });
-					var data = package_raw_data.map(function(d) { return [d.frequency]; });
-					var min_freq = package_raw_data.map(function(d) { return d.frequency; }).min();
-					var max_freq = package_raw_data.map(function(d) { return d.frequency; }).max();
-				    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
-				    
+			<script type="text/javascript+protovis">
+				var labels = package_raw_data.map(function(d) { return d.label; });
+				var data = package_raw_data.map(function(d) { return [d.frequency]; });
+				var min_freq = package_raw_data.map(function(d) { return d.frequency; }).min();
+				var max_freq = package_raw_data.map(function(d) { return d.frequency; }).max();
+			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+			    
+				if (data.length == 0) {
+					$$("div#package.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
+				} else {
 					<%= render :partial => "/graph/bar.js" %>
 					
 					bar.fillStyle(function(d) c(d));
@@ -65,32 +65,32 @@
 					vis.anchor("left").add(pv.Label).left(-80).textAngle(-Math.PI/2).text("package names");
 					
 					vis.render();
-				</script>
-			<% end %>
+				}
+			</script>
 		</div>
 
 		<div id="debtags" class="content">
 			<h3>debtag frequency counts (%) vs debtag name</h3>
 			
-			<% if @data.empty? %>
-				<p>Plot data is empty!</p>
-			<% else %>
-				<script type="text/javascript+protovis">
-					var labels = debtag_raw_data.map(function(d) { return d.label; });
-					var data = debtag_raw_data.map(function(d) { return [d.frequency]; });
-					var min_freq = debtag_raw_data.map(function(d) { return d.frequency; }).min();
-					var max_freq = debtag_raw_data.map(function(d) { return d.frequency; }).max();
-				    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
-					
+			<script type="text/javascript+protovis">
+				var labels = debtag_raw_data.map(function(d) { return d.label; });
+				var data = debtag_raw_data.map(function(d) { return [d.frequency]; });
+				var min_freq = debtag_raw_data.map(function(d) { return d.frequency; }).min();
+				var max_freq = debtag_raw_data.map(function(d) { return d.frequency; }).max();
+			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+				
+				if (data.length == 0) {
+					$$("div#debtags.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
+				} else {
 					<%= render :partial => "/graph/bar.js" %>
 					
 					bar.fillStyle(function(d) c(d));
 					vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
 					vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("debtag names");
-    			
+    		    	
 					vis.render();
-				</script>
-			<% end %>
+				}
+			</script>
 		</div>
 	</div>
 <% end %>
