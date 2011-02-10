@@ -15,16 +15,22 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class HoneynetController < ApplicationController
-  def index
-    @tags = (params[:tagged] ? params[:tagged].split(",") : Sudo.tag_counts_on(:debtags).map { |t| t.name }).sort
-    @data = Sudo.scoped
-    @data = @data.tagged_with(@tags, :any => true)
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml do
-        render :xml => @data
-      end
+require 'test_helper'
+
+class ActsAsTaggableTest < ActiveSupport::TestCase
+  context "ActsAsTaggableOn module" do
+    setup do
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
+    end
+    
+    should "have correct ActsAsTaggableOn::Tag members" do
+      tag_list = ActsAsTaggableOn::Tag.all.to_xml
+      assert_equal "d176e34520645cfbe7cff7ca72565edd741bb6e9", Digest::SHA1.hexdigest(tag_list.to_s)
+    end
+    
+    should "have correct ActsAsTaggableOn::Tagging members" do
+      tagging_list = ActsAsTaggableOn::Tagging.all.to_xml
+      assert_equal "99a8e9fdc91bf274caefcf5bc81d91b9722da7b0", Digest::SHA1.hexdigest(tagging_list.to_s)
     end
   end
 end
