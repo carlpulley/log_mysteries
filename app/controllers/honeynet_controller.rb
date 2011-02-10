@@ -17,7 +17,14 @@
 
 class HoneynetController < ApplicationController
   def index
+    @tags = (params[:tagged] ? params[:tagged].split(",") : Sudo.tag_counts_on(:debtags).map { |t| t.name }).sort
     @data = Sudo.scoped
-    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
+    @data = @data.tagged_with(@tags, :any => true)
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml do
+        render :xml => @data
+      end
+    end
   end
 end

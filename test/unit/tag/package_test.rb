@@ -24,7 +24,7 @@ class PackageTest < ActiveSupport::TestCase
     end
     
     should "have correct tagging of Sudo instances with package tagging names" do
-      package_list = Sudo.package_counts.order(:name).map { |t| [t.name, t.taggings.order(:id).map { |ts| ts.taggable.to_s }] }
+      package_list = Sudo.package_counts.order(:name).map { |t| [t.name, t.taggings.map { |ts| [ts.taggable.observed_at, ts.taggable.to_s] }.sort { |a,b| a.first <=> b.first }] }
       assert_equal "802968502f0837fe69ee93031cadd33e2a99de6d", Digest::SHA1.hexdigest(package_list.to_s)
     end
   end
