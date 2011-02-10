@@ -25,7 +25,7 @@ class CommandTest < ActiveSupport::TestCase
     
     should "have correct tagging of Sudo instances with command tagging names" do
       command_list = Sudo.command_counts.order(:name).map { |t| [t.name, t.taggings.map { |ts| [ts.taggable.observed_at, ts.taggable.to_s] }.sort { |a,b| a.first <=> b.first }] }
-      assert_equal "750b593489adbb2a72acde5d608430f3d13e388a", Digest::SHA1.hexdigest(command_list.to_s)
+      assert_equal "7f4d749c0efd152b1fedf2768900779edec41345", Digest::SHA1.hexdigest(command_list.to_s)
     end
   end
 end
