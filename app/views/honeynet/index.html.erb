@@ -1,3 +1,5 @@
+<% tag_names = [:command, :package, :debtags, :user, :pwd, :tty] %>
+
 <% content_for :data do %>
 <%
 	def map_to_hash(data)
@@ -5,9 +7,9 @@
 	end
 -%>
 	<script>
-		var debtag_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:debtags).order(:name)).to_json %>;
-		var command_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:commands).order(:name)).to_json %>;
-		var package_raw_data = <%=raw (map_to_hash @data.tag_counts_on(:packages).order(:name)).to_json %>;
+		<% tag_names.each do |item| %>
+		var <%= item %>_raw_data = <%=raw (map_to_hash @data.tag_counts_on(item).order(:name)).to_json %>;
+		<% end %>
 		var blue = "#897EFF"; 
 		var red = "#FF5254";
 	</script>
@@ -16,81 +18,35 @@
 <% content_for :note do %>
 	<div class="tabs">
 		<ul class="menu">
-			<li id="command" class="tab current"><a class="tab">Commands</a></li>
-			<li id="package" class="tab"><a class="tab">Packages</a></li>
-			<li id="debtags" class="tab"><a class="tab">Debtags</a></li>
+			<% tag_names.each do |item| %>
+			<li id="<%= item %>" class="tab<%= " current" if item == :command %>"><a class="tab"><%= item.to_s.titleize %></a></li>
+			<% end %>
 		</ul>
 		
-		<div id="command" class="content">
-			<h3>command frequency counts (%) vs command name</h3>
+		<% tag_names.each do |item| %>
+		<div id="<%= item %>" class="content">
+			<h3><%= item %> frequency counts (%) vs <%= item %> string</h3>
 			
 			<script type="text/javascript+protovis">
-				var labels = command_raw_data.map(function(d) { return d.label; });
-				var data = command_raw_data.map(function(d) { return [d.frequency]; });
-				var min_freq = command_raw_data.map(function(d) { return d.frequency; }).min();
-				var max_freq = command_raw_data.map(function(d) { return d.frequency; }).max();
+				var labels = <%= item %>_raw_data.map(function(d) { return d.label; });
+				var data = <%= item %>_raw_data.map(function(d) { return [d.frequency]; });
+				var min_freq = <%= item %>_raw_data.map(function(d) { return d.frequency; }).min();
+				var max_freq = <%= item %>_raw_data.map(function(d) { return d.frequency; }).max();
 			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
 				
 				if (data.length == 0) {
-					$$("div#command.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
+					$$("div#<%= item %>.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
 				} else {
 					<%= render :partial => "/graph/bar.js" %>
 					
 					bar.fillStyle(function(d) c(d));
 					vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
-					vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("commands");
+					vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("<%= item.to_s.pluralize %>");
 					
 					vis.render();
 				}
 			</script>
 		</div>
-		
-		<div id="package" class="content">
-			<h3>package frequency counts (%) vs package name</h3>
-			
-			<script type="text/javascript+protovis">
-				var labels = package_raw_data.map(function(d) { return d.label; });
-				var data = package_raw_data.map(function(d) { return [d.frequency]; });
-				var min_freq = package_raw_data.map(function(d) { return d.frequency; }).min();
-				var max_freq = package_raw_data.map(function(d) { return d.frequency; }).max();
-			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
-			    
-				if (data.length == 0) {
-					$$("div#package.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
-				} else {
-					<%= render :partial => "/graph/bar.js" %>
-					
-					bar.fillStyle(function(d) c(d));
-					vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
-					vis.anchor("left").add(pv.Label).left(-80).textAngle(-Math.PI/2).text("package names");
-					
-					vis.render();
-				}
-			</script>
-		</div>
-
-		<div id="debtags" class="content">
-			<h3>debtag frequency counts (%) vs debtag name</h3>
-			
-			<script type="text/javascript+protovis">
-				var labels = debtag_raw_data.map(function(d) { return d.label; });
-				var data = debtag_raw_data.map(function(d) { return [d.frequency]; });
-				var min_freq = debtag_raw_data.map(function(d) { return d.frequency; }).min();
-				var max_freq = debtag_raw_data.map(function(d) { return d.frequency; }).max();
-			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
-				
-				if (data.length == 0) {
-					$$("div#debtags.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
-				} else {
-					<%= render :partial => "/graph/bar.js" %>
-					
-					bar.fillStyle(function(d) c(d));
-					vis.anchor("bottom").add(pv.Label).textAlign("center").text("% frequency");
-					vis.anchor("left").add(pv.Label).left(-100).textAngle(-Math.PI/2).text("debtag names");
-    		    	
-					vis.render();
-				}
-			</script>
-		</div>
+		<% end %>
 	</div>
 <% end %>
