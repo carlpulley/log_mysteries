@@ -40,8 +40,12 @@
 				} else {
 					<%= render :partial => "/graph/dendrogram.js" %>
 					
-					vis.height(500).width(1000).bottom(100).top(20);
+					vis.height(500).width(700).bottom(100).left(20);
 					
+					dot.fillStyle(function(n) c(n.nodeValue));
+
+					label.text(function(n) n.lastChild ? n.nodeName : n.nodeName+" ("+n.nodeValue+"%)");
+
 					vis.render();
 				}
 			</script>
