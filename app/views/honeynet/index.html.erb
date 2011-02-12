@@ -24,6 +24,29 @@
 		</ul>
 		
 		<% tag_names.each do |item| -%>
+		<% if item == :pwds -%>
+		<div id="pwds" class="content">
+			<h3>Pwd frequency counts (%) vs pwd string</h3>
+			
+			<script type="text/javascript+protovis">
+			    var root = "";
+			    var data = pv.tree(pwds_raw_data).keys(function(d) d.label.split("/")).map();
+				var min_freq = pwds_raw_data.map(function(d) { return d.frequency; }).min();
+				var max_freq = pwds_raw_data.map(function(d) { return d.frequency; }).max();
+			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+				
+				if (data.length == 0) {
+					$$("div#pwds.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
+				} else {
+					<%= render :partial => "/graph/dendrogram.js" %>
+					
+					vis.height(500).width(1000).bottom(100).top(20);
+					
+					vis.render();
+				}
+			</script>
+		</div>		
+		<% else -%>
 		<div id="<%= item %>" class="content">
 			<h3><%= item.to_s.singularize %> frequency counts (%) vs <%= item.to_s.singularize %> string</h3>
 			
@@ -47,6 +70,7 @@
 				}
 			</script>
 		</div>
+		<% end -%>
 		<% end -%>
 	</div>
 <% end %>
