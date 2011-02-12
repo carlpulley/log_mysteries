@@ -24,8 +24,8 @@ class DebtagTest < ActiveSupport::TestCase
     end
     
     should "have correct tagging of Sudo instances with debtags tagging names" do
-      debtag_list = Sudo.debtag_counts.order(:name).map { |t| [t.name, t.taggings.map { |ts| [ts.taggable.observed_at, ts.taggable.to_s] }.sort { |a,b| a.first <=> b.first }] }
-      assert_equal "05bfb5567be36ae9e971f954dacff4dab74b61b3", Digest::SHA1.hexdigest(debtag_list.to_s)
+      debtag_list = Sudo.debtag_counts.order(:name).map { |t| [t.name.to_s, t.taggings.map { |ts| [ts.taggable.observed_at.to_i, ts.taggable.to_s] }.sort { |a,b| a.first <=> b.first }] }
+      assert_equal "83f37b0eece9638aa24a8f26ead64f1bfea6b6f3", Digest::SHA1.hexdigest(debtag_list.to_yaml)
     end
   end
 end
