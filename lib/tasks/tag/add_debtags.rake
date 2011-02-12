@@ -28,6 +28,11 @@ namespace :tag do
           event.debtag_list << debian_tags.keys.inject(debian_tags.first.last) { |ts, k1| ts.select { |k2| debian_tags[k1].member? k2 } } # encodes: event has debtags common to *all* packages
           event.package_list << debian_tags.keys # encodes: event belongs to *some* debian_tags package
         end
+        # Filtering tags
+        event.user_list << event.message[:user]
+        event.user_list << event.message[:subject]
+        event.pwd_list << event.message[:pwd]
+        event.tty_list << event.message[:tty]
         event.save!
       end
     end
