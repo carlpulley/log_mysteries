@@ -44,15 +44,54 @@
 					
 					dot.fillStyle(function(n) c(n.nodeValue));
 
-					label.text(function(n) n.lastChild ? n.nodeName : n.nodeName+" ("+n.nodeValue+"%)");
+					label.text(function(n) n.lastChild ? (n.nodeName == "" ? "/" : n.nodeName) : n.nodeName+" ("+n.nodeValue+"%)");
 
+					vis.render();
+				}
+			</script>
+		</div>		
+		<% elsif item == :users -%>
+		<div id="users" class="content">
+			<h3>Users frequency counts (%) vs users string</h3>
+			
+			<script type="text/javascript+protovis">
+			    var root = "";
+			    var data = pv.tree(users_raw_data).keys(function(d) d.label.split("/")).map();
+				var min_freq = users_raw_data.map(function(d) { return d.frequency; }).min();
+				var max_freq = users_raw_data.map(function(d) { return d.frequency; }).max();
+			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+				
+				if (data.length == 0) {
+					$$("div#users.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
+				} else {
+					var vis = new pv.Panel()
+					    .width(880)
+					    .height(310)
+					    .bottom(90);
+
+					var arc = vis.add(pv.Layout.Arc)
+					    .nodes(data.nodes)
+					    .links(data.links)
+					    .sort(function(a, b) a.group == b.group
+					        ? b.linkDegree - a.linkDegree
+					        : b.group - a.group);
+
+					var line = arc.link.add(pv.Line);
+
+					var dot = arc.node.add(pv.Dot)
+					    .size(function(d) d.linkDegree + 4)
+					    .fillStyle(c.by(function(d) d.group))
+					    .strokeStyle(function() this.fillStyle().darker());
+
+					var label = arc.label.add(pv.Label);
+					
 					vis.render();
 				}
 			</script>
 		</div>		
 		<% else -%>
 		<div id="<%= item %>" class="content">
-			<h3><%= item.to_s.singularize %> frequency counts (%) vs <%= item.to_s.singularize %> string</h3>
+			<h3><%= item.to_s.singularize.captialize %> frequency counts (%) vs <%= item.to_s.singularize %> string</h3>
 			
 			<script type="text/javascript+protovis">
 				var labels = <%= item %>_raw_data.map(function(d) { return d.label; });
