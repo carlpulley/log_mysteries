@@ -26,7 +26,7 @@
 		<% tag_names.each do |item| -%>
 		<% if item == :pwds -%>
 		<div id="pwds" class="content">
-			<h3>Pwd frequency count (%) path prefix tree</h3>
+			<h3>Pwd frequency count (%) <a href="http://en.wikipedia.org/wiki/Trie">trie</a></h3>
 			
 			<script type="text/javascript+protovis">
 			    var root = "";
@@ -52,40 +52,22 @@
 		</div>		
 		<% elsif item == :users -%>
 		<div id="users" class="content">
-			<h3>Users frequency counts (%) vs users string</h3>
+			<h3>Users frequency count (%) adjacency matrix</h3>
 			
 			<script type="text/javascript+protovis">
+				<% users = (@data.map { |d| d.message[:subject] } + @data.map { |d| d.message[:user] }).uniq.sort -%>
 			    var data = {
-					nodes: users_raw_data.map(function(d) { return { nodeName: d.label, group: 1 }; }),
-					links: []
+					nodes: <%=raw users.to_json %>,
+					links: <%=raw @data.map { |d| { :source => users.index(d.message[:subject]), :target => users.index(d.message[:user]), :value => 100*@data.select { |e| e.message[:subject] == d.message[:subject] and e.message[:user] == d.message[:user] }.count.to_f/@data.count } }.uniq.to_json %>
 				};
 				var min_freq = users_raw_data.map(function(d) { return d.frequency; }).min();
 				var max_freq = users_raw_data.map(function(d) { return d.frequency; }).max();
-			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+			    var colour = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
 				
 				if (data.length == 0) {
 					$$("div#users.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
 				} else {
-					var vis = new pv.Panel()
-					    .width(880)
-					    .height(310)
-					    .bottom(90);
-
-					var arc = vis.add(pv.Layout.Arc)
-					    .nodes(data.nodes)
-					    .links(data.links)
-					    .sort(function(a, b) a.group == b.group
-					        ? b.linkDegree - a.linkDegree
-					        : b.group - a.group);
-
-					var line = arc.link.add(pv.Line);
-
-					var dot = arc.node.add(pv.Dot)
-					    .size(function(d) d.linkDegree + 4)
-					    .fillStyle(c.by(function(d) d.group))
-					    .strokeStyle(function() this.fillStyle().darker());
-
-					var label = arc.label.add(pv.Label);
+					<%= render :partial => '/graph/matrix.js' %>
 					
 					vis.render();
 				}
