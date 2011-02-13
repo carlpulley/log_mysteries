@@ -1,15 +1,13 @@
 // WARNING NOTE: indexes here are 0 based!!
 // INPUT:
-//    root = <string>
+//    colour
 //    data = { nodes: [ { nodeName: <string>, nodeId: <integer> },.. ], links: [ { source: <integer>, target: <integer>, value: <double> },.. ] }
-
-var color = pv.Colors.category19().by(function(d) d.nodeId);
 
 var vis = new pv.Panel()
     .width(800)
-    .height(800)
-    .top(150)
-    .left(150);
+    .height(600)
+    .top(50)
+    .left(50);
 
 var layout = vis.add(pv.Layout.Matrix)
     .nodes(data.nodes)
@@ -17,11 +15,8 @@ var layout = vis.add(pv.Layout.Matrix)
     .sort(function(a, b) b.nodeId - a.nodeId);
 
 layout.link.add(pv.Bar)
-    .fillStyle(function(l) l.linkValue
-        ? ((l.targetNode.nodeId == l.sourceNode.nodeId)
-        ? color(l.sourceNode) : "#555") : "#eee")
+    .fillStyle(function(l) l.linkValue ? colour(l.linkValue) : "#eee")
     .antialias(false)
     .lineWidth(1);
 
-layout.label.add(pv.Label)
-    .textStyle(color);
+layout.label.add(pv.Label);
