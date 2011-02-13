@@ -26,7 +26,7 @@
 		<% tag_names.each do |item| -%>
 		<% if item == :pwds -%>
 		<div id="pwds" class="content">
-			<h3>Pwd frequency counts (%) vs pwd string</h3>
+			<h3>Pwd frequency count (%) path prefix tree</h3>
 			
 			<script type="text/javascript+protovis">
 			    var root = "";
@@ -44,7 +44,7 @@
 					
 					dot.fillStyle(function(n) c(n.nodeValue));
 
-					label.text(function(n) n.lastChild ? (n.nodeName == "" ? "/" : n.nodeName) : n.nodeName+" ("+n.nodeValue+"%)");
+					label.text(function(n) n.lastChild ? n.nodeName : n.nodeName+" ("+n.nodeValue+"%)");
 
 					vis.render();
 				}
@@ -55,8 +55,10 @@
 			<h3>Users frequency counts (%) vs users string</h3>
 			
 			<script type="text/javascript+protovis">
-			    var root = "";
-			    var data = pv.tree(users_raw_data).keys(function(d) d.label.split("/")).map();
+			    var data = {
+					nodes: users_raw_data.map(function(d) { return { nodeName: d.label, group: 1 }; }),
+					links: []
+				};
 				var min_freq = users_raw_data.map(function(d) { return d.frequency; }).min();
 				var max_freq = users_raw_data.map(function(d) { return d.frequency; }).max();
 			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
@@ -91,7 +93,7 @@
 		</div>		
 		<% else -%>
 		<div id="<%= item %>" class="content">
-			<h3><%= item.to_s.singularize.captialize %> frequency counts (%) vs <%= item.to_s.singularize %> string</h3>
+			<h3><%= item.to_s.singularize.capitalize %> frequency counts (%) vs <%= item.to_s.singularize %> string</h3>
 			
 			<script type="text/javascript+protovis">
 				var labels = <%= item %>_raw_data.map(function(d) { return d.label; });
