@@ -100,4 +100,35 @@
 		<% end -%>
 		<% end -%>
 	</div>
+	<p>
+		<%
+			total_sudo = @data.count
+			total_admin = @data.tagged_with(["admin::configuring", "admin::backup", "admin::file-distribution", "admin::login", "admin::monitoring", "admin::package-management", "admin::user-management"], :any=>true).count.to_f
+			total_format = @data.tagged_with(["works-with-format::html", "works-with-format::plaintext", "works-with-format::tar"], :any => true).count.to_f
+			total_accesses = @data.tagged_with(["works-with::archive", "works-with::file", "works-with::network-traffic", "works-with::software:package", "works-with::software:running", "works-with::software:source", "works-with::text"], :any=>true).count.to_f
+			total_implementations = @data.tagged_with(["implemented-in::c", "implemented-in::perl", "implemented-in::python"], :any => true).count.to_f
+			total_network = @data.tagged_with(["network::client", "network::server", "network::firewall", "network::scanner"], :any=>true).count.to_f
+			sudo_usage = @data.tagged_with(["/etc/init.d/apache2", "/usr/bin/tee", "/usr/bin/svn"], :any => true).count.to_f
+			sudo_activity = @data.tagged_with(["admin::configuring"], :any=>true).count.to_f
+			html_format = @data.tagged_with(["works-with-format::html"], :any => true).count.to_f
+			file_accesses = @data.tagged_with(["works-with::file"], :any=>true).count.to_f
+			network_client_activity = @data.tagged_with(["network::client"], :any=>true).count.to_f
+			network_server_activity = @data.tagged_with(["network::server"], :any=>true).count.to_f
+			user1_sudo_usage = @data.subject("user1").count.to_f
+			dhg_sudo_usage = @data.subject("dhg").count.to_f
+			web_path_usage = @data.pwd("/opt/software/web").count.to_f
+			www_path_usage = @data.pwd("/var/www").count.to_f
+		-%>
+
+		<b>Observations:</b>
+		<ul>
+			<li><%= number_to_percentage 100*sudo_usage/total_sudo, :precision => 1 %> of all sudo commands involve restarts of Apache2, the <a href="http://en.wikipedia.org/wiki/Tee_(command)">tee</a> command and subversion</li>
+			<li><%= number_to_percentage 100*sudo_activity/total_admin, :precision => 1 %> of administrator activity is due to configuration</li>
+			<li><%= number_to_percentage 100*html_format/total_format, :precision => 1 %> of sudo commands work with the HTML format and <%= number_to_percentage 100*file_accesses/total_accesses, :precision => 1 %> work on files</li>
+			<li><%= number_to_percentage 100*total_implementations/total_sudo, :precision => 1 %> of all sudo commands are implemented in C, Perl or Python</li>
+			<li><%= number_to_percentage 100*network_client_activity/total_network, :precision => 1 %> of network related sudo commands are clients and <%= number_to_percentage 100*network_server_activity/total_network, :precision => 1 %> are server commands</li>
+			<li><%= number_to_percentage 100*user1_sudo_usage/total_sudo, :precision => 1 %> of all sudo commands involve <code>user1</code> using <code>root</code> privileges, whilst <%= number_to_percentage 100*dhg_sudo_usage/total_sudo, :precision => 1 %> involve <code>dhg</code> (a user associated with the keywords: <code>psybnc</code> and <code>eggdrop</code> - see below)</li>
+			<li><code>/opt/software/web</code> has <%= number_to_percentage 100*web_path_usage/total_sudo, :precision => 1 %> of all sudo commands occurring within it (only <%= number_to_percentage 100*www_path_usage/total_sudo, :precision => 1 %> occur within <code>/var/www</code>)</li>
+		</ul>
+	</p>
 <% end %>

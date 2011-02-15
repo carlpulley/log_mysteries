@@ -19,8 +19,8 @@ class Sudo < Auth
   serialize :message, Hash
   
   scope :command, lambda { |cmd| where(["message like ?", "%\n:command: %#{cmd}%"]) }
-  scope :tty, lambda { |tty| where(["message like ?", "%\n:tty: %#{tty}\n%"]) }
-  scope :pwd, lambda { |pwd| where(["message like ?", "%\n:pwd: %#{pwd}%"]) }
+  scope :subject, lambda { |sub| where(["message like ?", "%\n:subject: #{sub}\n%"]) }
+  scope :pwd, lambda { |pwd| where(["message like ?", "%\n:pwd: #{pwd}%"]) }
   
   # sudo:   user1 : user NOT in sudoers ; TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/su -
   # sudo: pam_unix(sudo:session): session opened for user root by user1(uid=0)
