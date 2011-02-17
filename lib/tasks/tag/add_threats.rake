@@ -18,7 +18,7 @@
 namespace :tag do
   task :threats => :environment do 
     Sudo.select { |s| s.message.keys.member? :command }.each do |event|
-      event.tag_list << "threats" if event.message[:pwd] =~ /psybnc/ or event.message[:pwd] =~ /eggdrop/ or event.message[:subject] == "dhg"
+      event.tag_list << "threats" if event.message[:pwd] =~ /psybnc/ or event.message[:pwd] =~ /eggdrop/
       event.save!
     end
   end
