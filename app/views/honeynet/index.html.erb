@@ -2,15 +2,39 @@
 
 <% content_for :data do %>
 <%
-	def map_to_hash(data)
-		data.map_with_index { |d, i| { :label => d.name, :frequency => number_with_precision(100*d.count.to_f/@data.count, :precision => 1).to_f } }
+	def trie_keys
+		hash = {}
+		trie = ::Containers::Trie.new
+		@data.all.each do |data|
+			labels = data.message[:pwd].split("/")
+			hash["/"] = number_with_precision(100*@data.pwd("/").count.to_f/@data.count, :precision => 1).to_f if labels.empty? and not hash.keys.member? "/"
+			labels.each do |d|
+				prefix = labels[0..(labels.index(d))].join("/")
+				prefix = "/" if prefix.blank?
+				hash[prefix] = number_with_precision(100*@data.pwd(prefix).count.to_f/@data.count, :precision => 1).to_f unless hash.keys.member? prefix
+			end
+			trie.push(data.message[:pwd], hash[data.message[:pwd]])
+		end
+		[hash, trie]
+	end
+
+	def map_to_hash(data, item)
+		if item == :pwds
+			result = []
+			trie_keys.first.keys.each do |key|
+				result << { :label => key, :frequency => trie_keys.first[key] }
+			end
+		else
+			result = data.tag_counts_on(item).order(:name).map { |d| { :label => d.name, :frequency => number_with_precision(100*d.count.to_f/@data.count, :precision => 1).to_f } }
+		end
+		result
 	end
 -%>
 	<script>
 		<% tag_names.each do |item| -%>
-		var <%= item %>_raw_data = <%=raw (map_to_hash @data.tag_counts_on(item).order(:name)).to_json %>;
+		var <%= item %>_raw_data = <%=raw (map_to_hash @data, item).to_json %>;
 		<% end -%>
-		var blue = "#897EFF"; 
+		var blue = "#897EFF";
 		var red = "#FF5254";
 	</script>
 <% end %>
@@ -30,10 +54,9 @@
 			
 			<script type="text/javascript+protovis">
 			    var root = "";
-			    var data = pv.tree(pwds_raw_data).keys(function(d) d.label.split("/")).map();
-				var min_freq = pwds_raw_data.map(function(d) { return d.frequency; }).min();
-				var max_freq = pwds_raw_data.map(function(d) { return d.frequency; }).max();
-			    var c = pv.Scale.linear(min_freq == max_freq ? 0 : min_freq, max_freq).range(blue, red);
+			    var data = pv.dom(pv.tree(pwds_raw_data).keys(function(d) d.label.split("/")).map()).nodes(); 
+			var pwds_data = data;
+				var c = pv.Scale.log(0, 100).range(blue, red);
 				
 				if (data.length == 0) {
 					$$("div#pwds.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
@@ -42,9 +65,9 @@
 					
 					vis.height(500).width(700).bottom(100).left(20);
 					
-					dot.fillStyle(function(n) c(n.nodeValue));
+					dot.fillStyle(function(n) c(n.nodeValue || 0));
 
-					label.text(function(n) n.lastChild ? n.nodeName : n.nodeName+" ("+n.nodeValue+"%)");
+					label.text(function(n) n.lastChild ? (n.nodeName == "" ? "/" : n.nodeName) : n.nodeName+" ("+n.nodeValue+"%)");
 
 					vis.render();
 				}
@@ -100,4 +123,35 @@
 		<% end -%>
 		<% end -%>
 	</div>
+	<p>
+		<%
+			total_sudo = @data.count
+			total_admin = @data.tagged_with(["admin::configuring", "admin::backup", "admin::file-distribution", "admin::login", "admin::monitoring", "admin::package-management", "admin::user-management"], :any=>true).count.to_f
+			total_format = @data.tagged_with(["works-with-format::html", "works-with-format::plaintext", "works-with-format::tar"], :any => true).count.to_f
+			total_accesses = @data.tagged_with(["works-with::archive", "works-with::file", "works-with::network-traffic", "works-with::software:package", "works-with::software:running", "works-with::software:source", "works-with::text"], :any=>true).count.to_f
+			total_implementations = @data.tagged_with(["implemented-in::c", "implemented-in::perl", "implemented-in::python"], :any => true).count.to_f
+			total_network = @data.tagged_with(["network::client", "network::server", "network::firewall", "network::scanner"], :any=>true).count.to_f
+			sudo_usage = @data.tagged_with(["/etc/init.d/apache2", "/usr/bin/tee", "/usr/bin/svn"], :any => true).count.to_f
+			sudo_activity = @data.tagged_with(["admin::configuring"], :any=>true).count.to_f
+			html_format = @data.tagged_with(["works-with-format::html"], :any => true).count.to_f
+			file_accesses = @data.tagged_with(["works-with::file"], :any=>true).count.to_f
+			network_client_activity = @data.tagged_with(["network::client"], :any=>true).count.to_f
+			network_server_activity = @data.tagged_with(["network::server"], :any=>true).count.to_f
+			user1_sudo_usage = @data.subject("user1").count.to_f
+			dhg_sudo_usage = @data.subject("dhg").count.to_f
+			web_path_usage = @data.pwd("/opt/software/web").count.to_f
+			www_path_usage = @data.pwd("/var/www").count.to_f
+		-%>
+
+		<b>Observations:</b>
+		<ul>
+			<li><%= number_to_percentage 100*sudo_usage/total_sudo, :precision => 1 %> of all sudo commands involve restarts of Apache2, the <a href="http://en.wikipedia.org/wiki/Tee_(command)">tee</a> command and subversion</li>
+			<li><%= number_to_percentage 100*sudo_activity/total_admin, :precision => 1 %> of administrator activity is due to configuration</li>
+			<li><%= number_to_percentage 100*html_format/total_format, :precision => 1 %> of sudo commands work with the HTML format and <%= number_to_percentage 100*file_accesses/total_accesses, :precision => 1 %> work on files</li>
+			<li><%= number_to_percentage 100*total_implementations/total_sudo, :precision => 1 %> of all sudo commands are implemented in C, Perl or Python</li>
+			<li><%= number_to_percentage 100*network_client_activity/total_network, :precision => 1 %> of network related sudo commands are clients and <%= number_to_percentage 100*network_server_activity/total_network, :precision => 1 %> are server commands</li>
+			<li><%= number_to_percentage 100*user1_sudo_usage/total_sudo, :precision => 1 %> of all sudo commands involve <code>user1</code> using <code>root</code> privileges, whilst <%= number_to_percentage 100*dhg_sudo_usage/total_sudo, :precision => 1 %> involve <code>dhg</code> (a user associated with the keywords: <code>psybnc</code> and <code>eggdrop</code> - see below)</li>
+			<li><code>/opt/software/web</code> has <%= number_to_percentage 100*web_path_usage/total_sudo, :precision => 1 %> of all sudo commands occurring within it (only <%= number_to_percentage 100*www_path_usage/total_sudo, :precision => 1 %> occur within <code>/var/www</code>)</li>
+		</ul>
+	</p>
 <% end %>

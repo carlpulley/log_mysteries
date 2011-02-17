@@ -12,9 +12,7 @@ var vis = new pv.Panel()
     .bottom(10);
 
 var layout = vis.add(pv.Layout.Cluster)
-    .nodes(pv.dom(data)
-        .root(root)
-        .nodes())
+    .nodes(data)
     .group(true)
     .orient("left");
 

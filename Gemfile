@@ -21,3 +21,6 @@ gem 'acts-as-taggable-on'
 
 # Following gem is used so the user can avoid unnecessary SQL coding in ActiveRecord queries
 gem 'meta_where'
+
+# Following gem adds in a number of useful algorithms and data structures derived from GSoC
+gem 'algorithms'
