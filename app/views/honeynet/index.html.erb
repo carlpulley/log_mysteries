@@ -3,27 +3,29 @@
 <% content_for :data do %>
 <%
 	def trie_keys
-		hash = {}
-		trie = ::Containers::Trie.new
+		hash_compressed = {}
+		hash_full = {}
 		@data.all.each do |data|
-			labels = data.message[:pwd].split("/")
-			hash["/"] = number_with_precision(100*@data.pwd("/").count.to_f/@data.count, :precision => 1).to_f if labels.empty? and not hash.keys.member? "/"
+			path_prefix = data.message[:pwd]
+			labels = path_prefix.split("/")
 			labels.each do |d|
 				prefix = labels[0..(labels.index(d))].join("/")
 				prefix = "/" if prefix.blank?
-				hash[prefix] = number_with_precision(100*@data.pwd(prefix).count.to_f/@data.count, :precision => 1).to_f unless hash.keys.member? prefix
+				hash_full[prefix] = number_with_precision(100*@data.pwd(prefix).count.to_f/@data.count, :precision => 1).to_f unless hash_full.keys.member? prefix
 			end
-			trie.push(data.message[:pwd], hash[data.message[:pwd]])
+			hash_full[path_prefix] = number_with_precision(100*@data.pwd(path_prefix).count.to_f/@data.count, :precision => 1).to_f
+			unless hash_compressed.keys.member? path_prefix or not hash_compressed.keys.select { |k| k.index(path_prefix) == 0 }.empty?
+				key_prefixes = hash_compressed.keys.select { |k| k != path_prefix and path_prefix.index(k) == 0 }
+				key_prefixes.each { |k| hash_compressed.delete k } 
+				hash_compressed[path_prefix] = hash_full[path_prefix]
+			end
 		end
-		[hash, trie]
+		[hash_compressed, hash_full]
 	end
 
 	def map_to_hash(data, item)
 		if item == :pwds
-			result = []
-			trie_keys.first.keys.each do |key|
-				result << { :label => key, :frequency => trie_keys.first[key] }
-			end
+			result = trie_keys.first.map { |k,v| { :label => k, :frequency => v } }
 		else
 			result = data.tag_counts_on(item).order(:name).map { |d| { :label => d.name, :frequency => number_with_precision(100*d.count.to_f/@data.count, :precision => 1).to_f } }
 		end
@@ -33,6 +35,9 @@
 	<script>
 		<% tag_names.each do |item| -%>
 		var <%= item %>_raw_data = <%=raw (map_to_hash @data, item).to_json %>;
+		<% if item == :pwds -%>
+		var pwds_full_raw_data = <%=raw trie_keys.last.map { |k,v| { :label => k, :frequency => v } }.to_json %>;
+		<% end -%>
 		<% end -%>
 		var blue = "#897EFF";
 		var red = "#FF5254";
@@ -50,13 +55,25 @@
 		<% tag_names.each do |item| -%>
 		<% if item == :pwds -%>
 		<div id="pwds" class="content">
-			<h3>Pwd frequency count (%) <a href="http://en.wikipedia.org/wiki/Trie">trie</a></h3>
+			<h3>Pwd prefix path tree (node colour is % frequency count on a logarithm scale)</h3>
 			
 			<script type="text/javascript+protovis">
 			    var root = "";
-			    var data = pv.dom(pv.tree(pwds_raw_data).keys(function(d) d.label.split("/")).map()).nodes(); 
-			var pwds_data = data;
-				var c = pv.Scale.log(0, 100).range(blue, red);
+			    var pwds_data = pv.dom(pv.tree(pwds_raw_data).keys(function(d) d.label.split("/")).value(function(d) d.frequency).map()).nodes(); 
+				<% # FIXME: surely there is a better way of building up our tree than this!? -%>
+				function absolute_path(d) {
+					var result = [];
+					var ptr = d;
+					do {
+						result.push(ptr.nodeName);
+					} while(ptr = ptr.parentNode);
+					result.reverse();
+					var result_path = result.compact().join("/");
+					return result_path == "" ? "/" : result_path;
+				}
+				var data = pwds_data.map(function(d) { if (pwds_data.first() != d) { d.nodeValue = (d.nodeValue || pwds_full_raw_data.select(function(x) { return x.label == absolute_path(d); }).first().frequency); }; return d; } );
+				var min_freq = pwds_full_raw_data.map(function(d) { return d.frequency; }).min();
+				var c = pv.Scale.log(min_freq, 100).range(blue, red);
 				
 				if (data.length == 0) {
 					$$("div#pwds.content").each(function(e) e.insert("<p>Plot data is empty!</p>"));
@@ -75,7 +92,7 @@
 		</div>		
 		<% elsif item == :users -%>
 		<div id="users" class="content">
-			<h3>Users frequency count (%) adjacency matrix</h3>
+			<h3>Users adjacency matrix (colour is % frequency count on a linear scale)</h3>
 			
 			<script type="text/javascript+protovis">
 				<% users = (@data.map { |d| d.message[:subject] } + @data.map { |d| d.message[:user] }).uniq.sort -%>
