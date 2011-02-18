@@ -12,6 +12,7 @@
 <div id='events_<%= eid %>' class='events timeline'>
 <% timeline.events.each do |line| -%>
 	<div id='<%= line[:type] %><%= line[:id] %>' class='event' observed_at='<%= line[:observed_at] %>'><%= line[:event] %></div>
+	<% # TODO: list timeline tags that event has -%>
 <% end -%>
 </div>
 <script>
