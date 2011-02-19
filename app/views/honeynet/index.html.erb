@@ -2,10 +2,14 @@
 	<h3>Timeline</h3>
 
 	<% timeline1 = ApplicationHelper::Timeline.new %>
+	
+	<% admin_tags = ["admin::backup", "admin::configuring", "admin::file-distribution", "admin::login", "admin::monitoring", "admin::package-management", "admin::user-management"] -%>
+	<% network_tags = ["network::client", "network::firewall", "network::scanner", "network::server"] -%>
+	<% security_tags = ["security::authentication", "security::cryptography", "security::firewall", "security::integrity"] -%>
 
-	<% ["admin::backup", "admin::configuring", "admin::file-distribution", "admin::login", "admin::monitoring", "admin::package-management", "admin::user-management"].each { |t| timeline1.add_event(t, Sudo.tagged_with(t)) } %>
-	<% ["network::client", "network::firewall", "network::scanner", "network::server"].each { |t| timeline1.add_event(t, Sudo.tagged_with(t)) } %>
-	<% ["security::authentication", "security::cryptography", "security::firewall", "security::integrity"].each { |t| timeline1.add_event(t, Sudo.tagged_with(t)) } %>
+	<% admin_tags.each { |t| timeline1.add_event(t, Sudo.tagged_with(t)) } %>
+	<% network_tags.each { |t| timeline1.add_event(t, Sudo.tagged_with(t)) } %>
+	<% security_tags.each { |t| timeline1.add_event(t, Sudo.tagged_with(t)) } %>
 
-	<%= render :partial => '/graph/timeline', :object => timeline1 %>
+	<%= render :partial => '/graph/timeline', :object => timeline1, :locals => { :tags => admin_tags.concat(network_tags).concat(security_tags) } %>
 <% end %>

@@ -1,0 +1,1 @@
+<%= event.to_s %> <b>tags:</b> <%= tags.select { |t| event.debtag_list.member?(t) }.join(", ") %>
