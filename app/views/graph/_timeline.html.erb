@@ -1,7 +1,7 @@
 <% eid = (rand*(10**17)).to_i -%>
 <script type="text/javascript+protovis">
 	var data = <%=raw timeline.data.to_json %>;
-	var events = <%=raw timeline.events.map { |d| { :observed_at => d[:observed_at], :id => d[:id], :type => d[:type] } }.to_json %>;
+	var events = <%=raw timeline.events.map { |d| { :observed_at => d.observed_at.to_i, :id => d.id, :type => d.class.table_name } }.to_json %>;
 	var events_id = "events_<%= eid %>";
 	
 	<%= render :partial => '/graph/timeline.js' %>
@@ -10,9 +10,8 @@
 	var vis_<%= eid %> = vis;
 </script>
 <div id='events_<%= eid %>' class='events timeline'>
-<% timeline.events.each do |line| -%>
-	<div id='<%= line[:type] %><%= line[:id] %>' class='event' observed_at='<%= line[:observed_at] %>'><%= line[:event] %></div>
-	<% # TODO: list timeline tags that event has -%>
+<% timeline.events.each do |event| -%>
+	<div id='<%= event.class.table_name %><%= event.id %>' class='event' observed_at='<%= event.observed_at.to_i %>'><%= render :partial => 'event', :object => event, :locals => { :tags => tags } %></div>
 <% end -%>
 </div>
 <script>
@@ -36,10 +35,10 @@
 			}
 		});
 	});
-	<% timeline.events.each do |line| -%>
-	$("events_<%= eid %>").down("#<%= line[:type] %><%= line[:id] %>").observe('dblclick', function(event) {
-		vis_<%= eid %>.i(dates(<%= line[:observed_at] %>));
-		$("events_<%= eid %>").fire("timeline:position", { 'observed_at': <%= line[:observed_at] %>, 'event_type': "<%= line[:type] %>", 'event_id': <%= line[:id] %> });
+	<% timeline.events.each do |event| -%>
+	$("events_<%= eid %>").down("#<%= event.class.table_name %><%= event.id %>").observe('dblclick', function(event) {
+		vis_<%= eid %>.i(dates(<%= event.observed_at.to_i %>));
+		$("events_<%= eid %>").fire("timeline:position", { 'observed_at': <%= event.observed_at.to_i %>, 'event_type': "<%= event.class.table_name %>", 'event_id': <%= event.id %> });
         vis_<%= eid %>.render();
 	});
 	<% end -%>

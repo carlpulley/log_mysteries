@@ -30,11 +30,11 @@ module ApplicationHelper
       else
         @data << { :label => label, :timeline => scope.order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f, :event_id => d.id, :event_type => d.class.table_name } } }
       end
-      @events << scope.all.map { |d| { :observed_at => d.observed_at.to_f, :id => d.id, :type => d.class.table_name, :event => d.to_s } }
+      @events.concat(scope.all).uniq
     end
     
     def events
-      @events.inject([]) { |t,h| t+h }.uniq.sort { |a,b| a[:observed_at] <=> b[:observed_at] }
+      @events.sort { |a,b| a.observed_at.to_i <=> b.observed_at.to_i }
     end
   end
 end
