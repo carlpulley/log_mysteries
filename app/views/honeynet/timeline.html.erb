@@ -1,0 +1,25 @@
+<% content_for :note do %>
+	<% admin_tags = ["admin::backup", "admin::configuring", "admin::file-distribution", "admin::login", "admin::monitoring", "admin::package-management", "admin::user-management"] -%>
+	<% network_tags = ["network::client", "network::firewall", "network::scanner", "network::server"] -%>
+	<% security_tags = ["security::authentication", "security::cryptography", "security::firewall", "security::integrity"] -%>
+	<% all_tags = admin_tags + network_tags + security_tags -%>
+
+	<h3>Timeline of admin::*, network::* and security::* debtag events</h3>
+
+	<% debtag_timeline = ApplicationHelper::Timeline.new -%>
+	
+	<% admin_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) unless @data.tagged_with(t).empty? } -%>
+	<% network_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) unless @data.tagged_with(t).empty? } -%>
+	<% security_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) unless @data.tagged_with(t).empty? } -%>
+
+	<%= render :partial => '/graph/timeline', :object => debtag_timeline, :locals => { :tags => all_tags } %>
+	
+	<p>
+	<b>Usage Notes:</b>
+	<ul>
+		<li>timeline cursor follows mouse (click to detach or reattach cursor to mouse when over the timeline)</li>
+		<li>double click on a viewed log event to snap timeline cursor to that position</li>
+		<li>log events are highlighted red when they are within 10 minutes of the timeline cursor position.</li>
+	</ul>
+	</p>
+<% end %>

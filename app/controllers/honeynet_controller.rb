@@ -16,8 +16,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class HoneynetController < ApplicationController
-  def index
+  def timeline
     @data = Sudo.command("")
+    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml do
+        render :xml => @data
+      end
+    end
+  end
+  
+  def threats
+    @data = Sudo.tagged_with("threats")
     @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
     respond_to do |format|
       format.html # index.html.erb

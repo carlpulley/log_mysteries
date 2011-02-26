@@ -1,1 +1,16 @@
-<%= event.to_s %> <b>package:</b> <%= event.package_list.join(", ") %>; <b>tags:</b> <%= tags.select { |t| event.debtag_list.member?(t) }.join(", ") %>
+<div class="date">
+	<%= event.observed_at %>
+</div>
+<div class="prompt">
+	<%= event.host %>:<%= event.message[:pwd] %> [<%= event.message[:subject] %> on <%= event.message[:tty] %>]$ sudo <%= event.message[:command] %>
+</div>
+<div class="package tags">
+	<% event.package_list.each do |t| -%>
+	<div class='tag'><%= t %></div>
+	<% end -%>
+</div>
+<div class="debtag tags"> 
+	<% tags.select { |t| event.debtag_list.member?(t) }.each do |t| -%>
+	<div class='tag'><%= t %></div>
+	<% end -%>
+</div>

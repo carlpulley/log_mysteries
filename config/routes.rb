@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Answer::Application.routes.draw do  
-  get "honeynet/index"
-  match "honeynet" => "honeynet#index"
-  root :to => "honeynet#index"
+  get "honeynet/timeline"
+  get "honeynet/threats"
+  root :to => "honeynet#timeline"
 end
