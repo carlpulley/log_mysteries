@@ -18,6 +18,6 @@
 		<% end -%>
 	</div>
 	<div class="date">
-		<%= event.observed_at %>
+		<%= event.observed_at.in_time_zone("UTC").strftime("%d/%b/%y %H:%M:%S") %>
 	</div>
 </div>
