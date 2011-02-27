@@ -17,8 +17,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Answer::Application.routes.draw do  
-  get "honeynet/basic"
+  get "honeynet/url_versions"
+  get "honeynet/url_tree"
   get "honeynet/easy_google_syntax_highlighter"
   get "honeynet/google_syntax_highlighter"
-  root :to => "honeynet#basic"
+  root :to => "honeynet#url_versions"
 end
