@@ -1,16 +1,23 @@
-<div class="date">
-	<%= event.observed_at %>
+<div class="info">
+	<div class="prompt">
+		<div class="host"><%= event.host %>:</div><div class="pwd"><%= event.message[:pwd] %></div> [<%= event.message[:subject] %> on <%= event.message[:tty] %>]$
+	</div>
+	<div class="command">
+		sudo <%= event.message[:command] %>
+	</div>
 </div>
-<div class="prompt">
-	<%= event.host %>:<%= event.message[:pwd] %> [<%= event.message[:subject] %> on <%= event.message[:tty] %>]$ sudo <%= event.message[:command] %>
-</div>
-<div class="package tags">
-	<% event.package_list.each do |t| -%>
-	<div class='tag'><%= t %></div>
-	<% end -%>
-</div>
-<div class="debtag tags"> 
-	<% tags.select { |t| event.debtag_list.member?(t) }.each do |t| -%>
-	<div class='tag'><%= t %></div>
-	<% end -%>
+<div class="metainfo">
+	<div class="debtags"> 
+		<% tags.select { |t| event.debtag_list.member?(t) }.each do |t| -%>
+		<div class='tag'><%= t %></div>
+		<% end -%>
+	</div>
+	<div class="package">
+		<% event.package_list.each do |t| -%>
+		<div class='tag'><%= t %></div>
+		<% end -%>
+	</div>
+	<div class="date">
+		<%= event.observed_at %>
+	</div>
 </div>
