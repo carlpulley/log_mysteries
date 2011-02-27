@@ -15,15 +15,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class ArchiveContent < ActiveRecord::Base
-  include ActionView::Helpers::NumberHelper
-
+class Match < ActiveRecord::Base
   acts_as_taggable_on :tags
   
-  has_many :matches
-  has_many :apache_accesses, :through => :matches
+  scope :file, lambda { includes(:archive_content).where('archive_contents.directory' => false) }
+  scope :type, lambda { |nm| nm == "easy-google-syntax-highlighter" ? where(false) : includes([:apache_access, :archive_content]).joins(["left outer join taggings on apache_accesses.id = taggings.tagger_id and taggings.tagger_type = 'ApacheAccess' and taggings.tag_id = #{ActsAsTaggableOn::Tag.find_by_name(nm).id}"]).where('archive_contents.type' => nm.titleize.split(" ").join("")) }
   
-  def to_s
-    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %z")} #{name} #{number_to_human_size(size)}"
-  end
+  # TODO: need to rename this association and make it polymorphic (archive_content, ip_address, etc.)
+  belongs_to :archive_content
+  belongs_to :apache_access
 end

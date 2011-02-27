@@ -16,8 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class HoneynetController < ApplicationController
-  def index
-    @data = Sudo.command("")
+  def basic
+    @data = ApacheAccess.status(200).get
     @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
     respond_to do |format|
       format.html # index.html.erb

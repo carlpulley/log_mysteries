@@ -15,15 +15,25 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class ArchiveContent < ActiveRecord::Base
-  include ActionView::Helpers::NumberHelper
+require 'test_helper'
 
-  acts_as_taggable_on :tags
-  
-  has_many :matches
-  has_many :apache_accesses, :through => :matches
-  
-  def to_s
-    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %z")} #{name} #{number_to_human_size(size)}"
+class EasyGoogleSyntaxHighlighterTest < ActiveSupport::TestCase
+  context "easy-google-syntax-highlighter.zip" do
+    setup do
+      @auth = "evidence/easy-google-syntax-highlighter.zip"
+    end
+    
+    should "be extracted" do
+      assert FileTest.file?(@auth)
+    end
+    
+    should "have a valid SHA1" do
+      # NOTE: multiple hashes are possible here - this appears to be related to a CDN issuing hashed variants of the archive?
+      assert ["42da4aed8218948edebf3dbe1ed265c44f31ab39", "c854935a85eda6da91d647c654ffd3cc4f2ea53e"].member?(Digest::SHA1.hexdigest(open(@auth, "r").read))
+    end
+    
+    should "have the correct file type" do
+      assert_match "Zip archive data", `file #{@auth}`
+    end
   end
 end
