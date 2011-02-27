@@ -12,13 +12,13 @@
 <% end %>
 
 <% content_for :note do %>
-	<p>Examination of the <%= github_link "lib/tasks/apache_access/tag_versions.rake", "ver" %> parameter string for log entries tagged with <%= link_to "google-syntax-highlighter", "/research/by?tagged=google-syntax-highlighter,version" %> does not reveal anything regarding this plugin's version number.</p>
+	<p>Examination of the ver parameter string for log entries tagged with <%= link_to "google-syntax-highlighter", "/research/by?tagged=google-syntax-highlighter,version" %> does not reveal anything regarding this plugin's version number.</p>
 	
 	<p>By Googling with the keywords <%= link_to "wordpress plugin google-syntax-highlighter", "http://google.co.uk/search?q=wordpress+plugin+google-syntax-highlighter" %>, we are able to locate the <%= link_to "Easy Google Syntax Highlighter", "http://wordpress.org/extend/plugins/easy-google-syntax-highlighter/" %> plugin.</p>
 	
 	<p>According to the <%= link_to "Easy Google Syntax Highlighter", "http://wordpress.org/extend/plugins/easy-google-syntax-highlighter/" %> plugin web page, this plugin was last updated on the 22<sup>nd</sup> October 2009. As a result, we are led to believe that this plugin is probably at version 1.2.1 since all our ApacheAccess events occur with the logged year dates: <%= ApacheAccess.all.map { |d| d.observed_at.year }.uniq.join("; ") %>.</p>
 	
-	<p><%= github_link "lib/tasks/easy_google_syntax_highlighter.rake", "Downloading" %> (<%= github_link "test/unit/easy_google_syntax_highlighter_test.rb", "verification" %>) version 1.2.1 of Easy Google Syntax Highlighter then allows us to match (see <%= github_link "lib/tasks/archive/add_url_names.rake" %> and <%= github_link "lib/tasks/archive/add_url_basenames.rake" %>) (<%= github_link "test/unit/csv/report_google_analyticator_test.rb", "verification" %>) the contents of the resulting archive against instances of the ApacheAccess model.</p>
+	<p>Downloading version 1.2.1 of Easy Google Syntax Highlighter then allows us to match the contents of the resulting archive against instances of the ApacheAccess model.</p>
 	
 	<p>This archive is found to contain the following information within its index:
 	<pre>

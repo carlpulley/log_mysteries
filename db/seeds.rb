@@ -32,5 +32,5 @@ Rake::Task["tag:events:wordpress:plugins"].invoke
 
 # Build ArchiveContent and ApacheAccess relationships
 
-#Rake::Task["add:names:url"].invoke
-#Rake::Task["add:names:url:basename"].invoke
+Rake::Task["build:names:url"].invoke
+Rake::Task["build:names:url:basename"].invoke
