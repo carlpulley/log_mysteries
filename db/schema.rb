@@ -10,7 +10,31 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101025103015) do
+ActiveRecord::Schema.define(:version => 20101031154211) do
+
+  create_table "apache_accesses", :force => true do |t|
+    t.string   "remote"
+    t.string   "host"
+    t.string   "user"
+    t.string   "http_method"
+    t.string   "http_url"
+    t.string   "http_version"
+    t.integer  "result"
+    t.integer  "bytes"
+    t.string   "referer"
+    t.string   "user_agent"
+    t.string   "unknown"
+    t.string   "local"
+    t.integer  "timestamp"
+    t.integer  "pid"
+    t.integer  "counter"
+    t.integer  "thread_index"
+    t.integer  "processing_time"
+    t.datetime "observed_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "archive_content_id"
+  end
 
   create_table "archive_contents", :force => true do |t|
     t.string   "type"
@@ -33,6 +57,13 @@ ActiveRecord::Schema.define(:version => 20101025103015) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "state"
+  end
+
+  create_table "matches", :force => true do |t|
+    t.integer  "archive_content_id"
+    t.integer  "apache_access_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "taggings", :force => true do |t|

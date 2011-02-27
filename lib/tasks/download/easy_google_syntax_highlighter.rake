@@ -15,15 +15,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class ArchiveContent < ActiveRecord::Base
-  include ActionView::Helpers::NumberHelper
-
-  acts_as_taggable_on :tags
-  
-  has_many :matches
-  has_many :apache_accesses, :through => :matches
-  
-  def to_s
-    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %z")} #{name} #{number_to_human_size(size)}"
+namespace :download do
+  task :easy_google_syntax_highlighter => :environment do
+    archive = "evidence/easy-google-syntax-highlighter.zip"
+    
+    puts `curl http://downloads.wordpress.org/plugin/easy-google-syntax-highlighter.zip -o #{archive}` unless FileTest.file?(archive)
+    
+    `unzip -l #{archive}`.split("\n").map do |d| 
+      EasyGoogleSyntaxHighlighter.create!({ :archive => archive, :name => $3, :observed_at => DateTime.strptime($2, "%Y-%m-%d %H:%M"), :size => $1.to_i, :directory => ($4 == '/') }) if d =~ /^\s*(\d+)\s+([\d\-]+\s+[\d:]+)\s+(easy\-google\-syntax\-highlighter.*?)(\/?)$/
+    end
   end
 end

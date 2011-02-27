@@ -15,15 +15,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class ArchiveContent < ActiveRecord::Base
-  include ActionView::Helpers::NumberHelper
-
-  acts_as_taggable_on :tags
-  
-  has_many :matches
-  has_many :apache_accesses, :through => :matches
-  
-  def to_s
-    "#{observed_at.in_time_zone('Pacific Time (US & Canada)').strftime("%d/%b/%Y %H:%M:%S %z")} #{name} #{number_to_human_size(size)}"
+namespace :extract do
+  task :www_access => :environment do
+    archive = "sanitized_log/apache2/www-access.log"
+    
+    puts `unzip -d evidence evidence/sanitized_log.zip #{archive}` unless FileTest.file?("evidence/#{archive}")
+    
+    open("evidence/#{archive}", "r").each do |line|
+      unless ApacheAccess.create(ApacheAccess.parse_log_line(line).merge({ :name => "www-access.log" }))
+        puts "Skipping line: #{line}"
+      end
+    end
   end
 end
