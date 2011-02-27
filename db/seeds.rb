@@ -26,9 +26,9 @@ Rake::Task["download:easy_google_syntax_highlighter"].invoke
 
 # Tag events in the ApacheAccess model
 
-#Rake::Task["tag:events:wordpress"].invoke
-#Rake::Task["tag:events:wordpress:version"].invoke
-#Rake::Task["tag:events:wordpress:plugins"].invoke
+Rake::Task["tag:events:wordpress"].invoke
+Rake::Task["tag:events:wordpress:version"].invoke
+Rake::Task["tag:events:wordpress:plugins"].invoke
 
 # Build ArchiveContent and ApacheAccess relationships
 

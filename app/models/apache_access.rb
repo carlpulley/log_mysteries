@@ -22,6 +22,9 @@ class ApacheAccess < ActiveRecord::Base
   has_many :archive_contents, :through => :matches
   
   scope :get, lambda { where(:http_method => 'GET') }
+  scope :url, lambda { |url| where(["http_url like ?", "#{url}%"]) }
+  scope :ip_address, lambda { |addr| where(["remote like ?", "#{addr}%"]) }
+  scope :user_agent, lambda { |agent| where(agent == "-" ? ["user_agent like '-'"] : ["user_agent like ?", "%#{agent}%"]) }
   scope :status, lambda { |code| where(:result => code) }
 
   # NOTES:
