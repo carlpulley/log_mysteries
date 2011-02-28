@@ -1,1 +1,0 @@
-<%= event.to_s %> <b>package:</b> <%= event.package_list.join(", ") %>; <b>tags:</b> <%= tags.select { |t| event.debtag_list.member?(t) }.join(", ") %>
