@@ -17,7 +17,7 @@
 
 class HoneynetController < ApplicationController
   def url_tree
-    @data = ApacheAccess.scoped
+    @data = ApacheAccess.status(200).get
     @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
     respond_to do |format|
       format.html # index.html.erb
