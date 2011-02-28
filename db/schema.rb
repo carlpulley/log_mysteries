@@ -34,7 +34,6 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
-    t.integer  "archive_content_id"
   end
 
   create_table "archive_contents", :force => true do |t|

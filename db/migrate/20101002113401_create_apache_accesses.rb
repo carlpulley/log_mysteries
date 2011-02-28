@@ -19,6 +19,7 @@ class CreateApacheAccesses < ActiveRecord::Migration
       t.integer :thread_index
       t.integer :processing_time
       t.datetime :observed_at
+      t.string :name
 
       t.timestamps
     end
