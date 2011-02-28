@@ -25,7 +25,7 @@ class ApacheAccessTest < ActiveSupport::TestCase
     
     should "have correct tagging of ApacheAccess instances with 'tag' tagging names" do
       tag_list = ApacheAccess.tag_counts.order(:name).map { |t| [t.name.to_s, t.taggings.map { |ts| [ts.taggable.observed_at.to_i, ts.taggable.to_s] }.sort { |a,b| a.first <=> b.first }] }
-      assert_equal "34b95dfe5ca71bcb2e4e92743275ac7262292f9e", Digest::SHA1.hexdigest(tag_list.to_yaml)
+      assert_equal "a79aec9514388c48e777ce13158dddffaed4e4cb", Digest::SHA1.hexdigest(tag_list.to_yaml)
     end
   end
 end
