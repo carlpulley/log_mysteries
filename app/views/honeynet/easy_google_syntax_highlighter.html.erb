@@ -5,14 +5,12 @@
 	end
 -%>
 	<script>
-		var raw_data = <%=raw (map_to_hash @data).to_json %>;
-		var raw_full_data = <%=raw (map_to_hash @data).select { |d| not d[:partial_match] }.to_json %>;
 		var raw_partial_data = <%=raw (map_to_hash @data).select { |d| d[:partial_match] }.to_json %>;
 	</script>
 <% end %>
 
 <% content_for :note do %>
-	<h2>Partial Matching: plugin file and URL file (file names) vs. file size (bytes)</h2>
+	<h2>Partial Matching (on basename): plugin file and URL file (file names) vs. file size (bytes)</h2>
 	
 	<script type="text/javascript+protovis">
 		var labels = raw_partial_data.map(function(d) d.request_method+" "+d.request_name+": "+d.request_status+" =?= "+d.archive_name);
