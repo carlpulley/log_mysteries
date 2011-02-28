@@ -19,9 +19,8 @@ class Match < ActiveRecord::Base
   acts_as_taggable_on :tags
   
   scope :file, lambda { includes(:archive_content).where('archive_contents.directory' => false) }
-  scope :type, lambda { |nm| nm == "easy-google-syntax-highlighter" ? where(false) : includes([:apache_access, :archive_content]).joins(["left outer join taggings on apache_accesses.id = taggings.tagger_id and taggings.tagger_type = 'ApacheAccess' and taggings.tag_id = #{ActsAsTaggableOn::Tag.find_by_name(nm).id}"]).where('archive_contents.type' => nm.titleize.split(" ").join("")) }
+  scope :type, lambda { |nm| joins([:archive_content, {:apache_access => {:taggings => :tag}}]).where('tags.name' => (nm == "easy-google-syntax-highlighter" ? "google-syntax-highlighter" : nm)).where('archive_contents.type' => nm.titleize.split(" ").join("")) }
   
-  # TODO: need to rename this association and make it polymorphic (archive_content, ip_address, etc.)
   belongs_to :archive_content
   belongs_to :apache_access
 end
