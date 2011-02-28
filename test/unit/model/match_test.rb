@@ -15,12 +15,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class Match < ActiveRecord::Base
-  acts_as_taggable_on :tags
-  
-  scope :file, lambda { includes(:archive_content).where('archive_contents.directory' => false) }
-  scope :type, lambda { |nm| joins([:archive_content, {:apache_access => {:taggings => :tag}}]).where('tags.name' => (nm == "easy-google-syntax-highlighter" ? "google-syntax-highlighter" : nm), 'archive_contents.type' => nm.titleize.split(" ").join("")) }
-  
-  belongs_to :archive_content
-  belongs_to :apache_access
+require 'test_helper'
+
+class MatchTest < ActiveSupport::TestCase
+  context "Match model" do
+    setup do
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations["development"])
+    end
+    
+    should "have Match instances correctly pairing ApacheAccess and ArchiveContent instances" do
+      tag_list = ApacheAccess.tag_counts.order(:name).map { |t| [t.name.to_s, t.taggings.map { |ts| [ts.taggable.observed_at.to_i, ts.taggable.to_s] }.sort { |a,b| a.first <=> b.first }] }
+      assert_equal "a79aec9514388c48e777ce13158dddffaed4e4cb", Digest::SHA1.hexdigest(tag_list.to_yaml)
+    end
+  end
 end
