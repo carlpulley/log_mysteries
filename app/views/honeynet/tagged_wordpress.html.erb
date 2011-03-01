@@ -1,0 +1,3 @@
+<% content_for :note do %>
+	<%= render :partial => 'data', :object => @data.order(:observed_at).all %>
+<% end %>

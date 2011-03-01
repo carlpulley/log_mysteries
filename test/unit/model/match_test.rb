@@ -24,7 +24,7 @@ class MatchTest < ActiveSupport::TestCase
     end
     
     should "have Match instances correctly pairing ApacheAccess and ArchiveContent instances" do
-      matches = Match.order('apache_accesses.observed_at').all.map { |m| [m.apache_access.to_s, m.archive_content.to_s] }
+      matches = Match.order(:apache_accesses => :observed_at).all.map { |m| [m.apache_access.to_s, m.archive_content.to_s] }
       assert_equal "a79aec9514388c48e777ce13158dddffaed4e4cb", Digest::SHA1.hexdigest(matches.to_yaml)
     end
   end

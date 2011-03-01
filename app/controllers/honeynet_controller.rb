@@ -59,4 +59,26 @@ class HoneynetController < ApplicationController
       end
     end
   end
+  
+  def tagged_wordpress
+    @data = ApacheAccess.tagged_with("wordpress")
+    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml do
+        render :xml => @data
+      end
+    end
+  end
+  
+  def tagged_version
+    @data = ApacheAccess.tagged_with("version")
+    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml do
+        render :xml => @data
+      end
+    end
+  end
 end

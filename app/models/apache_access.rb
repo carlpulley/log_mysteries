@@ -47,7 +47,7 @@ class ApacheAccess < ActiveRecord::Base
   end
   
   def to_html(max_bytes, max_processing_time)
-    "#{observed_time "%d/%b/%Y:%H:%M:%S %z"} <script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{max_bytes}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{max_processing_time}).render();</script> #{counter} #{pid} #{thread_index} #{referer == '-' ? http_method : "#{referer} -> #{http_method}"} #{http_url}"
+    "<script type=\"text/javascript+protovis\">sparkcolour(#{result.to_json}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{bytes.to_json}, #{max_bytes}).render();</script> <script type=\"text/javascript+protovis\">sparklength(#{processing_time.to_json}, #{max_processing_time}).render();</script> <div class='event tag'>#{pid}</div> <div class='event tag'>#{thread_index}</div> #{referer == '-' ? http_method : "#{referer} -> #{http_method}"} #{http_url} <div class='event metainfo'><div class=\"date\">#{observed_at.in_time_zone("UTC").strftime("%d/%b/%y %H:%M:%S")}</div></div>"
   end
   
   def self.timestamp(unknown)
