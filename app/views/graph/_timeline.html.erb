@@ -1,4 +1,5 @@
 <% eid = (rand*(10**17)).to_i -%>
+<% tags ||= [] -%>
 <script type="text/javascript+protovis">
 	var data = <%=raw timeline.data.to_json %>;
 	var events = <%=raw timeline.events.map { |d| { :observed_at => d.observed_at.to_i, :id => d.id, :type => d.class.table_name } }.to_json %>;

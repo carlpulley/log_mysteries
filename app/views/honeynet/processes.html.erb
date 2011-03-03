@@ -1,0 +1,23 @@
+<% content_for :data do %>
+<%
+	def map_to_hash(data)
+	  data.map { |d| { :pid => d.pid, :observed_at => d.observed_at.to_f, :thread_index => (d.thread_index || 0), :counter => d.counter } }
+	end
+-%>
+	<script>
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
+	</script>
+<% end %>
+
+<% content_for :note do %>
+	<script type="text/javascript+protovis">
+		var data = raw_data.map(function(d) { h = {}; h['x'] = d.observed_at; h['y'] = d.pid; h['z'] = d.observed_at; return h; });
+
+		<%= render :partial => '/graph/scatter.js' %>
+
+		xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
+		dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
+
+		vis.render();
+	</script>
+<% end %>

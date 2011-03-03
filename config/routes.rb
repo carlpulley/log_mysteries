@@ -17,11 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Answer::Application.routes.draw do  
-  get "honeynet/url_versions"
-  get "honeynet/url_tree"
-  get "honeynet/easy_google_syntax_highlighter"
-  get "honeynet/google_syntax_highlighter"
-  get "honeynet/tagged_wordpress"
-  get "honeynet/tagged_version"
-  root :to => "honeynet#url_versions"
+  get "honeynet/processes"
+  get "honeynet/process_timeline"
+  root :to => "honeynet#processes"
 end

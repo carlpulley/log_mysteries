@@ -16,8 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class HoneynetController < ApplicationController
-  def url_tree
-    @data = ApacheAccess.status(200).get
+  def processes
+    @data = ApacheAccess.scoped
     @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
     respond_to do |format|
       format.html # index.html.erb
@@ -27,52 +27,8 @@ class HoneynetController < ApplicationController
     end
   end
   
-  def url_versions
-    @data = ApacheAccess.tagged_with(["wordpress", "version"])
-    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml do
-        render :xml => @data
-      end
-    end
-  end
-  
-  def google_syntax_highlighter
-    @data = Match.type("google-syntax-highlighter").file
-    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml do
-        render :xml => @data
-      end
-    end
-  end
-  
-  def easy_google_syntax_highlighter
-    @data = Match.type("easy-google-syntax-highlighter").file
-    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml do
-        render :xml => @data
-      end
-    end
-  end
-  
-  def tagged_wordpress
-    @data = ApacheAccess.tagged_with("wordpress")
-    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml do
-        render :xml => @data
-      end
-    end
-  end
-  
-  def tagged_version
-    @data = ApacheAccess.tagged_with("version")
+  def process_timeline
+    @data = ApacheAccess.scoped
     @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
     respond_to do |format|
       format.html # index.html.erb
