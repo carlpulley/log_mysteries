@@ -12,7 +12,7 @@
 </script>
 <div id='events_<%= eid %>' class='events timeline'>
 <% timeline.events.each do |event| -%>
-	<div id='<%= event.class.table_name %><%= event.id %>' class='event' observed_at='<%= event.observed_at.to_i %>'><%= render :partial => 'event', :object => event, :locals => { :tags => tags } %></div>
+	<div id='<%= event.class.table_name %><%= event.id %>' class='event' observed_at='<%= event.observed_at.to_i %>'><%= render :partial => "honeynet/event/#{event.class.table_name}", :locals => { :tags => tags, :event => event, :max_bytes => timeline.max_bytes, :max_processing_time => timeline.max_processing_time } %></div>
 <% end -%>
 </div>
 <script>

@@ -1,0 +1,14 @@
+<div class="event">
+	<div class="info">
+ 		<script type="text/javascript+protovis">sparklength(<%=raw event.bytes.to_json %>, <%= max_bytes %>).render();</script> 
+		<script type="text/javascript+protovis">sparklength(<%=raw event.processing_time.to_json %>, <%= max_processing_time %>).render();</script>
+		<script type="text/javascript+protovis">sparkcolour(<%=raw event.result.to_json %>).render();</script> 
+		<%= event.referer == '-' ? event.http_method : "#{event.referer} -> #{event.http_method}" %>
+		<%= event.http_url %>
+	</div>
+	<div class='metainfo'>
+		<div class='tag'><b>PID:</b> <%= event.pid %></div> 
+		<div class='tag'><b>TID:</b> <%= event.thread_index %></div> 
+		<div class="date"><%= event.observed_at.in_time_zone("UTC").strftime("%d/%b/%y %H:%M:%S") %></div>
+	</div>
+</div>

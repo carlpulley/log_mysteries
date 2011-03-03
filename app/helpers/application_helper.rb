@@ -17,11 +17,13 @@
 
 module ApplicationHelper  
   class Timeline
-    attr_reader :data, :events
+    attr_reader :data, :events, :max_bytes, :max_processing_time
     
     def initialize
       @data = []
       @events = []
+      @max_bytes = 0
+      @max_processing_time = 0
     end
     
     def add_event(label, scope)
@@ -30,6 +32,8 @@ module ApplicationHelper
       else
         @data << { :label => label, :timeline => scope.order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f, :event_id => d.id, :event_type => d.class.table_name } } }
       end
+      @max_bytes = (scope.all.map { |d| d.bytes } + [@max_bytes]).max if scope.first.respond_to? :bytes
+      @max_processing_time = (scope.all.map { |d| d.processing_time } + [@max_processing_time]).max if scope.first.respond_to? :processing_time
       @events.concat(scope.all).uniq
     end
     
