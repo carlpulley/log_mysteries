@@ -16,7 +16,7 @@
 		<%= render :partial => '/graph/scatter.js' %>
 
 		xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
-		//dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
+		dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
 
 		vis.render();
 	</script>
