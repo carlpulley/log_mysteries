@@ -3,7 +3,7 @@ var w = 1000,
     h = 500,
     x = pv.Scale.linear(data.map(function(d){ return d['x']; }).min(), data.map(function(d){ return d['x']; }).max()).range(0, w),
     y = pv.Scale.linear(data.map(function(d){ return d['y']; }).min(), data.map(function(d){ return d['y']; }).max()).range(0, h),
-    c = pv.Scale.log(data.map(function(d){ return d['z']; }).min(), data.map(function(d){ return d['z']; }).max()).range("blue", "red");
+    c = pv.Scale.linear(data.map(function(d){ return d['z']; }).min(), data.map(function(d){ return d['z']; }).max()).range("#0000ff", "#ff0000");
 
 /* The root panel. */
 var vis = new pv.Panel()
@@ -38,6 +38,6 @@ var dot = vis.add(pv.Panel)
     .left(function(d) x(d.x))
     .bottom(function(d) y(d.y))
     .strokeStyle(function(d) c(d.z))
-    .fillStyle(function() this.strokeStyle().alpha(.2))
+    .fillStyle(function() this.strokeStyle().alpha(.6))
     .size(5)
     .title(function(d) d.z.toFixed(1));
