@@ -11,20 +11,20 @@
 
 <% content_for :note do %>
 	<script type="text/javascript+protovis">
-		var data = raw_data.map(function(d) { h = {}; h['x'] = d.observed_at; h['y'] = d.pid; h['z'] = d.observed_at; return h; });
+		var data = raw_data.map(function(d) { h = {}; h['x'] = d.observed_at; h['y'] = d.pid; h['z'] = d.thread_index; return h; });
 
 		<%= render :partial => '/graph/scatter.js' %>
 
 		xlabel.text(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d*1000)));
-		dot.title(function(d) pv.Format.date("%d/%b/%y %H:%M:%S")(new Date(d.z*1000)));
 
 		vis.render();
 	</script>
 	<p>
-	<b>Observations:</b>
+	<b>Notes and Observations:</b>
 	<ul>
+	<li>dot's coloured using the scoreboard thread index and a (linear) blue-red colour scale</li>
 	<li>lines represent periods of stability (ie. uptime) for the Apache2 process?</li>
-	<li>(curved) beginnings to our straight lines are consistent with a (rapid?) sequential assignment of process IDs (ie. for the worker threads, as Apache2 starts up)?</li>
+	<li>curved beginnings to our straight lines are consistent with a (rapid?) sequential assignment of process IDs (ie. for the worker threads, as Apache2 starts up)?</li>
 	</ul>
 	</p>
 <% end %>

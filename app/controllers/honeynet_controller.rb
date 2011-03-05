@@ -37,4 +37,15 @@ class HoneynetController < ApplicationController
       end
     end
   end
+  
+  def thread_timeline
+    @data = ApacheAccess.scoped
+    @data = @data.tagged_with(params[:tagged].split(","), :any => true) if params[:tagged]
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml do
+        render :xml => @data
+      end
+    end
+  end
 end

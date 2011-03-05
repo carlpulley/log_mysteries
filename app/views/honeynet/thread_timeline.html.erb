@@ -1,0 +1,20 @@
+<% content_for :data do %>
+<%
+	def map_to_hash(data)
+	  data.map { |d| { :pid => d.pid, :observed_at => d.observed_at.to_f, :thread_index => (d.thread_index || 0), :counter => d.counter } }
+	end
+-%>
+	<script>
+		var raw_data = <%=raw (map_to_hash @data).to_json %>;
+	</script>
+<% end %>
+
+<% content_for :note do %>
+	<% timeline = ApplicationHelper::Timeline.new -%>
+	<% threads = ApacheAccess.all.map { |d| d.thread_index }.compact.uniq.sort -%>
+	<% threads.each do |tid| %>
+		<% timeline.add_event("TID: #{tid}", ApacheAccess.where("thread_index = ?", tid)) %>
+	<% end %>
+
+	<%= render :partial => '/graph/timeline', :object => timeline %>
+<% end %>
