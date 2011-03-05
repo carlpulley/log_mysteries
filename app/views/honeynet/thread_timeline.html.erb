@@ -13,7 +13,7 @@
 	<% timeline = ApplicationHelper::Timeline.new -%>
 	<% threads = ApacheAccess.all.map { |d| d.thread_index }.compact.uniq.sort -%>
 	<% threads.each do |tid| %>
-		<% timeline.add_event("TID: #{tid}", ApacheAccess.where("thread_index = ?", tid)) %>
+		<% timeline.add_event("TID: #{tid}", ApacheAccess.where("thread_index = ?", tid)) { |d| d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } %>
 	<% end %>
 
 	<%= render :partial => '/graph/timeline', :object => timeline %>

@@ -27,8 +27,8 @@ module ApplicationHelper
     end
     
     def add_event(label, scope)
-      if scope.first.respond_to? :processing_time
-        @data << { :label => label, :timeline => scope.order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f+(d.processing_time.to_f/(10**6)), :event_id => d.id, :event_type => d.class.table_name } } }
+      if block_given? #scope.first.respond_to? :processing_time
+        @data << { :label => label, :timeline => scope.order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => yield(d), :event_id => d.id, :event_type => d.class.table_name } } }
       else
         @data << { :label => label, :timeline => scope.order(:observed_at).all.map { |d| { :begin => d.observed_at.to_f, :end => d.observed_at.to_f, :event_id => d.id, :event_type => d.class.table_name } } }
       end
