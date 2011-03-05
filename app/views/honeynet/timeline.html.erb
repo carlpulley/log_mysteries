@@ -8,9 +8,9 @@
 
 	<% debtag_timeline = ApplicationHelper::Timeline.new -%>
 	
-	<% admin_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) unless @data.tagged_with(t).empty? } -%>
-	<% network_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) unless @data.tagged_with(t).empty? } -%>
-	<% security_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) unless @data.tagged_with(t).empty? } -%>
+	<% admin_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) { |d| d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } unless @data.tagged_with(t).empty? } -%>
+	<% network_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) { |d| d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } unless @data.tagged_with(t).empty? } -%>
+	<% security_tags.each { |t| debtag_timeline.add_event(t, @data.tagged_with(t)) { |d| d.observed_at.to_f+(d.processing_time.to_f/(10**6)) } unless @data.tagged_with(t).empty? } -%>
 
 	<%= render :partial => '/graph/timeline', :object => debtag_timeline, :locals => { :tags => all_tags } %>
 	
