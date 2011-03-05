@@ -20,5 +20,6 @@ Answer::Application.routes.draw do
   get "honeynet/processes"
   get "honeynet/process_timeline"
   get "honeynet/thread_timeline"
+  get "honeynet/restart_checks"
   root :to => "honeynet#processes"
 end
