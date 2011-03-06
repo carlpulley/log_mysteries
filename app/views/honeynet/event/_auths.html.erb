@@ -7,6 +7,7 @@
 	</div>
 </div>
 <div class="metainfo">
+	<% unless tags.empty? -%>
 	<div class="debtags"> 
 		<% tags.select { |t| event.debtag_list.member?(t) }.each do |t| -%>
 		<div class='tag'><%= t %></div>
@@ -17,6 +18,7 @@
 		<div class='tag'><%= t %></div>
 		<% end -%>
 	</div>
+	<% end -%>
 	<div class="date">
 		<%= event.observed_at.in_time_zone("UTC").strftime("%d/%b/%y %H:%M:%S") %>
 	</div>
