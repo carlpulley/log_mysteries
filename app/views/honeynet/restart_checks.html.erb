@@ -12,10 +12,13 @@
 <% content_for :note do %>
 	<% timeline = ApplicationHelper::Timeline.new -%>
 	<% threads = ApacheAccess.all.map { |d| d.thread_index }.compact.uniq.sort -%>
-	<% threads.each do |tid| %>
+	<% threads.each do |tid| -%>
 		<% thread_timeline = ApacheAccess.where(:thread_index => tid) -%>
-		<% timeline.add_event("TID: #{tid}", thread_timeline) { |d| thread_timeline.where(:pid => d.pid).where("observed_at > ?", d.observed_at.to_i).order(:observed_at).last.observed_at.to_f } %>
-	<% end %>
+		<% timeline.add_event("TID: #{tid}", thread_timeline) { |d| thread_timeline.where(:pid => d.pid).where("observed_at > ?", d.observed_at.to_i).order(:observed_at).last.observed_at.to_f } -%>
+	<% end -%>
+	<% timeline.union -%>
+	<% timeline.add_event("/usr/bin/killall apache2", Sudo.command("/usr/bin/killall").command("apache2").where(:observed_at => Time.strptime("2010-04-18 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-26 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z"))) -%>
+	<% ["stop", "start", "restart"].each { |act| timeline.add_event("/etc/init.d/apache2 #{act}", Sudo.command("/etc/init.d/apache2 #{act}").where(:observed_at => Time.strptime("2010-04-18 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-26 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z"))) } -%>
 
 	<%= render :partial => '/graph/timeline', :object => timeline %>
 	
