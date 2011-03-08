@@ -11,12 +11,9 @@
 
 <% content_for :note do %>
 	<% timeline = ApplicationHelper::Timeline.new -%>
-	<% threads = ApacheAccess.all.map { |d| d.thread_index }.compact.uniq.sort -%>
-	<% threads.each do |tid| -%>
-		<% thread_timeline = ApacheAccess.where(:thread_index => tid) -%>
-		<% timeline.add_event("TID: #{tid}", thread_timeline) { |d| thread_timeline.where(:pid => d.pid).where("observed_at > ?", d.observed_at.to_i).order(:observed_at).last.observed_at.to_f } -%>
-	<% end -%>
-	<% timeline.union -%>
+	
+	<% timeline.add_event("Worker thread restart windows", ApacheAccess.where({:observed_at => Time.strptime("2010-04-19 18:59:44 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 19:06:54 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-19 19:06:54 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 19:21:40 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-19 19:21:40 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 19:36:56 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-19 20:19:34 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 20:37:01 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-19 20:48:42 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 21:07:02 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-19 21:17:52 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 21:25:46 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-19 21:25:49 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 21:37:04 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-19 21:46:41 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-19 22:01:08 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-22 18:12:10 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-22 18:40:26 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-22 18:40:30 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-22 18:46:59 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-22 18:46:59 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-22 19:08:45 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-22 19:36:58 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-22 19:59:07 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-22 20:05:53 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-22 20:34:05 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-23 17:56:20 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-23 18:21:15 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-23 18:24:55 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-23 18:25:27 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-23 18:25:33 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-23 18:26:31 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-23 18:27:32 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-23 18:28:02 UTC", "%Y-%m-%d %H:%M:%S %z")} | {:observed_at => Time.strptime("2010-04-23 18:28:14 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-23 18:31:24 UTC", "%Y-%m-%d %H:%M:%S %z")})) -%>
+
 	<% timeline.add_event("/usr/bin/killall apache2", Sudo.command("/usr/bin/killall").command("apache2").where(:observed_at => Time.strptime("2010-04-18 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-26 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z"))) -%>
 	<% ["stop", "start", "restart"].each { |act| timeline.add_event("/etc/init.d/apache2 #{act}", Sudo.command("/etc/init.d/apache2 #{act}").where(:observed_at => Time.strptime("2010-04-18 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z")..Time.strptime("2010-04-26 00:00:00 UTC", "%Y-%m-%d %H:%M:%S %z"))) } -%>
 
@@ -25,7 +22,7 @@
 	<p>
 		<b>Notes:</b>
 		<ul>
-			<li>solid areas of thread timelines encode periods over which the worker thread's PID remains stable or constant</li>
+			<li>we only include <code>sanitized_log/apache2/www-*.log</code> events that are present on our restart boundaries here</li>
 		</ul>
 	</p>
 <% end %>

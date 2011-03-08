@@ -13,6 +13,8 @@
 		<div class='tag'><%= t %></div>
 		<% end -%>
 	</div>
+	<% end -%>
+	<% unless event.package_list.empty? -%>
 	<div class="package">
 		<% event.package_list.each do |t| -%>
 		<div class='tag'><%= t %></div>

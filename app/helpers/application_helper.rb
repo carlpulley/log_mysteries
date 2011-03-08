@@ -18,7 +18,6 @@
 module ApplicationHelper  
   class Timeline
     attr_reader :data, :events, :max_bytes, :max_processing_time
-    attr_writer :merge
     
     def initialize
       @data = []
@@ -40,12 +39,6 @@ module ApplicationHelper
     
     def events
       @events.sort { |a,b| a.observed_at.to_i <=> b.observed_at.to_i }
-    end
-    
-    def union
-      label = @data.map { |d| d[:label] }.join("\; ")
-      data = @data.map { |d| d[:timeline] }.inject([]) { |t, h| t = t + h }
-      @data = [ { :label => label, :timeline => data } ]
     end
   end
 end
