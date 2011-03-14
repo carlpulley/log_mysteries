@@ -1,0 +1,2 @@
+class BranchEntry < Entry
+end

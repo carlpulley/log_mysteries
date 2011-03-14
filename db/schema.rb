@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101031154211) do
+ActiveRecord::Schema.define(:version => 20110313095823) do
 
   create_table "apache_accesses", :force => true do |t|
     t.string   "remote"
@@ -31,9 +31,9 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
     t.integer  "thread_index"
     t.integer  "processing_time"
     t.datetime "observed_at"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "name"
   end
 
   create_table "archive_contents", :force => true do |t|
@@ -47,6 +47,17 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
     t.datetime "updated_at"
   end
 
+  create_table "artefacts", :force => true do |t|
+    t.integer  "entry_id"
+    t.string   "path"
+    t.string   "revision"
+    t.integer  "size"
+    t.datetime "submitted_at"
+    t.string   "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "auths", :force => true do |t|
     t.datetime "observed_at"
     t.string   "host"
@@ -56,12 +67,26 @@ ActiveRecord::Schema.define(:version => 20101031154211) do
     t.string   "type"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "state"
+  end
+
+  create_table "entries", :force => true do |t|
+    t.string   "name"
+    t.integer  "repository_id"
+    t.string   "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "matches", :force => true do |t|
     t.integer  "archive_content_id"
     t.integer  "apache_access_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "repositories", :force => true do |t|
+    t.string   "url"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

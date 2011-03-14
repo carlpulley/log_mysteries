@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  entry_id: 1
+  path: MyString
+  revision: MyString
+  size: 1
+  submitted_at: 2011-03-13 09:58:23
+  type: MyString
+
+two:
+  entry_id: 1
+  path: MyString
+  revision: MyString
+  size: 1
+  submitted_at: 2011-03-13 09:58:23
+  type: MyString

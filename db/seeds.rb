@@ -34,3 +34,8 @@ Rake::Task["tag:events:wordpress:plugins"].invoke
 
 Rake::Task["build:names:url"].invoke
 Rake::Task["build:names:url:basename"].invoke
+
+# Build wordpress nad plugin SVN databases
+
+Rake::Task["build:svn:wordpress"].invoke
+Rake::Task["build:svn:wp_plugins"].invoke

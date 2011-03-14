@@ -1,0 +1,2 @@
+class DirArtefact < Artefact
+end
