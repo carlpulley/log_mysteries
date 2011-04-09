@@ -15,7 +15,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# TODO: we can not use Ruby Subversion bindings with Ruby 1.9 (they do not yet build!), so we're forced to use the following XML-based hacks
+# TODO: ensure we also record file hashes in our database tables!!
+# TODO: want some hashes present so that we can match against partial files (eg. 4kB block hashing)
+
+# TODO: we can not use Ruby Subversion bindings with Ruby 1.9 (they do not yet build!), so we're forced to use approx. the following XML type hacks
 def build_artefact(repos_url, entry)
   Nokogiri::XML(`svn list -R --xml --incremental #{repos_url}`).xpath("//entry").each do |artefact|
     if artefact[:kind] == 'file'
@@ -23,7 +26,7 @@ def build_artefact(repos_url, entry)
     else
       item = DirArtefact.find_or_create_by_path(:path => artefact.at_css("name").content, :size => 0, :submitted_at => artefact.at_css("date").content, :revision => artefact.at_css("commit")[:revision])
     end
-    entry.artefacts << item if item.new_record?
+    entry.artefacts << item unless entry.artefacts.member? item
   end
 end
 
@@ -49,14 +52,36 @@ def build_entries(repos_url, repository)
   end
 end
 
+namespace :checkout do
+  namespace :svn do    
+    desc "Checkout the Wordpress subversion source code repository. \nNOTE: This rake task can safely be called multiple times (eg. you're updating to subversion HEAD)."
+    task :wordpress => :environment do
+      repos = "core.svn.wordpress.org"
+      puts "Checking out #{repos}..."
+      puts `svn update http://#{repos} evidence/wordpress` if File.exists? "evidence/wordpress"
+      puts `svn co http://#{repos} evidence/wordpress` unless File.exists? "evidence/wordpress"
+    end
+    
+    desc "Checkout the Wordpress plugin subversion source code repositories. \nNOTE: This rake task can safely be called multiple times (eg. you're updating to subversion HEAD)."
+    task :wp_plugins => :environment do
+      repos = "svn.wp-plugins.org"
+      puts "Checking out #{repos}..."
+      `svn list evidence/wp-plugins`.split.each do |item|
+        puts `svn update http://#{repos}/#{item} evidence/wp-plugins/#{item}` if File.exists? "evidence/wp-plugins/#{item}"
+        puts `svn co http://#{repos}/#{item} evidence/wp-plugins/#{item}` unless File.exists? "evidence/wp-plugins/#{item}"
+      end
+    end
+  end
+end
+
 namespace :build do
   namespace :svn do    
     desc "Builds DB tables for the Wordpress subversion source code repository. \nNOTE: This rake task can safely be called multiple times (eg. you're updating to subversion HEAD)."
     task :wordpress => :environment do
       repos = "core.svn.wordpress.org"
       puts "Building #{repos} database tables..."
-      repository = Repository.find_or_create_by_url(:url => "http://#{repos}", :name => "wordpress")
-      build_entries("http://#{repos}", repository)
+      repository = Repository.find_or_create_by_url(:url => "evidence", :name => "wordpress")
+      build_entries("evidence/wordpress", repository)
       repository.save!
     end
     
@@ -64,9 +89,9 @@ namespace :build do
     task :wp_plugins => :environment do
       repos = "svn.wp-plugins.org"
       puts "Building #{repos} database tables..."
-      `svn list http://#{repos}`.split.each do |item|
-        repository = Repository.find_or_create_by_url(:url => "http://#{repos}/#{item}", :name => "wp-plugins/#{item}")
-        build_entries("http://#{repos}/#{item}", repository)
+      `svn list evidence/wp-plugins`.split.each do |item|
+        repository = Repository.find_or_create_by_url(:url => "evidence/wp-plugins/#{item}", :name => "wp-plugins/#{item}")
+        build_entries("evidence/wp-plugins/#{item}", repository)
         repository.save!
       end
     end
